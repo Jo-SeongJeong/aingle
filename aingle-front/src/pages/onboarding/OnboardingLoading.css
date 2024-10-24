@@ -1,0 +1,21 @@
+@keyframes rainbowEffect {
+  0% {
+    background-color: #ff4fa3;
+  }
+  50% {
+    background-color: #ff8cc4; /* 거의 흰색에 가까운 중간 색상 */
+  }
+  100% {
+    background-color: #ff53a6;
+  }
+}
+
+.rainbow-animation {
+  animation: rainbowEffect 3s infinite;
+}
+/* 텍스트 그라데이션 효과 */
+.text-gradient {
+  background: linear-gradient(to right, #66e3cc, #fab75f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

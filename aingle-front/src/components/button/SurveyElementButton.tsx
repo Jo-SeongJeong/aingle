@@ -29,7 +29,7 @@ const SurveyElementButton: React.FC<SurveyElementButtonProps> = ({
     <div className="flex flex-col items-center space-y-4">
       {/* 첫 번째 버튼 */}
       <button
-        className={`px-6 py-3 w-[325px] rounded-full text-[14px] bg-[#ffe6f2]  ${
+        className={`px-6 py-3 w-[350px] rounded-full text-[14px] bg-[#ffe6f2] font-hakgyo ${
           selected === 1
             ? "border-2 border-[#fb599a] text-[#fb599a]"
             : "border-2 border-transparent"
@@ -41,7 +41,7 @@ const SurveyElementButton: React.FC<SurveyElementButtonProps> = ({
 
       {/* 두 번째 버튼 */}
       <button
-        className={`px-6 py-3 w-[325px] rounded-full text-[14px] bg-[#ffe6f2] ${
+        className={`px-6 py-3 w-[350px] rounded-full text-[14px] bg-[#ffe6f2] font-hakgyo ${
           selected === 2
             ? "border-2 border-[#fb599a] text-[#fb599a]"
             : "border-2 border-transparent"

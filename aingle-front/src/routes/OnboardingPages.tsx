@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import Onboarding from "../pages/onboarding/Onboarding";
-import Survey from "../pages/onboarding/Survey";
+import OnboardingLoading from "../pages/onboarding/OnboardingLoading";
 
 const OnboardingPages = () => {
   return (
     <div className="h-full w-[375px] relative">
       <Routes>
         <Route path="/" element={<Onboarding />} />
-        <Route path="/survey" element={<Survey />} />
+        <Route path="/loading" element={<OnboardingLoading />} />
       </Routes>
     </div>
   );
