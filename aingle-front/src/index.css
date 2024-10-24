@@ -21,3 +21,17 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+/* Adding HakgyoansimDunggeunmisoTTF-B Font */
+@font-face {
+  font-family: "HakgyoansimDunggeunmisoTTF-B";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Custom Font Class for HakgyoansimDunggeunmiso */
+.font-hakgyo {
+  font-family: "HakgyoansimDunggeunmisoTTF-B", sans-serif;
+}
