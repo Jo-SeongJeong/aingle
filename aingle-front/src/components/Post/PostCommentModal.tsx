@@ -183,7 +183,7 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
           <h1 className="font-semibold absolute top-[30px]">댓글 {id}</h1>
         </div>
         <div
-          className="px-[18px] pt-[25px] overflow-y-auto bg-red-300"
+          className="px-[18px] pt-[25px] overflow-y-auto"
           style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
         >
           {dummyDatas.map((data, idx) => (
