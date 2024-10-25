@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import category from "../../assets/icons/Category.png";
 import categoryGray from "../../assets/icons/CategoryGray.png";
 import home from "../../assets/icons/Home.png";
@@ -12,12 +12,25 @@ import { useEffect, useState } from "react";
 
 const Footer = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  {
+    location.pathname !== "/write" && location.pathname !== "/" && <Footer />;
+  }
+
   const [homeState, setHomeState] = useState<boolean>(true);
   const [categoryState, setCategoryState] = useState<boolean>(true);
   const [noticeState, setNoticeState] = useState<boolean>(true);
   const [profileState, setProfileState] = useState<boolean>(true);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (location.pathname == "/home") {
+      setHomeState(true);
+      setCategoryState(false);
+      setNoticeState(false);
+      setProfileState(false);
+    }
+  }, [location.pathname]);
 
   const handleHomeClick = () => {
     setHomeState(true);
@@ -51,6 +64,14 @@ const Footer = () => {
     navigate("/mypage");
   };
 
+  const handleWriteClick = () => {
+    setHomeState(false);
+    setCategoryState(false);
+    setNoticeState(false);
+    setProfileState(false);
+    navigate("/write");
+  };
+
   return (
     <div
       className="w-full h-[75px] flex justify-evenly items-center absolute bottom-0 z-3 bg-white shadow-lg"
@@ -67,7 +88,13 @@ const Footer = () => {
         className="w-[24px] mb-[12px]"
       />
       <div className="rounded-full p-2 flex items-center mb-[45px] justify-center">
-        <img src={plus} className="w-[60px] h-[60px]" />
+        <img
+          src={plus}
+          className="w-[60px] h-[60px]"
+          onClick={() => {
+            handleWriteClick();
+          }}
+        />
       </div>
 
       <img
