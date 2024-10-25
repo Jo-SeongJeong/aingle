@@ -13,8 +13,17 @@ const OnboardingLoading = () => {
 
   const getResult = async () => {
     try {
-      //   navigate("/result");
-      console.log("2초 뒤임");
+      // 1. axios 설문 결과 담아서 요청 보내야함
+
+      // 2. 받은 결과 담아서 localstorage에 담기
+
+      // 3. 설문 결과 지우기
+      localStorage.removeItem("1");
+      localStorage.removeItem("2");
+      localStorage.removeItem("3");
+      localStorage.removeItem("4");
+
+      navigate("/result");
     } catch (error) {
       console.error("오류 발생:", error);
     }
