@@ -22,7 +22,7 @@ const Onboarding = () => {
   };
 
   useEffect(() => {
-    console.log(selected);
+    // console.log(selected);
   }, [selected]);
 
   // 뒤로가기 버튼 클릭 시 페이지 감소
@@ -50,7 +50,10 @@ const Onboarding = () => {
   // 마지막 페이지 도달 시 실행되는 함수
   const onLastPageReached = async () => {
     try {
-      navigate("/home");
+      for (let i = 1; i <= 4; i++) {
+        localStorage.setItem(String(i), String(selected[i]));
+      }
+      navigate("/loading");
     } catch (error) {
       console.error("오류 발생:", error);
     }
@@ -79,20 +82,20 @@ const Onboarding = () => {
             {/* 가운데 정렬 */}
             <img src={bird} className="w-[60px] h-[60px] mb-6" />
             <div className="mb-[34px]">
-              <span className="font-hakgyo text-[20px] text-pink-base">
+              <span className="font-hakgyo text-[26px] text-pink-base">
                 aingle{" "}
               </span>
-              <span className="font-hakgyo text-[20px] text-black ">
+              <span className="font-hakgyo text-[26px] text-black ">
                 에 온 걸 환영해!
               </span>
             </div>
-            <h1 className="mb-[16px] font-medium text-black">
+            <h1 className="mb-[16px] font-hakgyo text-black">
               너에게 딱 맞는 AI캐릭터를 추천해주려고 해
             </h1>
-            <h1 className="mb-[16px] font-medium text-black">
+            <h1 className="mb-[16px] font-hakgyo text-black">
               너가 어떤 사람인지 알려줘
             </h1>
-            <h1 className="mb-[16px] font-medium text-black">
+            <h1 className="mb-[16px] font-hakgyo text-black">
               그러면 내가 맞는 친구를 데려올게
             </h1>
           </div>
@@ -103,7 +106,7 @@ const Onboarding = () => {
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q1
             </h1>
-            <h1 className="mb-[50px] font-semibold text-black">
+            <h1 className="mb-[50px] font-hakgyo text-black">
               SNS에서 주로 어떻게 시간을 보내시나요?
             </h1>
             <SurveyElementButton
@@ -122,7 +125,7 @@ const Onboarding = () => {
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q2
             </h1>
-            <h1 className="mb-[50px] font-semibold text-black">
+            <h1 className="mb-[50px] font-hakgyo text-black">
               SNS에서 어떤 콘텐츠를 더 자주 클릭하시나요?
             </h1>
             <SurveyElementButton
@@ -141,10 +144,10 @@ const Onboarding = () => {
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q3
             </h1>
-            <h1 className="mb-[8px] font-semibold text-black">
+            <h1 className="mb-[8px] font-hakgyo text-black">
               친구가 SNS에 고민을 털어놓았을 때,
             </h1>
-            <h1 className="mb-[20px] font-semibold text-black">
+            <h1 className="mb-[20px] font-hakgyo text-black">
               어떻게 반응하시나요?
             </h1>
             <SurveyElementButton
@@ -163,7 +166,7 @@ const Onboarding = () => {
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q4
             </h1>
-            <h1 className="mb-[50px] font-semibold text-black">
+            <h1 className="mb-[50px] font-hakgyo text-black">
               SNS 피드를 관리하는 방식은 어떤가요?
             </h1>
             <SurveyElementButton
@@ -228,7 +231,7 @@ const Onboarding = () => {
         {renderContent()}
       </div>
       <button
-        className={`py-[20px] w-full text-white bg-pink-base rounded-[10px] ${
+        className={`py-[20px] w-full text-white bg-pink-base rounded-[10px] font-hakgyo ${
           pageNumber === 1 ? "mt-[10px]" : "mt-[80px]"
         }`}
         onClick={handleButtonClick}
