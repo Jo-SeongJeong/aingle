@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import bird from "../../assets/icons/Bird.png";
 import porfile from "../../assets/images/sampleProfile.png";
 import { useNavigate } from "react-router-dom";
@@ -6,13 +7,18 @@ const OnboardingResult = () => {
   const navigate = useNavigate();
   const start = async () => {
     try {
-      // axios 팔로우 하기 요청
-
-      navigate("/home");
+      navigate("/login");
     } catch (error) {
       console.error("오류 발생:", error);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      // 로컬 스토리지에서 정보 꺼내기
+    };
+  }, []);
+
   return (
     <div className="bg-white h-full w-full px-[16px] py-[34px] flex flex-col  items-center">
       <div className="flex flex-col items-center flex-1 justify-center">

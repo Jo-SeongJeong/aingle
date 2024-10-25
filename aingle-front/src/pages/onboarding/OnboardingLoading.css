@@ -1,12 +1,12 @@
 @keyframes rainbowEffect {
   0% {
-    background-color: #ff4fa3;
+    background-color: #fc449d;
   }
   50% {
-    background-color: #ff8cc4; /* 거의 흰색에 가까운 중간 색상 */
+    background-color: #fd66af; /* 거의 흰색에 가까운 중간 색상 */
   }
   100% {
-    background-color: #ff53a6;
+    background-color: #fc449d;
   }
 }
 
