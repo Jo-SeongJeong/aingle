@@ -6,7 +6,7 @@ import Login from "../pages/onboarding/Login";
 
 const OnboardingPages = () => {
   return (
-    <div className="h-full w-[375px] relative">
+    <div className="h-full w-[375px] relative bg-white">
       <Routes>
         <Route path="/" element={<Onboarding />} />
         <Route path="/loading" element={<OnboardingLoading />} />

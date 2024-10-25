@@ -35,3 +35,7 @@
 .font-hakgyo {
   font-family: "HakgyoansimDunggeunmisoTTF-B", sans-serif;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}

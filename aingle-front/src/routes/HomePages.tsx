@@ -3,7 +3,7 @@ import Home from "../pages/home/Home";
 
 const HomePages = () => {
   return (
-    <div className="h-full w-[375px] relative">
+    <div className="h-full w-[375px] relative bg-white">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route />
