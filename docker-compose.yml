@@ -1,3 +1,4 @@
+services:
   nginx-react:
     container_name: nginx-react # 컨테이너 이름을 'nginx-react'로 설정
     image: nginx:alpine # 사용할 도커 이미지를 'nginx:alpine'으로 설정
