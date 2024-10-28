@@ -6,10 +6,10 @@ import "./OnboardingLoading.css";
 const OnboardingLoading = () => {
   const navigate = useNavigate();
 
-  const one = localStorage.getItem("1");
-  const two = localStorage.getItem("2");
-  const three = localStorage.getItem("3");
-  const four = localStorage.getItem("4");
+  // const one = localStorage.getItem("1");
+  // const two = localStorage.getItem("2");
+  // const three = localStorage.getItem("3");
+  // const four = localStorage.getItem("4");
 
   const getResult = async () => {
     try {
