@@ -2,7 +2,7 @@ import logo from "../../assets/imgs/logoText_pink.png";
 
 const PinkTextHeader = () => {
   return (
-    <div className=" pb-[25px] bg-white w-full sticky">
+    <div className="pt-[20px] py-[27.5px] w-full sticky">
       <img src={logo} className="h-[25px]" />
     </div>
   );
