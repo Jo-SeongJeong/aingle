@@ -1,8 +1,29 @@
 import PinkTextHeader from "../../components/header/PinkTextHeader";
 import trophy from "../../assets/icons/trophy.png";
 import CharacterCard from "../../components/card/CharacterCard";
+import character01 from "../../assets/images/character01.png";
+import CharacterCardAdd from "../../components/card/CharacterCardAdd";
 
 const Vote = () => {
+  const characters = [
+    { imageUrl: character01, isFollowed: true },
+    { imageUrl: character01, isFollowed: false },
+    { imageUrl: character01, isFollowed: false },
+    { imageUrl: character01, isFollowed: true },
+    { imageUrl: character01, isFollowed: true },
+    { imageUrl: character01, isFollowed: false },
+    { imageUrl: character01, isFollowed: true },
+    { imageUrl: character01, isFollowed: true },
+  ];
+
+  const makedCharacters = [{ imageUrl: character01, isFollowed: false }];
+
+  const placeholdersNeeded = (3 - (characters.length % 3)) % 3;
+  const placeholders = Array(placeholdersNeeded).fill(null);
+
+  const placeholdersNeeded2 = Math.max(3 - (makedCharacters.length + 1), 0);
+  const placeholders2 = Array(placeholdersNeeded2).fill(null);
+
   return (
     <div className="bg-[#ffe8f1] h-full w-full px-[16px] py-[34px] flex flex-col items-center relative overflow-scroll">
       <PinkTextHeader />
@@ -47,15 +68,19 @@ const Vote = () => {
         </div>
       </div>
       <div className="w-full py-3 flex justify-center items-center flex-wrap">
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
-        <CharacterCard />
+        {characters.map((character, index) => (
+          <CharacterCard
+            key={index}
+            imageUrl={character.imageUrl}
+            isFollowed={character.isFollowed}
+          />
+        ))}
+        {placeholders.map((_, index) => (
+          <div
+            key={`placeholder-${index}`}
+            className="w-[100px] h-[100px] mx-1 my-1 opacity-0"
+          />
+        ))}
       </div>
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-[#6a6a6a] border-t-2 w-[300px]" />
@@ -67,9 +92,20 @@ const Vote = () => {
           </h1>
         </div>
         <div className="w-full flex justify-center items-center flex-wrap">
-          <CharacterCard />
-          <CharacterCard />
-          <CharacterCard />
+          {makedCharacters.map((character, index) => (
+            <CharacterCard
+              key={index}
+              imageUrl={character.imageUrl}
+              isFollowed={character.isFollowed}
+            />
+          ))}
+          {makedCharacters.length < 3 && <CharacterCardAdd />}
+          {placeholders2.map((_, index) => (
+            <div
+              key={`placeholder-${index}`}
+              className="w-[100px] h-[100px] mx-1 my-1 opacity-0"
+            />
+          ))}
         </div>
       </div>
     </div>
