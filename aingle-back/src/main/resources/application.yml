@@ -2,7 +2,13 @@ spring.config.import: optional:application-private.yml
 
 server:
   port: 8080
+  servlet:
+    context-path: /api
 
 spring:
   application:
     name: aingle-backend
+
+springdoc:
+  swagger-ui:
+    path: ${swagger-url}
