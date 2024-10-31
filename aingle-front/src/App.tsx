@@ -5,6 +5,7 @@ import Footer from "./components/footer/Footer";
 import VotePages from "./routes/VotePages";
 import MyPages from "./routes/MyPages";
 import Write from "./pages/write/Write";
+import SocialRedirection from "./pages/onboarding/SocialRedirection";
 
 const App = () => {
   const location = useLocation();
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/mypage/*" element={<MyPages />} />
         <Route path="/write" element={<Write />} />
         <Route path="/*" element={<OnboardingPages />} />
+        <Route path="/social-redirection" element={<SocialRedirection />} />
       </Routes>
       {location.pathname !== "/write" && location.pathname !== "/" && (
         <Footer />
