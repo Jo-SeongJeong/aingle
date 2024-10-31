@@ -19,9 +19,9 @@ const App = () => {
         <Route path="/notice/*" element={<NoticePages />} />
         <Route path="/*" element={<OnboardingPages />} />
       </Routes>
-      {location.pathname !== "/write" && location.pathname !== "/" && (
-        <Footer />
-      )}
+      {location.pathname !== "/write" &&
+        location.pathname !== "/" &&
+        location.pathname !== "/mypage/edit" && <Footer />}
     </div>
   );
 };
