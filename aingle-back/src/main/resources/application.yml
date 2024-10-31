@@ -12,3 +12,12 @@ spring:
 springdoc:
   swagger-ui:
     path: ${swagger-url}
+
+jwt:
+  expiration_time: 3600000 #1시간
+  secret: ${JWT}
+
+kakao:
+  grant-type: authorization_code
+  client-id: ${kakao-client-id}
+  redirect-uri: ${kakao-redirect-uri}
