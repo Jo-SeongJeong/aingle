@@ -1,8 +1,10 @@
+import { useState } from "react";
 import PinkTextHeader from "../../components/header/PinkTextHeader";
 import trophy from "../../assets/icons/trophy.png";
 import CharacterCard from "../../components/card/CharacterCard";
 import character01 from "../../assets/images/character01.png";
 import CharacterCardAdd from "../../components/card/CharacterCardAdd";
+import ChDetailModal from "../../components/modal/ChDetailModal";
 
 const Vote = () => {
   const characters = [
@@ -23,6 +25,17 @@ const Vote = () => {
 
   const placeholdersNeeded2 = Math.max(3 - (makedCharacters.length + 1), 0);
   const placeholders2 = Array(placeholdersNeeded2).fill(null);
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<{
+    imageUrl: string;
+    isFollowed: boolean;
+  } | null>(null);
+
+  const openModal = (character: { imageUrl: string; isFollowed: boolean }) => {
+    setSelectedCharacter(character);
+    setModalOpen(true);
+  };
 
   return (
     <div className="bg-[#ffe8f1] h-full w-full px-[16px] py-[34px] flex flex-col items-center relative overflow-scroll">
@@ -73,6 +86,7 @@ const Vote = () => {
             key={index}
             imageUrl={character.imageUrl}
             isFollowed={character.isFollowed}
+            onClick={() => openModal(character)}
           />
         ))}
         {placeholders.map((_, index) => (
@@ -82,6 +96,11 @@ const Vote = () => {
           />
         ))}
       </div>
+      <ChDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        character={selectedCharacter}
+      />
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-[#6a6a6a] border-t-2 w-[300px]" />
       </div>
@@ -97,6 +116,7 @@ const Vote = () => {
               key={index}
               imageUrl={character.imageUrl}
               isFollowed={character.isFollowed}
+              onClick={() => openModal(character)}
             />
           ))}
           {makedCharacters.length < 3 && <CharacterCardAdd />}

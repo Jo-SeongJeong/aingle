@@ -29,6 +29,35 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) =>
+              request.destination === "document" ||
+              request.destination === "script" ||
+              request.destination === "style",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "dynamic-resources",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 하루 단위로 캐시를 갱신
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === "image",
+            handler: "CacheFirst",
+            options: {
+              cacheName: "images-cache",
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 일주일 동안 캐시 유지
+              },
+            },
+          },
+        ],
+      },
     }),
   ],
 });
