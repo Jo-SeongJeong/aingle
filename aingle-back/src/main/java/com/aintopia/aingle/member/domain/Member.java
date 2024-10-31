@@ -46,6 +46,8 @@ public class Member {
     private Platform platform;
 
     @Column(name = "language")
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("korean")
     private Language language;
 
     @Column(name = "create_time", columnDefinition = "TIMESTAMP")
@@ -55,8 +57,8 @@ public class Member {
     private LocalDateTime resignTime;
 
     @Column(name = "is_resigned")
-    @ColumnDefault("0")
-    private Integer isResigned;
+    @ColumnDefault("false")
+    private Boolean isResigned;
 
     @Column(name = "alarm_count")
     @ColumnDefault("0")
@@ -71,7 +73,7 @@ public class Member {
     }
 
     public void resign() {
-        this.isResigned = 1;
+        this.isResigned = true;
     }
 
     @Builder(builderMethodName = "signupBuilder")

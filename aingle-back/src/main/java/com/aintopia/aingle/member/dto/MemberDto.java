@@ -16,6 +16,6 @@ public class MemberDto {
     private Language language;
     private LocalDate createTime;
     private LocalDate resignTime;
-    private Integer isResigned;
+    private Boolean isResigned;
     private Integer alarmCount;
 }
