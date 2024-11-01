@@ -1,10 +1,15 @@
 import bgbg from "../../assets/images/bgbg.png";
 import PostCard from "../../components/card/PostCard";
 import cog from "../../assets/icons/settings.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 
-const MyPage = () => {
+const CharDetail = () => {
+  const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
+  const { id: string } = useParams();
 
   // 더미 데이터 생성
   const posts = [
@@ -24,10 +29,9 @@ const MyPage = () => {
         className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"
         style={{ backgroundImage: `url(${bgbg})` }}
       >
-        <img
-          src={cog}
-          className="w-[24px] h-[24px] absolute top-[13px] right-[24px] cursor-pointer"
-          alt="설정 아이콘"
+        <FontAwesomeIcon
+          icon={faChevronLeft}
+          className=" text-white absolute top-[16px] left-[18px] cursor-pointer"
           onClick={() => {
             navigate("/mypage/edit");
           }}
@@ -42,20 +46,37 @@ const MyPage = () => {
           alt="프로필 이미지"
         />
         <h1 className="text-[20px] font-semibold mb-3">정채린</h1>
-        <div className="bg-[#FFE8F1] py-[15px] px-[40px] flex gap-[80px] rounded-[10px]">
-          <div className="text-center">
-            <h1 className="text-lg font-bold text-pink-base">4</h1>
-            <h1 className="text-[#6A6A6A]">게시물</h1>
+        <div className="flex gap-[15px] items-center">
+          <div className="bg-[#FFE8F1] py-[15px] px-[40px] flex gap-[70px] rounded-[10px]">
+            <div className="text-center">
+              <h1 className="text-lg font-bold text-pink-base">4</h1>
+              <h1 className="text-[#6A6A6A]">게시물</h1>
+            </div>
+            <div
+              className="text-center"
+              onClick={() => {
+                navigate("/mypage/following");
+              }}
+            >
+              <h1 className="text-lg font-bold text-pink-base">4</h1>
+              <h1 className="text-[#6A6A6A]">팔로워</h1>
+            </div>
           </div>
-          <div
-            className="text-center"
-            onClick={() => {
-              navigate("/mypage/following");
-            }}
-          >
-            <h1 className="text-lg font-bold text-pink-base">4</h1>
-            <h1 className="text-[#6A6A6A]">팔로워</h1>
-          </div>
+          {!isFollowing ? (
+            <button
+              onClick={() => setIsFollowing(true)}
+              className="w-[82px] h-[50px] rounded-[10px] bg-pink-base text-white"
+            >
+              팔로우
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsFollowing(false)}
+              className="w-[82px] h-[50px] rounded-[10px] bg-[#CFCFCF] text-white"
+            >
+              언팔로우
+            </button>
+          )}
         </div>
       </div>
 
@@ -70,4 +91,4 @@ const MyPage = () => {
   );
 };
 
-export default MyPage;
+export default CharDetail;

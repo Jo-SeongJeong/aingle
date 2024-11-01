@@ -5,6 +5,7 @@ import Footer from "./components/footer/Footer";
 import VotePages from "./routes/VotePages";
 import MyPages from "./routes/MyPages";
 import Write from "./pages/write/Write";
+import NoticePages from "./routes/NoticePages";
 import SocialRedirection from "./pages/onboarding/SocialRedirection";
 
 const App = () => {
@@ -16,12 +17,15 @@ const App = () => {
         <Route path="/vote/*" element={<VotePages />} />
         <Route path="/mypage/*" element={<MyPages />} />
         <Route path="/write" element={<Write />} />
+        <Route path="/notice/*" element={<NoticePages />} />
         <Route path="/*" element={<OnboardingPages />} />
         <Route path="/social-redirection" element={<SocialRedirection />} />
       </Routes>
-      {location.pathname !== "/write" && location.pathname !== "/" && (
-        <Footer />
-      )}
+      {location.pathname !== "/write" &&
+        location.pathname !== "/" &&
+        location.pathname !== "/mypage/edit" &&
+        location.pathname !== "/login" &&
+        location.pathname !== "/signup" && <Footer />}
     </div>
   );
 };
