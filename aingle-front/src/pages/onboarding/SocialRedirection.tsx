@@ -29,7 +29,7 @@ const SocialRedirection: React.FC = () => {
 
           if (response && response.status === 200) {
             sessionStorage.setItem("email", response.data.email);
-            navigate("/singup", { state: { method: platform } });
+            navigate("/signup", { state: { method: platform } });
           }
         } catch (error: any) {
           if (axios.isAxiosError(error) && error.response?.status === 303) {
