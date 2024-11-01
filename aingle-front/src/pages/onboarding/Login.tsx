@@ -5,6 +5,8 @@ import google from "../../assets/icons/google.png";
 const Login = () => {
   const restKey = import.meta.env.VITE_REACT_APP_REST_KEY;
   const redirect = import.meta.env.VITE_REACT_APP_REDIRECT_URI;
+  const googleKey = import.meta.env.VITE_REACT_APP_GOOGLE_KEY;
+  const googleRedirect = import.meta.env.VITE_REACT_APP_GOOGLE_REDIRECT_URI;
   const login = async (platform: string) => {
     if (platform === "kakao") {
       try {
@@ -16,6 +18,14 @@ const Login = () => {
       } catch (error) {
         console.error("카카오 로그인 요청 실패:", error);
         alert("카카오 로그인에 실패했습니다.");
+      }
+    } else if (platform === "google") {
+      try {
+        const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${googleKey}&redirect_uri=${googleRedirect}&response_type=token&scope=https://www.googleapis.com/auth/userinfo.email`;
+        window.location.href = googleAuthUrl;
+      } catch (error) {
+        console.error("구글 로그인 요청 실패:", error);
+        alert("구글 로그인에 실패했습니다.");
       }
     }
   };
