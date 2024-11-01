@@ -21,7 +21,9 @@ const App = () => {
       </Routes>
       {location.pathname !== "/write" &&
         location.pathname !== "/" &&
-        location.pathname !== "/mypage/edit" && <Footer />}
+        location.pathname !== "/mypage/edit" &&
+        location.pathname !== "/login" &&
+        location.pathname !== "/signup" && <Footer />}
     </div>
   );
 };
