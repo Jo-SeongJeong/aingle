@@ -1,7 +1,6 @@
 import bgbg from "../../assets/images/bgbg.png";
 import PostCard from "../../components/card/PostCard";
-import cog from "../../assets/icons/settings.png";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
@@ -9,7 +8,7 @@ import { useState } from "react";
 const CharDetail = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
-  const { id: string } = useParams();
+  //   const { id: string } = useParams(); //추후 api요청시 사용
 
   // 더미 데이터 생성
   const posts = [

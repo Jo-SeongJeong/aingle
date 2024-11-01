@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TextHeader from "../../components/header/TextHeader";
 
 const EditProfile = () => {
@@ -10,6 +10,12 @@ const EditProfile = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
   const [selectedImage, setSelectedImage] = useState<File | null>(null); // 이미지 파일을 저장할 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
+
+  //이 코드는 나중에 지움
+  useEffect(() => {
+    setProfileImg("");
+    setSelectedImage(selectedImage);
+  }, []);
 
   const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBirthday(e.target.value);
@@ -89,6 +95,7 @@ const EditProfile = () => {
                 className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                 type="date"
                 value={birthday}
+                onChange={handleBirthdayChange}
               />
             </div>
             <div className="flex items-center gap-4 mb-[15px]">

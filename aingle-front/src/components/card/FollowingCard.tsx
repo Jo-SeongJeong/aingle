@@ -1,5 +1,3 @@
-import bgbg from "../../assets/images/bgbg.png";
-
 interface IFollowCard {
   profileImg: string;
 }

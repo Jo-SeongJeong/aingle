@@ -6,7 +6,7 @@ const Signup = () => {
   const [birthday, setBirthday] = useState("");
   const [userName, setUserName] = useState("");
   const [language, setLanguage] = useState("한국어");
-  const [profileImg, setProfileImg] = useState("");
+  // const [profileImg, setProfileImg] = useState("");
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
