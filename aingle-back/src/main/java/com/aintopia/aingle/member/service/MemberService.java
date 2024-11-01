@@ -24,9 +24,6 @@ public class MemberService {
     private final JwtUtil jwtUtil;
     private final ModelMapper mapper;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
-
     @Transactional
     public String signUp(MemberSignUpRequestDto signUpMemberDto) {
         Optional<Member> member = memberRepository.findByEmail(signUpMemberDto.getEmail());
@@ -37,7 +34,7 @@ public class MemberService {
         // 이미지가 있는 경우 S3에 업로드 후 URL 저장
 //        if (signUpMemberDto.getFile() != null && !signUpMemberDto.getFile().isEmpty()) {
 //            String imageUrl = saveMemberImage(signUpMemberDto.getFile(), savedMember);
-//            savedMember.setImageUrl(imageUrl);
+//            signUpMemberDto.setMemberImage(imageUrl);
 //        }
 
 
