@@ -51,7 +51,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-white h-full w-full px-[16px] py-[34px] flex flex-col items-center relative">
+    <div className="bg-white h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative">
       {/* `relative` 포지셔닝 추가 */}
       <PinkTextHeader />
       {/* 모달 컴포넌트를 최상위 요소 바로 아래에 위치시킵니다 */}

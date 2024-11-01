@@ -24,11 +24,26 @@ const Footer = () => {
   const [profileState, setProfileState] = useState<boolean>(true);
 
   useEffect(() => {
-    if (location.pathname == "/home") {
+    if (location.pathname.startsWith("/home")) {
       setHomeState(true);
       setCategoryState(false);
       setNoticeState(false);
       setProfileState(false);
+    } else if (location.pathname.startsWith("/vote")) {
+      setHomeState(false);
+      setCategoryState(true);
+      setNoticeState(false);
+      setProfileState(false);
+    } else if (location.pathname.startsWith("/notice")) {
+      setHomeState(false);
+      setCategoryState(false);
+      setNoticeState(true);
+      setProfileState(false);
+    } else if (location.pathname.startsWith("/mypage")) {
+      setHomeState(false);
+      setCategoryState(false);
+      setNoticeState(false);
+      setProfileState(true);
     }
   }, [location.pathname]);
 
