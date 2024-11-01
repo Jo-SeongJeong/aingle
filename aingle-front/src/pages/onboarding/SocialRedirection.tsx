@@ -20,11 +20,16 @@ const SocialRedirection: React.FC = () => {
               `https://aingle.co.kr/api/oauth/kakao/${code}`
             );
           } else if (platform === "google") {
+            const params = new URLSearchParams(window.location.hash.slice(1));
+            const access_token = params.get("access_token");
+            response = await axios.post(
+              `https://aingle.co.kr/api/oauth/google/${access_token}`
+            );
           }
 
           if (response && response.status === 200) {
             sessionStorage.setItem("email", response.data.email);
-            navigate("/home", { state: { method: platform } });
+            navigate("/singup", { state: { method: platform } });
           }
         } catch (error: any) {
           if (axios.isAxiosError(error) && error.response?.status === 303) {
@@ -32,7 +37,7 @@ const SocialRedirection: React.FC = () => {
             sessionStorage.setItem("accessToken", error.response.data.token);
             navigate("/home");
           } else {
-            console.error("카카오 코드 요청 실패:", error);
+            console.error("요청 실패:", error);
           }
         }
       } catch (error: any) {
