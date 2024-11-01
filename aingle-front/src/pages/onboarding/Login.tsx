@@ -1,15 +1,33 @@
 import circleBird from "../../assets/icons/CircleBird.png";
 import kakao from "../../assets/icons/kakao.png";
 import google from "../../assets/icons/google.png";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const navigate = useNavigate();
+  const restKey = import.meta.env.VITE_REACT_APP_REST_KEY;
+  const redirect = import.meta.env.VITE_REACT_APP_REDIRECT_URI;
+  const googleKey = import.meta.env.VITE_REACT_APP_GOOGLE_KEY;
+  const googleRedirect = import.meta.env.VITE_REACT_APP_GOOGLE_REDIRECT_URI;
   const login = async (platform: string) => {
-    // 로그인 로직 수행
+    if (platform === "kakao") {
+      try {
+        // 카카오 로그인 URL로 리다이렉트하여 사용자에게 카카오 로그인 창을 보여줍니다
+        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${restKey}&redirect_uri=${redirect}&response_type=code`;
 
-    navigate("/home");
-    return;
+        // 로그인 창으로 리다이렉트
+        window.location.href = kakaoAuthUrl;
+      } catch (error) {
+        console.error("카카오 로그인 요청 실패:", error);
+        alert("카카오 로그인에 실패했습니다.");
+      }
+    } else if (platform === "google") {
+      try {
+        const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${googleKey}&redirect_uri=${googleRedirect}&response_type=token&scope=https://www.googleapis.com/auth/userinfo.email`;
+        window.location.href = googleAuthUrl;
+      } catch (error) {
+        console.error("구글 로그인 요청 실패:", error);
+        alert("구글 로그인에 실패했습니다.");
+      }
+    }
   };
 
   return (

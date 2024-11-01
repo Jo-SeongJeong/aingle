@@ -28,6 +28,7 @@ export default defineConfig({
           },
         ],
       },
+<<<<<<< HEAD
       // 캐시를 비활성화하려면 아래 설정을 추가합니다.
       workbox: {
         // precache를 비활성화하여 초기 캐싱을 하지 않음
@@ -38,6 +39,34 @@ export default defineConfig({
           {
             urlPattern: /.\*/,
             handler: "NetworkOnly", // 항상 네트워크에서 데이터를 가져옴
+=======
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) =>
+              request.destination === "document" ||
+              request.destination === "script" ||
+              request.destination === "style",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "dynamic-resources",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 하루 단위로 캐시를 갱신
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === "image",
+            handler: "CacheFirst",
+            options: {
+              cacheName: "images-cache",
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 일주일 동안 캐시 유지
+              },
+            },
+>>>>>>> front-develop
           },
         ],
       },
