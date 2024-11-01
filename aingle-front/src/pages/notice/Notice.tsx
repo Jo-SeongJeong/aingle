@@ -1,4 +1,3 @@
-import React from "react";
 import PinkTextHeader from "../../components/header/PinkTextHeader";
 import NoticeCard, { INoticeCard } from "../../components/card/NoticeCard";
 

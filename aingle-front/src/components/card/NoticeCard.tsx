@@ -48,7 +48,7 @@ const NoticeCard: React.FC<INoticeCard> = ({
         <img
           src={contentImg}
           alt="콘텐츠 이미지"
-          className="w-[50px] h-[50px] bg-black object-cover flex-shrink-0"
+          className="w-[50px] h-[50px] bg-black object-cover flex-shrink-0 rounded-[5px]"
         />
       )}
     </div>

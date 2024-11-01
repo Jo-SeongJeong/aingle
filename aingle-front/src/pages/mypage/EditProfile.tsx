@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import TextHeader from "../../components/header/TextHeader";
-import grayImg from "../../assets/images/grayImg.png";
 
 const EditProfile = () => {
   const [birthday, setBirthday] = useState("2000-01-01");

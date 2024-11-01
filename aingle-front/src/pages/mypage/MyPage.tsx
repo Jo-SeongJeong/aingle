@@ -47,7 +47,12 @@ const MyPage = () => {
             <h1 className="text-lg font-bold text-pink-base">4</h1>
             <h1 className="text-[#6A6A6A]">게시물</h1>
           </div>
-          <div className="text-center">
+          <div
+            className="text-center"
+            onClick={() => {
+              navigate("/mypage/following");
+            }}
+          >
             <h1 className="text-lg font-bold text-pink-base">4</h1>
             <h1 className="text-[#6A6A6A]">팔로워</h1>
           </div>
