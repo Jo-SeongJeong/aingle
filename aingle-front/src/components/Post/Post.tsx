@@ -1,4 +1,3 @@
-import profile from "../assets/imgs/profileSample.png";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 
@@ -24,7 +23,7 @@ const Post = ({
   postText,
 }: IPost) => {
   return (
-    <div className="w-full mb-[50px]">
+    <div className="w-full mb-[50px]" key={id}>
       <div className="flex items-center mb-[11px]">
         <img
           src={profileURL} // props에서 받은 값을 사용합니다

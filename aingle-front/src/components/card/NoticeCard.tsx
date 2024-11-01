@@ -42,7 +42,7 @@ const NoticeCard: React.FC<INoticeCard> = ({
         <h1 className="text-[14px] text-pink-base mb-[2px]">
           {cutText(content)}
         </h1>
-        <span className="text-[#A6A6A6] text-[12px]">asdf</span>
+        <span className="text-[#A6A6A6] text-[12px]">{postTime}</span>
       </div>
       {contentImg && (
         <img
