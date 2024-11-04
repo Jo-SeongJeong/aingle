@@ -25,7 +25,7 @@ public class SwaggerConfig {
         );
 
         ArrayList<Server> servers = new ArrayList<>();
-        servers.add(new Server().url("https://www.aingle.co.kr/api").description("Deploy Server"));
+        servers.add(new Server().url("https://aingle.co.kr/api").description("Deploy Server"));
         return new OpenAPI()
                 .components(new Components())
                 .servers(servers)
