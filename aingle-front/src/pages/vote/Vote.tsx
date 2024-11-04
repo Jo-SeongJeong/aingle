@@ -2,23 +2,133 @@ import { useState } from "react";
 import PinkTextHeader from "../../components/header/PinkTextHeader";
 import trophy from "../../assets/icons/trophy.png";
 import CharacterCard from "../../components/card/CharacterCard";
-import character01 from "../../assets/images/character01.png";
 import CharacterCardAdd from "../../components/card/CharacterCardAdd";
 import ChDetailModal from "../../components/modal/ChDetailModal";
+import { CharacterInfo } from "../../model/character";
 
 const Vote = () => {
-  const characters = [
-    { imageUrl: character01, isFollowed: true },
-    { imageUrl: character01, isFollowed: false },
-    { imageUrl: character01, isFollowed: false },
-    { imageUrl: character01, isFollowed: true },
-    { imageUrl: character01, isFollowed: true },
-    { imageUrl: character01, isFollowed: false },
-    { imageUrl: character01, isFollowed: true },
-    { imageUrl: character01, isFollowed: true },
+  const characters: CharacterInfo[] = [
+    {
+      characterId: 1,
+      name: "John",
+      job: "Warrior",
+      age: 25,
+      tone: true,
+      personality: "Brave",
+      talkType: true,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: true,
+    },
+    {
+      characterId: 2,
+      name: "Sarah",
+      job: "Mage",
+      age: 30,
+      tone: false,
+      personality: "Wise",
+      talkType: false,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: false,
+    },
+    {
+      characterId: 3,
+      name: "Leo",
+      job: "Archer",
+      age: 22,
+      tone: true,
+      personality: "Energetic",
+      talkType: false,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: false,
+    },
+    {
+      characterId: 4,
+      name: "Mia",
+      job: "Assassin",
+      age: 27,
+      tone: true,
+      personality: "Calm",
+      talkType: true,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: true,
+    },
+    {
+      characterId: 5,
+      name: "Alex",
+      job: "Knight",
+      age: 35,
+      tone: false,
+      personality: "Honest",
+      talkType: true,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: true,
+    },
+    {
+      characterId: 6,
+      name: "Emma",
+      job: "Druid",
+      age: 29,
+      tone: true,
+      personality: "Kind",
+      talkType: false,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: false,
+    },
+    {
+      characterId: 7,
+      name: "Max",
+      job: "Thief",
+      age: 24,
+      tone: true,
+      personality: "Cunning",
+      talkType: true,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: true,
+    },
+    {
+      characterId: 8,
+      name: "Luna",
+      job: "Sorcerer",
+      age: 28,
+      tone: false,
+      personality: "Mysterious",
+      talkType: true,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: true,
+    },
   ];
 
-  const makedCharacters = [{ imageUrl: character01, isFollowed: false }];
+  const makedCharacters: CharacterInfo[] = [
+    {
+      characterId: 1,
+      name: "Unknown",
+      job: "Unknown",
+      age: 0,
+      tone: false,
+      personality: "Unknown",
+      talkType: false,
+      etc: {},
+      imageUrl:
+        "https://plog-bucket-official.s3.ap-northeast-2.amazonaws.com/horseman.png",
+      isFollowed: false,
+    },
+  ];
 
   const placeholdersNeeded = (3 - (characters.length % 3)) % 3;
   const placeholders = Array(placeholdersNeeded).fill(null);
@@ -27,12 +137,10 @@ const Vote = () => {
   const placeholders2 = Array(placeholdersNeeded2).fill(null);
 
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<{
-    imageUrl: string;
-    isFollowed: boolean;
-  } | null>(null);
+  const [selectedCharacter, setSelectedCharacter] =
+    useState<CharacterInfo | null>(null);
 
-  const openModal = (character: { imageUrl: string; isFollowed: boolean }) => {
+  const openModal = (character: CharacterInfo) => {
     setSelectedCharacter(character);
     setModalOpen(true);
   };
@@ -99,7 +207,7 @@ const Vote = () => {
       <ChDetailModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
-        character={selectedCharacter}
+        CharacterInfo={selectedCharacter}
       />
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-[#6a6a6a] border-t-2 w-[300px]" />

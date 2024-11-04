@@ -1,15 +1,22 @@
+import { CharacterInfo } from "../../model/character";
+import { useNavigate } from "react-router-dom";
+
 interface ChDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  character?: { imageUrl: string; isFollowed: boolean } | null;
+  CharacterInfo: CharacterInfo | null;
 }
 
 const ChDetailModal: React.FC<ChDetailModalProps> = ({
   isOpen,
   onClose,
-  character,
+  CharacterInfo,
 }) => {
-  if (!isOpen || !character) return null;
+  if (!isOpen || !CharacterInfo) return null;
+  const navigate = useNavigate();
+  const goFeed = (id: number) => {
+    navigate(`/vote/chardetail/${id}`);
+  };
 
   return (
     <div
@@ -42,17 +49,36 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
         <div className="w-full h-full flex flex-col items-center justify-center gap-4">
           <div className="border-[3px] border-main-color rounded-full h-[100px] w-[100px] overflow-hidden">
             <img
-              src={character.imageUrl}
+              src={CharacterInfo.imageUrl}
               alt="Character"
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="bg-slate-600 w-full h-[150px] flex items-center justify-center rounded-lg">
-            {/* 추가적인 콘텐츠나 스타일을 여기에 추가할 수 있습니다 */}
+          <div className="w-full h-[150px] flex flex-col items-center justify-center rounded-lg">
+            <div className="h-1/6 w-full flex justify-center items-center font-hakgyo text-[22px]">
+              <h1 className="">{CharacterInfo.name}</h1>
+            </div>
+            <div className="h-2/6 font-bold mb-3 text-main-color text-[14px] flex items-center justify-center pt-[5px] pl-3 flex-wrap">
+              <div className=" mr-2">#{CharacterInfo.age}세</div>
+              <div className=" mr-2">#{CharacterInfo.job}</div>
+              <div className=" mr-2">
+                #
+                {CharacterInfo.talkType ? "TMI 투머치 토커" : "조용하고 소심한"}
+              </div>
+              <div className=" mr-2">
+                #{CharacterInfo.tone ? "반말모드" : "예의바른"}
+              </div>
+            </div>
+            <div className="w-full h-3/6 bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium">
+              나만 믿어! 뭐 하면 돼?
+            </div>
           </div>
-          <p className="text-gray-600 mt-4">
-            팔로우 여부: {character.isFollowed ? "Yes" : "No"}
-          </p>
+          <button
+            onClick={() => goFeed(CharacterInfo.characterId)}
+            className="bg-pink-500 text-white font-medium w-[145px] h-[48px] text-[16px] py-2 px-4 rounded-xl"
+          >
+            피드 보러 가기 &gt;
+          </button>
         </div>
       </div>
     </div>

@@ -30,11 +30,11 @@ const SurveyElementButton: React.FC<SurveyElementButtonProps> = ({
       {/* 첫 번째 버튼 */}
       <button
         className={`px-6 py-3 w-[350px] rounded-full text-[14px] bg-[#ffe6f2] font-hakgyo ${
-          selected === 1
+          selected === 0
             ? "border-2 border-[#fb599a] text-[#fb599a]"
             : "border-2 border-transparent"
         }`}
-        onClick={() => handleButtonClick(1)}
+        onClick={() => handleButtonClick(0)}
       >
         {button1Text}
       </button>
@@ -42,11 +42,11 @@ const SurveyElementButton: React.FC<SurveyElementButtonProps> = ({
       {/* 두 번째 버튼 */}
       <button
         className={`px-6 py-3 w-[350px] rounded-full text-[14px] bg-[#ffe6f2] font-hakgyo ${
-          selected === 2
+          selected === 1
             ? "border-2 border-[#fb599a] text-[#fb599a]"
             : "border-2 border-transparent"
         }`}
-        onClick={() => handleButtonClick(2)}
+        onClick={() => handleButtonClick(1)}
       >
         {button2Text}
       </button>

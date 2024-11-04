@@ -1,29 +1,36 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import birdBlur from "../../assets/icons/BirdBlur.png";
+import axios from "axios";
 import "./OnboardingLoading.css";
+import { CharacterInfoShort } from "../../model/character";
 
 const OnboardingLoading = () => {
   const navigate = useNavigate();
-
-  // const one = localStorage.getItem("1");
-  // const two = localStorage.getItem("2");
-  // const three = localStorage.getItem("3");
-  // const four = localStorage.getItem("4");
-
-  const getResult = async () => {
+  const getResult = async (): Promise<void> => {
+    const one = localStorage.getItem("1");
+    const two = localStorage.getItem("2");
+    const three = localStorage.getItem("3");
+    const four = localStorage.getItem("4");
     try {
-      // 1. axios 설문 결과 담아서 요청 보내야함
-
-      // 2. 받은 결과 담아서 localstorage에 담기
-
-      // 3. 설문 결과 지우기
+      // 설문 결과를 담아 POST 요청 보내기
+      const response = await axios.post<CharacterInfoShort>(
+        "https://aingle.co.kr/api/characters/survey",
+        {
+          ei: parseInt(one || "0", 10),
+          sn: parseInt(two || "0", 10),
+          tf: parseInt(three || "0", 10),
+          jp: parseInt(four || "0", 10),
+        }
+      );
+      // 설문 데이터 삭제
       localStorage.removeItem("1");
       localStorage.removeItem("2");
       localStorage.removeItem("3");
       localStorage.removeItem("4");
 
-      navigate("/result");
+      // 결과 페이지로 이동하며 응답 데이터를 함께 전달
+      navigate("/result", { state: response.data });
     } catch (error) {
       console.error("오류 발생:", error);
     }
