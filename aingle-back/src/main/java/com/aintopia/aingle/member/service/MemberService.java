@@ -1,8 +1,10 @@
 package com.aintopia.aingle.member.service;
 
+import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.dto.MemberDto;
+import com.aintopia.aingle.member.dto.MemberImageDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.exception.MemberDuplicateException;
 import com.aintopia.aingle.member.repository.MemberImageRepository;
@@ -12,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -20,38 +24,37 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberImageRepository memberImageRepository;
+    private final S3Service s3Service;
     private final JwtUtil jwtUtil;
     private final ModelMapper mapper;
 
     @Transactional
-    public String signUp(MemberSignUpRequestDto signUpMemberDto) {
+    public String signUp(MemberSignUpRequestDto signUpMemberDto, MultipartFile file) throws IOException {
         Optional<Member> member = memberRepository.findByEmail(signUpMemberDto.getEmail());
         if (member.isPresent()) {
             throw new MemberDuplicateException();
         }
 
         // 이미지가 있는 경우 S3에 업로드 후 URL 저장
-//        if (signUpMemberDto.getFile() != null && !signUpMemberDto.getFile().isEmpty()) {
-//            String imageUrl = saveMemberImage(signUpMemberDto.getFile(), savedMember);
-//            signUpMemberDto.setMemberImage(imageUrl);
-//        }
-
+        MemberImageDto memberImageDto = new MemberImageDto();
+        if (file != null && !file.isEmpty()) {
+            String url = s3Service.uploadFile(file);
+            memberImageDto.setMemberImage(url);
+        }
 
         Member savedMember = memberRepository.save(Member.signupBuilder()
                 .memberSignUpRequestDto(signUpMemberDto)
                 .build()
         );
 
-        saveMemberImage(signUpMemberDto, savedMember);
+        if (file != null && !file.isEmpty()) {
+            MemberImage memberImage = MemberImage.builder()
+                    .member(savedMember)
+                    .memberImage(memberImageDto.getMemberImage())
+                    .build();
+            memberImageRepository.save(memberImage);
+        }
 
         return jwtUtil.createAccessToken(mapper.map(savedMember, MemberDto.class));
-    }
-
-    private void saveMemberImage(MemberSignUpRequestDto signUpMemberDto, Member savedMember) {
-        MemberImage memberImage = MemberImage.builder()
-                .member(savedMember)
-                .memberImage(signUpMemberDto.getMemberImage().getMemberImage())
-                .build();
-        memberImageRepository.save(memberImage);
     }
 }
