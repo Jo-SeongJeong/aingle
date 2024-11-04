@@ -36,37 +36,37 @@ public class CharaterService {
     private Long getCharacterIdByCombination(int combination) {
         switch (combination) {
             case 0b0000: // 0
-                return 1L; // ESTJ
+                return 2L; // ESTJ
             case 0b0001: // 1
-                return 2L; // ESTP
+                return 4L; // ESTP
             case 0b0010: // 2
-                return 3L; // ESFJ
+                return 4L; // ESFJ
             case 0b0011: // 3
-                return 4L; // ESFP
+                return 1L; // ESFP
             case 0b0100: // 4
-                return 5L; // ENTJ
+                return 2L; // ENTJ
             case 0b0101: // 5
-                return 6L; // ENTP
+                return 3L; // ENTP
             case 0b0110: // 6
-                return 7L; // ENFJ
+                return 3L; // ENFJ
             case 0b0111: // 7
-                return 8L; // ENFP
+                return 1L; // ENFP
             case 0b1000: // 8
-                return 9L; // ISTJ
+                return 2L; // ISTJ
             case 0b1001: // 9
-                return 10L; // ISTP
+                return 6L; // ISTP
             case 0b1010: // 10
-                return 11L; // ISFJ
+                return 4L; // ISFJ
             case 0b1011: // 11
-                return 12L; // ISFP
+                return 1L; // ISFP
             case 0b1100: // 12
-                return 13L; // INTJ
+                return 6L; // INTJ
             case 0b1101: // 13
-                return 14L; // INTP
+                return 3L; // INTP
             case 0b1110: // 14
-                return 15L; // INFJ
+                return 5L; // INFJ
             case 0b1111: // 15
-                return 16L; // INFP
+                return 5L; // INFP
             default:
                 throw new IllegalArgumentException("Invalid MBTI combination");
         }
