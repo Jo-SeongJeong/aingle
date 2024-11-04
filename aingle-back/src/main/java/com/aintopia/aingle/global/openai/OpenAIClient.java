@@ -66,7 +66,7 @@ public class OpenAIClient {
         String postText = OpenAIPrompt.AI_CHARACTER_COMMENT_REQUEST_PROMPT + postRequest.getMessage();
         userMessage = new UserMessage(postText, new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
         promptMessages.add(userMessage);
-
+        log.info("promptMessages : " + promptMessages);
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
