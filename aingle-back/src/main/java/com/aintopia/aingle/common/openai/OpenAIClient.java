@@ -1,8 +1,8 @@
-package com.aintopia.aingle.global.openai;
+package com.aintopia.aingle.common.openai;
 
 import com.aintopia.aingle.character.dto.CharacterInfo;
-import com.aintopia.aingle.global.openai.model.OpenAIPrompt;
-import com.aintopia.aingle.global.openai.model.PostRequest;
+import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
+import com.aintopia.aingle.common.openai.model.PostRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
