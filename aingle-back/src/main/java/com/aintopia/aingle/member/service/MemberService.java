@@ -6,6 +6,7 @@ import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.dto.MemberDto;
 import com.aintopia.aingle.member.dto.MemberImageDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
+import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import com.aintopia.aingle.member.exception.MemberDuplicateException;
 import com.aintopia.aingle.member.repository.MemberImageRepository;
 import com.aintopia.aingle.member.repository.MemberRepository;
@@ -56,5 +57,21 @@ public class MemberService {
         }
 
         return jwtUtil.createAccessToken(mapper.map(savedMember, MemberDto.class));
+    }
+
+    public MemberDetailResponseDto findById(Long memberId) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        if (member.isEmpty()) return null;
+
+        MemberDetailResponseDto memberDetailResponseDto = MemberDetailResponseDto.builder()
+                .email(member.get().getEmail())
+                .name(member.get().getName())
+                .birth(member.get().getBirth())
+                .language(member.get().getLanguage())
+                .build();
+
+        if(member.get().getMemberImage() != null) memberDetailResponseDto.setMemberImageDto(new MemberImageDto(member.get().getMemberId(), member.get().getMemberImage().getMemberImage()));
+
+        return memberDetailResponseDto;
     }
 }
