@@ -1,4 +1,4 @@
-package com.aintopia.aingle.global.config;
+package com.aintopia.aingle.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://k11b207.p.ssafy.io", "https://www.aingle.co.kr")
+                .allowedOrigins("http://localhost:3000", "https://k11b207.p.ssafy.io", "https://aingle.co.kr")
                 .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(),
                         HttpMethod.DELETE.name(), HttpMethod.HEAD.name(), HttpMethod.OPTIONS.name(),
                         HttpMethod.PATCH.name())

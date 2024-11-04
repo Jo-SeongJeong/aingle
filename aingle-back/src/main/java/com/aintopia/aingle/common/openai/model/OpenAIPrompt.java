@@ -1,4 +1,4 @@
-package com.aintopia.aingle.global.openai.model;
+package com.aintopia.aingle.common.openai.model;
 
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import lombok.AllArgsConstructor;

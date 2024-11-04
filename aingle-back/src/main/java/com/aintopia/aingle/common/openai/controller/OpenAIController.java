@@ -1,10 +1,10 @@
-package com.aintopia.aingle.global.openai.controller;
+package com.aintopia.aingle.common.openai.controller;
 
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.repository.CharaterRepository;
-import com.aintopia.aingle.global.openai.OpenAIClient;
-import com.aintopia.aingle.global.openai.model.PostRequest;
+import com.aintopia.aingle.common.openai.OpenAIClient;
+import com.aintopia.aingle.common.openai.model.PostRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
