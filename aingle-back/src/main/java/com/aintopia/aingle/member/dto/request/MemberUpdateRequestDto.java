@@ -11,5 +11,4 @@ public class MemberUpdateRequestDto {
     private String name;
     private LocalDate birth;
     private Language language;
-    private MemberImageDto memberImage;
 }

@@ -3,7 +3,9 @@ package com.aintopia.aingle.member.controller;
 import com.aintopia.aingle.common.util.MemberInfo;
 import com.aintopia.aingle.member.dto.MemberDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
+import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
+import com.aintopia.aingle.member.dto.response.MemberUpdateResponseDto;
 import com.aintopia.aingle.member.service.MemberService;
 import com.aintopia.aingle.security.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +44,6 @@ public class MemberController {
     })
     public ResponseEntity<?> signUp(@RequestPart("memberSignUpRequestDto") MemberSignUpRequestDto memberSignUpRequestDto,
                                     @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-        System.out.println(file);
 
         String accessToken = memberService.signUp(memberSignUpRequestDto, file);
         return ResponseEntity.status(HttpStatus.OK).body(accessToken);
@@ -64,4 +65,20 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.OK).body(memberDetailResponseDto);
     }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "회원정보 수정", description = "회원정보 수정 할 때 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "이름, 생년월일, 사진, 언어 변경가능",
+                    content = @Content(mediaType = "application/json"))
+    })
+    public ResponseEntity<?> updateMember(@RequestPart("memberUpdateRequestDto") MemberUpdateRequestDto memberUpdateRequestDto,
+                                          @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+        Long memberId = MemberInfo.getId();
+        MemberUpdateResponseDto memberUpdateResponseDto = memberService.updateMember(memberUpdateRequestDto, file, memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(memberUpdateResponseDto);
+
+    }
+
 }

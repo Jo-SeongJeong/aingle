@@ -4,10 +4,7 @@ import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -70,6 +67,11 @@ public class Member {
     public void updateMember(MemberUpdateRequestDto memberUpdateRequestDto) {
         this.name = memberUpdateRequestDto.getName();
         this.birth = memberUpdateRequestDto.getBirth();
+        this.language = memberUpdateRequestDto.getLanguage();
+    }
+
+    public void updateImage(MemberImage memberImage) {
+        this.memberImage = memberImage;
     }
 
     public void resign() {
