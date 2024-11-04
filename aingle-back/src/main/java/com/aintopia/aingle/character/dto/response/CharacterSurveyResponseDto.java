@@ -1,10 +1,8 @@
 package com.aintopia.aingle.character.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class CharacterSurveyResponseDto {
     private Long characterId;
     private String name;

@@ -63,7 +63,8 @@ public class Character {
     @JoinColumn(name = "vote_id", nullable = false)
     private Vote vote;
 
-    public CharacterInfo toDTO(){
-        return new CharacterInfo(this.name, this.job, this.age, this.personality, this.gender, this.tone, this.talkType, this.description);
+    public CharacterInfo toDTO() {
+        return new CharacterInfo(this.name, this.job, this.age, this.personality, this.gender,
+            this.tone, this.talkType, this.description);
     }
 }
