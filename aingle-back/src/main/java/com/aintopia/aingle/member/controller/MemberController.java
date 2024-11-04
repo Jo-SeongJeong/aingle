@@ -1,7 +1,6 @@
 package com.aintopia.aingle.member.controller;
 
 import com.aintopia.aingle.common.util.MemberInfo;
-import com.aintopia.aingle.member.dto.MemberDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
@@ -66,7 +65,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberDetailResponseDto);
     }
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "회원정보 수정", description = "회원정보 수정 할 때 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
