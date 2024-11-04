@@ -8,9 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequestMapping("/members")
 @RestController
@@ -18,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/sign-up")
+    @PostMapping(value = "/sign-up", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "회원가입", description = "회원가입 할 때 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -32,10 +35,11 @@ public class MemberController {
                     content = @Content(mediaType = "application/json")
             ),
     })
-    public ResponseEntity<?> signUp(@RequestPart("MemberSignUpRequestDto") MemberSignUpRequestDto memberSignUpRequestDto,
-                                    @RequestPart("file") MultipartFile file) {
-        memberSignUpRequestDto.setFile(file);
-        String accessToken = memberService.signUp(memberSignUpRequestDto);
+    public ResponseEntity<?> signUp(@RequestPart("memberSignUpRequestDto") MemberSignUpRequestDto memberSignUpRequestDto,
+                                    @RequestPart(name = "file", required = false) MultipartFile file) throws IOException {
+        System.out.println(file);
+
+        String accessToken = memberService.signUp(memberSignUpRequestDto, file);
         return ResponseEntity.status(HttpStatus.OK).body(accessToken);
     }
 

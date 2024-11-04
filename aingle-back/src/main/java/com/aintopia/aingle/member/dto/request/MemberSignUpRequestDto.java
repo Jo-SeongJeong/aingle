@@ -5,7 +5,6 @@ import com.aintopia.aingle.member.domain.Platform;
 import com.aintopia.aingle.member.dto.MemberImageDto;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -17,6 +16,5 @@ public class MemberSignUpRequestDto {
     private LocalDate birth;
     private Platform platform;
     private Language language;
-    private MemberImageDto memberImage;
-    private MultipartFile file;
+//    private MemberImageDto memberImage;
 }
