@@ -6,10 +6,10 @@ import SurveyElementButton from "../../components/button/SurveyElementButton";
 const Onboarding = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [selected, setSelected] = useState<{ [key: number]: number }>({
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
+    1: -1,
+    2: -1,
+    3: -1,
+    4: -1,
   });
   const navigate = useNavigate();
 
@@ -21,9 +21,7 @@ const Onboarding = () => {
     }));
   };
 
-  useEffect(() => {
-    // console.log(selected);
-  }, [selected]);
+  useEffect(() => {}, [selected]);
 
   // 뒤로가기 버튼 클릭 시 페이지 감소
   const handleBackClick = () => {
@@ -34,7 +32,7 @@ const Onboarding = () => {
 
   // 버튼 클릭 시 페이지 번호 증가 및 마지막 페이지 도달 시 onLastPageReached 호출
   const handleButtonClick = () => {
-    if (pageNumber != 1 && selected[pageNumber - 1] === 0) {
+    if (pageNumber != 1 && selected[pageNumber - 1] === -1) {
       alert("선택을 완료해주세요!");
       return;
     }
@@ -110,8 +108,8 @@ const Onboarding = () => {
               SNS에서 주로 어떻게 시간을 보내시나요?
             </h1>
             <SurveyElementButton
-              button1Text="다른 사람들의 게시물을 관찰하는 시간이 더 많다"
-              button2Text="주기적으로 게시글을 올리고 활발하게 소통한다"
+              button1Text="주기적으로 게시글을 올리고 활발하게 소통한다"
+              button2Text="다른 사람들의 게시물을 관찰하는 시간이 더 많다"
               chosed={selected[pageNumber - 1]}
               onSelect={(buttonNumber) =>
                 handleSelect(pageNumber - 1, buttonNumber)
@@ -129,8 +127,8 @@ const Onboarding = () => {
               SNS에서 어떤 콘텐츠를 더 자주 클릭하시나요?
             </h1>
             <SurveyElementButton
-              button1Text="흥미로운 릴스나 자극적인 콘텐츠를 주로 클릭한다"
-              button2Text="정보나 유용한 팁을 주로 클릭한다."
+              button1Text="정보나 유용한 팁을 주로 클릭한다"
+              button2Text="흥미로운 릴스나 자극적인 콘텐츠를 주로 클릭한다"
               chosed={selected[pageNumber - 1]}
               onSelect={(buttonNumber) =>
                 handleSelect(pageNumber - 1, buttonNumber)
@@ -151,8 +149,8 @@ const Onboarding = () => {
               어떻게 반응하시나요?
             </h1>
             <SurveyElementButton
-              button1Text="친구의 감정을 먼저 이해하고 공감의 말을 건넨다"
-              button2Text="도움될 만한 해결책을 이야기한다"
+              button1Text="도움될 만한 해결책을 이야기한다"
+              button2Text="친구의 감정을 먼저 이해하고 공감의 말을 건넨다"
               chosed={selected[pageNumber - 1]}
               onSelect={(buttonNumber) =>
                 handleSelect(pageNumber - 1, buttonNumber)

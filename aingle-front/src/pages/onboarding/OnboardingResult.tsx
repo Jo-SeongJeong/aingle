@@ -1,9 +1,17 @@
 import { useEffect } from "react";
 import bird from "../../assets/icons/Bird.png";
-import porfile from "../../assets/images/sampleProfile.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { CharacterInfoShort } from "../../model/character";
+import talk01 from "../../assets/images/talk01.png";
+import talk02 from "../../assets/images/talk02.png";
+import talk03 from "../../assets/images/talk03.png";
+import talk04 from "../../assets/images/talk04.png";
+import talk05 from "../../assets/images/talk05.png";
+import talk06 from "../../assets/images/talk06.png";
 
 const OnboardingResult = () => {
+  const location = useLocation();
+  const surveyResult = location.state as CharacterInfoShort; // 전달받은 데이터
   const navigate = useNavigate();
   const start = async () => {
     try {
@@ -33,7 +41,7 @@ const OnboardingResult = () => {
             <div className="w-1/4 flex justify-center pt-[19px]">
               <div className="border-[1.5px] bg-white border-main-color rounded-full w-[55px] h-[55px] overflow-hidden">
                 <img
-                  src={porfile}
+                  src={surveyResult.imageUrl}
                   alt="이미지 설명"
                   className="w-full h-full object-cover"
                 />
@@ -41,33 +49,60 @@ const OnboardingResult = () => {
             </div>
             <div className="w-3/4">
               <div className="h-2/5 text-[18px] pl-3 font-extrabold flex items-end">
-                김아무개
+                {surveyResult.name}
               </div>
-              <div className="h-3/5 font-bold text-main-color text-[14px] flex pt-[5px] pl-3">
-                #긍정적인 #외향적인 #효율중시 #도전적인
+              <div className="font-bold text-main-color text-[14px] flex pt-[5px] pl-3 flex-wrap">
+                <div className=" mr-2">#{surveyResult.age}세</div>
+                <div className=" mr-2">#{surveyResult.job}</div>
+                <div className=" mr-2">
+                  #
+                  {surveyResult.talkType
+                    ? "TMI 투머치 토커"
+                    : "조용하고 소심한"}
+                </div>
+                <div className=" mr-2">
+                  #{surveyResult.tone ? "반말모드" : "예의바른"}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-300 h-[175px] w-full flex flex-row items-center justify-around">
-            {/* 오른쪽 대화창 */}
-            <div className="relative bg-white border-2 border-pink-500 text-pink-500 rounded-xl p-4">
+          <div className="h-[175px] w-full flex flex-row items-center justify-around">
+            {surveyResult.characterId === 1 && (
+              <img src={talk01} alt="" className="w-[300px]" />
+            )}
+            {surveyResult.characterId === 2 && (
+              <img src={talk02} alt="" className="w-[300px]" />
+            )}
+            {surveyResult.characterId === 3 && (
+              <img src={talk03} alt="" className="w-[300px]" />
+            )}
+            {surveyResult.characterId === 4 && (
+              <img src={talk04} alt="" className="w-[300px]" />
+            )}
+            {surveyResult.characterId === 5 && (
+              <img src={talk05} alt="" className="w-[300px]" />
+            )}
+            {surveyResult.characterId === 6 && (
+              <img src={talk06} alt="" className="w-[300px]" />
+            )}
+
+            {/* <div className="relative bg-white border-2 border-pink-500 text-pink-500 rounded-xl p-4">
               나 우울해서 빵 샀어 ㅠㅠ
               <div className="absolute right-[-20px] bottom-[10px] border-t-[10px] border-t-transparent border-l-[10px] border-l-pink-500 border-b-[10px] border-b-transparent bg-white"></div>
             </div>
 
-            {/* 왼쪽 대화창 */}
             <div className="relative bg-pink-500 text-white rounded-xl p-4">
               무슨 빵?
               <div className="absolute left-[-20px] bottom-[10px] border-t-[10px] border-t-transparent border-r-[10px] border-r-pink-500 border-b-[10px] border-b-transparent bg-white"></div>
-            </div>
+            </div> */}
           </div>
 
           <h1 className="mb-[16px] font-semibold text-black text-[16px]">
             이 친구와 함께 앵토피아로 떠나볼래?
           </h1>
           <button
-            className="bg-main-color text-white font-semibold py-2 px-6 rounded-lg w-[156px] h-[58px]"
+            className="bg-main-color text-white font-semibold py-2 px-6 rounded-lg w-[156px] h-[58px] my-4"
             onClick={start}
           >
             시작하기
