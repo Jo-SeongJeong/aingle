@@ -12,4 +12,5 @@ public class CharacterSurveyResponseDto {
     private String personality;
     private Boolean talkType;
     private String etc;
+    private String imageUrl;
 }

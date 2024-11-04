@@ -1,5 +1,6 @@
 package com.aintopia.aingle.character.service;
 
+import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
@@ -26,11 +27,22 @@ public class CharaterService {
         int combination = (ei << 3) | (sn << 2) | (tf << 1) | jp;
 
         Long characterId = getCharacterIdByCombination(combination);
+        CharacterSurveyResponseDto characterSurveyResponseDto = mapper.map(
+            characterRepository.findById(characterId)
+                .orElseThrow(() -> new NoSuchElementException(
+                    "Character not found with id: " + characterId)),
+            CharacterSurveyResponseDto.class
+        );
 
-        return mapper.map(characterRepository.findById(characterId)
-                .orElseThrow(
-                    () -> new NoSuchElementException("Character not found with id: " + characterId)),
-            CharacterSurveyResponseDto.class);
+        // CharacterImage에서 imageUrl 설정
+        CharacterImage characterImage = characterImageRepository.findById(characterId)
+            .orElseThrow(() -> new NoSuchElementException(
+                "Image not found for character with id: " + characterId));
+
+        characterSurveyResponseDto.setImageUrl(characterImage.getUrl());
+
+        return characterSurveyResponseDto;
+
     }
 
     private Long getCharacterIdByCombination(int combination) {
