@@ -21,3 +21,14 @@ kakao:
   grant-type: authorization_code
   client-id: ${kakao-client-id}
   redirect-uri: ${kakao-redirect-uri}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region: ap-northeast-2
+
+
