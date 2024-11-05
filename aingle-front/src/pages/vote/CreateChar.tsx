@@ -1,6 +1,8 @@
 import TextHeader from "../../components/header/TextHeader";
 import React, { useRef, useState } from "react";
 import grayImg from "../../assets/images/grayImg.png";
+import add from "../../assets/icons/options/add.png";
+import sub from "../../assets/icons/options/sub.png";
 
 const CreateChar = () => {
   const [userName, setUserName] = useState("");
@@ -8,7 +10,7 @@ const CreateChar = () => {
   const [profileImg, setProfileImg] = useState(grayImg); // 기본값을 grayImg로 설정
   const [job, setJob] = useState("");
   const [personality, setPersonality] = useState("");
-  const [etc, setEtc] = useState("");
+  const [etc, setEtc] = useState<string[]>([""]);
   const [tone, setTone] = useState("반말");
   const [talktype, setTalktype] = useState("투머치토커");
 
@@ -18,6 +20,20 @@ const CreateChar = () => {
 
   const handleImageClick = () => {
     fileInputRef.current?.click(); // 이미지 디브 클릭 시 파일 입력 클릭
+  };
+
+  const handleAddEtc = () => {
+    setEtc([...etc, ""]); // 새로운 빈 항목 추가
+  };
+
+  const handleRemoveEtc = (index: number) => {
+    setEtc(etc.filter((_, i) => i !== index)); // 해당 항목 삭제
+  };
+
+  const handleEtcChange = (index: number, value: string) => {
+    const updatedEtc = [...etc];
+    updatedEtc[index] = value;
+    setEtc(updatedEtc);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,21 +173,45 @@ const CreateChar = () => {
                 </button>
               </div>
             </div>
-            <div className="flex items-center gap-4 mb-[15px]">
-              <h1 className="text-gray-700 text-[14px] min-w-[30px]">기타</h1>
-              <input
-                className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
-                type="text"
-                placeholder="ex) even이라는 말을 자주 사용한다."
-                value={etc}
-                onChange={(e) => setEtc(e.target.value)}
-              />
+
+            {/* 기타 */}
+            <div>
+              {/* 기타 입력 필드 */}
+              {etc.map((item, index) => (
+                <div className="flex items-center mb-[15px]" key={index}>
+                  <h1 className="text-gray-700 text-[14px] min-w-[30px] mr-4">
+                    기타
+                  </h1>
+                  <input
+                    className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
+                    type="text"
+                    placeholder="ex) even이라는 말을 자주 사용한다."
+                    value={item}
+                    onChange={(e) => handleEtcChange(index, e.target.value)}
+                  />
+                  <img
+                    src={sub}
+                    className="w-6 h-6 ml-1.5 cursor-pointer"
+                    onClick={() => handleRemoveEtc(index)}
+                    alt="remove"
+                  />
+                </div>
+              ))}
+              <div className="flex mb-2">
+                <span>항목 추가</span>
+                <img
+                  src={add}
+                  className="w-6 h-6 ml-1.5 cursor-pointer"
+                  onClick={handleAddEtc}
+                  alt="add"
+                />
+              </div>
             </div>
           </div>
           <button
             type="submit"
             onClick={handleSubmit}
-            className="mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
+            className="mt-auto  bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
           >
             수정하기
           </button>
