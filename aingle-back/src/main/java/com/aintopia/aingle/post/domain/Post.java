@@ -2,7 +2,7 @@ package com.aintopia.aingle.post.domain;
 
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
+import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -62,8 +62,8 @@ public class Post {
     private Character character;
 
     @Builder(builderMethodName = "registBuilder")
-    public Post(PostRegistRequestDto postRegistRequestDto, String url, Member member) {
-        this.content = postRegistRequestDto.getContent();
+    public Post(RegistPostRequestDto registPostRequestDto, String url, Member member) {
+        this.content = registPostRequestDto.getContent();
         this.member = member;
         this.image = url;
     }
@@ -71,6 +71,22 @@ public class Post {
     public void delete() {
         this.isDeleted = true;
         this.deleteTime = LocalDateTime.now();
+    }
+
+    public void increaseLike() {
+        this.totalLike++;
+    }
+
+    public void decreaseLike() {
+        this.totalLike--;
+    }
+
+    public void increaseComment() {
+        this.totalComment++;
+    }
+
+    public void decreaseComment() {
+        this.totalComment--;
     }
 
 }

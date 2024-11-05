@@ -13,7 +13,7 @@ import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 
 import com.aintopia.aingle.post.domain.Post;
-import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
+import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
 import com.aintopia.aingle.post.exception.ForbbidenPostException;
@@ -91,7 +91,7 @@ public class PostService {
     }
 
     @Transactional
-    public void registPost(PostRegistRequestDto postRegistRequestDto, MultipartFile file, Long memberId) throws IOException {
+    public void registPost(RegistPostRequestDto registPostRequestDto, MultipartFile file, Long memberId) throws IOException {
         Member member = memberRepository.findById(memberId).orElse(null);
 
         if(member == null) return;
@@ -101,7 +101,7 @@ public class PostService {
         if (file != null && !file.isEmpty()) url = s3Service.uploadFile(file);
 
         Post post = Post.registBuilder()
-                .postRegistRequestDto(postRegistRequestDto)
+                .registPostRequestDto(registPostRequestDto)
                 .url(url)
                 .member(member)
                 .build();
