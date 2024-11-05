@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +23,7 @@ public class FollowController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "팔로우에 성공하였습니다!",
-                    content = @Content(mediaType = "application/json")
+                    description = "팔로우에 성공하였습니다!"
             ),
             @ApiResponse(
                     responseCode = "500",
@@ -38,6 +34,25 @@ public class FollowController {
     public ResponseEntity<Void> resistFollow(@RequestParam Long characterId){
         Long memberId = MemberInfo.getId();
         followService.resistFollow(memberId, characterId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "팔로우 취소", description = "팔로우 취소 시 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "팔로우 취소에 성공하였습니다!"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<Void> deleteFollow(@RequestParam Long characterId){
+        Long memberId = MemberInfo.getId();
+        followService.deleteFollow(memberId, characterId);
         return ResponseEntity.ok().build();
     }
 }
