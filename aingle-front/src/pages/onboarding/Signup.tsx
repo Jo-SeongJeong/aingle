@@ -1,23 +1,40 @@
 import React, { useRef, useState } from "react";
+import { useSetRecoilState } from "recoil"; 
 import TextHeader from "../../components/header/TextHeader";
 import grayImg from "../../assets/images/grayImg.png";
+import { ImemberSignUpRequestDto } from "../../model/user";
+import { useLocation, useNavigate } from "react-router-dom";
+import { registUserInfo } from "../../api/userAPI";
+import { userDataState } from "../../store/atoms"; 
 
 const Signup = () => {
-  const [birthday, setBirthday] = useState("");
-  const [userName, setUserName] = useState("");
-  const [language, setLanguage] = useState("한국어");
-  // const [profileImg, setProfileImg] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const platform = location.state.method;
+  const email = sessionStorage.getItem("email")!;
+
+  const [inputInfo, setInputInfo] = useState<ImemberSignUpRequestDto>({
+    name: "",
+    email: email,
+    birth: "",
+    platform: platform,
+    language: "korean",
+    file: null,
+  });
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBirthday(e.target.value);
-  };
+  const setUserData = useSetRecoilState(userDataState);
 
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
+  const handleChange = (
+    field: keyof ImemberSignUpRequestDto,
+    value: string | File | null
+  ) => {
+    setInputInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleImageClick = () => {
@@ -27,7 +44,7 @@ const Signup = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
+      handleChange("file", file);
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
@@ -38,13 +55,36 @@ const Signup = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // 폼 제출 막기
-    if (!selectedImage) {
-      alert("프로필 이미지를 선택해주세요."); // 파일이 없으면 경고 표시
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputInfo.file) {
+      alert("프로필 이미지를 선택해주세요.");
       return;
     }
-    // 서버로 데이터 전송 등의 로직 추가
+
+    try {
+      // 회원가입 요청 
+      const response = await registUserInfo(inputInfo);
+      const { token, id, email, name, language, birth, file, iat, exp } = response;
+
+      // 유저 정보 저장
+      setUserData({
+        token, 
+        id,
+        email,
+        name,
+        language,
+        birth,
+        file,
+        iat,
+        exp,
+      });
+      
+      // 회원가입 이후 메인 페이지로 리다이렉트
+      navigate("/home");
+    } catch (error) {
+      console.error("회원 가입 실패 :", error);
+    }
   };
 
   return (
@@ -83,8 +123,8 @@ const Signup = () => {
                 required
                 className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                 type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                value={inputInfo.name}
+                onChange={(e) => handleChange("name", e.target.value)}
               />
             </div>
             <div className="flex items-center gap-4 mb-[15px]">
@@ -93,8 +133,9 @@ const Signup = () => {
                 required
                 className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                 type="date"
-                value={birthday}
-                onChange={handleBirthdayChange}
+                value={inputInfo.birth}
+                onChange={(e) => handleChange("birth", e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
               />
             </div>
             <div className="flex items-center gap-4 mb-[15px]">
@@ -102,9 +143,9 @@ const Signup = () => {
               <div className="flex gap-4 w-full">
                 <button
                   type="button"
-                  onClick={() => handleLanguageChange("한국어")}
+                  onClick={() => handleChange("language", "korean")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
-                    language === "한국어"
+                    inputInfo.language === "korean"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
                       : "bg-gray-100 text-gray-500"
                   }`}
@@ -113,9 +154,9 @@ const Signup = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleLanguageChange("영어")}
+                  onClick={() => handleChange("language", "english")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
-                    language === "영어"
+                    inputInfo.language === "english"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
                       : "bg-gray-100 text-gray-500"
                   }`}
