@@ -36,10 +36,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             //JWT 유효성 검증
             if (jwtUtil.validateToken(token)) {
-                String id = jwtUtil.getId(token);
+                String email = jwtUtil.getEmail(token);
 
                 //유저와 토큰 일치 시 userDetails 생성
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(id);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
                 if (userDetails != null) {
                     //UserDetails, Password, Role -> 접근권한 인증 Token 생성

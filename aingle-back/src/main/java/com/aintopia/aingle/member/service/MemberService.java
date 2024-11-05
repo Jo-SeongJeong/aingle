@@ -6,7 +6,11 @@ import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.dto.MemberDto;
 import com.aintopia.aingle.member.dto.MemberImageDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
+import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
+import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
+import com.aintopia.aingle.member.dto.response.MemberUpdateResponseDto;
 import com.aintopia.aingle.member.exception.MemberDuplicateException;
+import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberImageRepository;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.security.util.JwtUtil;
@@ -57,4 +61,45 @@ public class MemberService {
 
         return jwtUtil.createAccessToken(mapper.map(savedMember, MemberDto.class));
     }
+
+    public MemberDetailResponseDto findById(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                NotFoundMemberException::new
+        );
+
+        MemberDetailResponseDto memberDetailResponseDto = MemberDetailResponseDto.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .birth(member.getBirth())
+                .language(member.getLanguage())
+                .build();
+
+        if(member.getMemberImage() != null) memberDetailResponseDto.setMemberImageDto(new MemberImageDto(member.getMemberId(), member.getMemberImage().getMemberImage()));
+
+        return memberDetailResponseDto;
+    }
+
+    @Transactional
+    public MemberUpdateResponseDto updateMember(MemberUpdateRequestDto memberUpdateRequestDto, MultipartFile file, Long memberId) throws IOException {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                NotFoundMemberException::new
+        );
+
+        member.updateMember(memberUpdateRequestDto);
+
+        if(file != null && !file.isEmpty()) {
+            String url = s3Service.uploadFile(file);
+
+            MemberImage memberImage = MemberImage.builder()
+                    .memberId(memberId)
+                    .member(member)
+                    .memberImage(url)
+                    .build();
+            member.updateImage(memberImage);
+        }
+        memberRepository.save(member);
+        MemberDto memberDto = mapper.map(member, MemberDto.class);
+        return new MemberUpdateResponseDto(jwtUtil.createAccessToken(memberDto));
+    }
+
 }
