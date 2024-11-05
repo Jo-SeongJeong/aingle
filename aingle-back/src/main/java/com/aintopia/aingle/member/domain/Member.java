@@ -92,6 +92,10 @@ public class Member {
         this.language = memberSignUpRequestDto.getLanguage();
     }
 
+    public void saveImage(MemberImage meberImage) {
+        this.memberImage = meberImage;
+    }
+
     public PostMember changeDto() {
         return new PostMember(this.memberId, this.name);
     }

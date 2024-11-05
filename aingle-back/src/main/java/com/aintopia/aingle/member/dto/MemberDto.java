@@ -1,6 +1,7 @@
 package com.aintopia.aingle.member.dto;
 
 import com.aintopia.aingle.member.domain.Language;
+import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.domain.Platform;
 import lombok.Data;
 
@@ -19,5 +20,5 @@ public class MemberDto {
     private Boolean isResigned;
     private Integer alarmCount;
 
-    private MemberImageDto memberImageDto;
+    private MemberImage memberImage;
 }

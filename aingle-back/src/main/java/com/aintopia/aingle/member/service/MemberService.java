@@ -50,8 +50,11 @@ public class MemberService {
 
         if (url != null) {
             MemberImage memberImage = MemberImage.createImage(savedMember, url);
-            memberImageRepository.save(memberImage);
+            MemberImage mI = memberImageRepository.save(memberImage);
+            savedMember.saveImage(mI);
         }
+
+
 
         return jwtUtil.createAccessToken(mapper.map(savedMember, MemberDto.class));
     }
