@@ -102,4 +102,13 @@ public class MemberService {
         return new MemberUpdateResponseDto(jwtUtil.createAccessToken(memberDto));
     }
 
+    @Transactional
+    public void resignMember(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                NotFoundMemberException::new
+        );
+        member.resign();
+        memberRepository.save(member);
+    }
+
 }

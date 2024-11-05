@@ -76,6 +76,7 @@ public class Member {
 
     public void resign() {
         this.isResigned = true;
+        this.resignTime = LocalDateTime.now();
     }
 
     @Builder(builderMethodName = "signupBuilder")
