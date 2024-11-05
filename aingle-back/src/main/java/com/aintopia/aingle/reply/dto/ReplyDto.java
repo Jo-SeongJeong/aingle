@@ -1,4 +1,3 @@
-// ReplyDto.java
 package com.aintopia.aingle.reply.dto;
 
 import lombok.AllArgsConstructor;

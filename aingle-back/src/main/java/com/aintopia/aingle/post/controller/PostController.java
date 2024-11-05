@@ -1,6 +1,7 @@
 package com.aintopia.aingle.post.controller;
 
 import com.aintopia.aingle.common.util.MemberInfo;
+import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
 import com.aintopia.aingle.post.service.PostService;
@@ -12,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -51,9 +55,25 @@ public class PostController {
 
         PostDetailResponseDto postDetailResponseDto = postService.findById(postId);
 
-
-
         return ResponseEntity.ok(postDetailResponseDto);
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "게시글 등록", description = "게시글 등록시 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시글 등록 성공",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    ResponseEntity<?> registPost(@RequestPart("postRegistRequestDto") PostRegistRequestDto postRegistRequestDto,
+                                 @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+        Long memberId = MemberInfo.getId();
+
+        postService.registPost(postRegistRequestDto, file, memberId);
+
+        return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
     }
 
     @DeleteMapping("/{postId}")
@@ -72,4 +92,5 @@ public class PostController {
 
         return ResponseEntity.status(HttpStatus.OK).body("게시글 삭제 성공!");
     }
+
 }

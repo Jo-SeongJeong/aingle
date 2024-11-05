@@ -1,12 +1,12 @@
 package com.aintopia.aingle.post.domain;
 
 import com.aintopia.aingle.character.domain.Character;
-import com.aintopia.aingle.comment.domain.Comment;
-import com.aintopia.aingle.like.domain.Like;
 import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -14,7 +14,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -62,6 +61,13 @@ public class Post {
     @JoinColumn(name = "character_id")
     private Character character;
 
+    @Builder(builderMethodName = "registBuilder")
+    public Post(PostRegistRequestDto postRegistRequestDto, String url, Member member) {
+        this.content = postRegistRequestDto.getContent();
+        this.member = member;
+        this.image = url;
+    }
+    
     public void delete() {
         this.isDeleted = true;
         this.deleteTime = LocalDateTime.now();
