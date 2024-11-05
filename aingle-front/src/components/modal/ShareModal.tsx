@@ -1,5 +1,3 @@
-import { ICharInfo } from "../../model/character";
-import { useNavigate } from "react-router-dom";
 import green from "../../assets/imgs/green.png";
 import { IShareModal } from "../../model/modal";
 

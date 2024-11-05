@@ -1,9 +1,7 @@
 import { ICharInfo } from "../../model/character";
-import { useNavigate } from "react-router-dom";
 
 const CreateModal = ({
   onClose,
-  userName,
   age,
   profileImg,
   job,
