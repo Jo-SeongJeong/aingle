@@ -5,8 +5,10 @@ import CharacterCard from "../../components/card/CharacterCard";
 import CharacterCardAdd from "../../components/card/CharacterCardAdd";
 import ChDetailModal from "../../components/modal/ChDetailModal";
 import { CharacterInfo } from "../../model/character";
+import { useNavigate } from "react-router-dom";
 
 const Vote = () => {
+  const navigate = useNavigate();
   const characters: CharacterInfo[] = [
     {
       characterId: 1,
@@ -145,6 +147,10 @@ const Vote = () => {
     setModalOpen(true);
   };
 
+  const goVoteMain = () => {
+    navigate("/vote/main");
+  };
+
   return (
     <div className="bg-[#ffe8f1] h-full w-full px-[16px] py-[34px] flex flex-col items-center relative overflow-scroll">
       <PinkTextHeader />
@@ -153,7 +159,7 @@ const Vote = () => {
           <div className="w-1/4 h-full flex justify-center items-center">
             <img src={trophy} alt="" className="w-[50px] h-[50px]" />
           </div>
-          <div className="w-2/4 h-full py-4">
+          <div className="w-2/4 h-full py-4" onClick={goVoteMain}>
             <div className="w-full pt-[4px] pb-[4px] flex items-start justify-start">
               <h1 className="text-[16px] text-pink-base font-semibold">
                 새로운 앵표가 있앵
