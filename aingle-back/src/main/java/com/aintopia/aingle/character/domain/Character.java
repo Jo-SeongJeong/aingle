@@ -66,6 +66,9 @@ public class Character {
     @JoinColumn(name = "vote_id", nullable = false)
     private Vote vote;
 
+    @Column(name = "summary")
+    private String summary;
+
     @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Post> post;
