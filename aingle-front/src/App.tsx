@@ -26,6 +26,7 @@ const App = () => {
         <Route path="/post/:id" element={<PostDetail />} />
       </Routes>
       {!matchPostDetail &&
+        location.pathname !== "/result" &&
         location.pathname !== "/write" &&
         location.pathname !== "/" &&
         location.pathname !== "/mypage/edit" &&
