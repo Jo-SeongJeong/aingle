@@ -4,5 +4,5 @@ export interface ImemberSignUpRequestDto {
   birth: string;
   platform: "kakao" | "google";
   language: "korean" | "english";
-  file: File;
+  file: File | null;
 }
