@@ -11,9 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -74,6 +74,23 @@ public class PostController {
         postService.registPost(postRegistRequestDto, file, memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
+    }
+
+    @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제시 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시글 삭제 성공",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    ResponseEntity<?> deleteById(@PathVariable Long postId) {
+        Long memberId = MemberInfo.getId();
+
+        postService.deleteById(postId, memberId);
+
+        return ResponseEntity.status(HttpStatus.OK).body("게시글 삭제 성공!");
     }
 
 }

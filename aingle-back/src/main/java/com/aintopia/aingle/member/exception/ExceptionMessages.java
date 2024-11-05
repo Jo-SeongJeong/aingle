@@ -1,4 +1,4 @@
-package com.aintopia.aingle.member.domain;
+package com.aintopia.aingle.member.exception;
 
 public enum ExceptionMessages {
 

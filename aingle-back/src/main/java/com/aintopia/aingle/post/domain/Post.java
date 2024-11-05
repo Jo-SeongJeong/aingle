@@ -67,5 +67,10 @@ public class Post {
         this.member = member;
         this.image = url;
     }
+    
+    public void delete() {
+        this.isDeleted = true;
+        this.deleteTime = LocalDateTime.now();
+    }
 
 }

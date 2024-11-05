@@ -11,10 +11,13 @@ import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
+
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
+import com.aintopia.aingle.post.exception.ForbbidenPostException;
+import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
@@ -105,6 +108,18 @@ public class PostService {
 
         postRepository.save(post);
     }
+
+    @Transactional
+    public void deleteById(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+
+        if(post.getMember() == null || memberId != post.getMember().getMemberId()) throw new ForbbidenPostException();
+
+        post.delete();
+        postRepository.save(post);
+    }
+
+
 
 
     // Post를 PostResponseDto로 변환하는 메서드
