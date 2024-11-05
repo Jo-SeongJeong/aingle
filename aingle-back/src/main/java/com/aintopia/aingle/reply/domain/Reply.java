@@ -39,7 +39,7 @@ public class Reply {
     @ColumnDefault("false")
     private Boolean isDeleted;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
 

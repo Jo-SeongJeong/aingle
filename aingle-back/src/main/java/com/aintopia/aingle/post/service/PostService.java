@@ -3,6 +3,7 @@ package com.aintopia.aingle.post.service;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
+import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
 import com.aintopia.aingle.member.dto.PostMember;
@@ -10,7 +11,9 @@ import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
 import com.aintopia.aingle.post.repository.PostRepository;
+import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
+import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final FollowService followService;
+    private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId) {
@@ -59,8 +64,18 @@ public class PostService {
 
     public PostDetailResponseDto findById(Long postId) {
         Post post = postRepository.findById(postId).orElse(null);
+        List<Comment> comments = commentRepository. findByPost_PostId(post.getPostId());
 
-        return convertToDetailDto(post);
+        // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
+        List<CommentDto> commentDtos = comments.stream()
+                .filter(comment -> !comment.getIsDeleted())
+                .map(comment -> {
+                    List<Reply> replies = replyRepository.findByComment_CommentId(comment.getCommentId());
+                    return convertToCommentDto(comment, replies);
+                })
+                .collect(Collectors.toList());
+
+        return convertToDetailDto(post, commentDtos);
     }
 
 
@@ -85,15 +100,9 @@ public class PostService {
     }
 
     // Post를 PostDetailResponseDto로 변환하는 메서드
-    private PostDetailResponseDto convertToDetailDto(Post post) {
+    private PostDetailResponseDto convertToDetailDto(Post post, List<CommentDto> commentDtos) {
         PostMember memberDto = post.getMember() != null ? post.getMember().changeDto() : null;
         PostCharacter characterDto = post.getCharacter() != null ? post.getCharacter().changeDto() : null;
-
-        // Comment를 CommentDto로 변환
-        List<CommentDto> commentDtos = post.getComment().stream()
-                .filter(comment -> !comment.getIsDeleted()) // isDeleted가 false인 댓글만 포함
-                .map(this::convertToCommentDto)
-                .collect(Collectors.toList());
 
         return PostDetailResponseDto.builder()
                 .postId(post.getPostId())
@@ -109,8 +118,8 @@ public class PostService {
     }
 
     // Comment를 CommentDto로 변환하는 메서드
-    private CommentDto convertToCommentDto(Comment comment) {
-        List<ReplyDto> replyDtos = comment.getReply().stream()
+    private CommentDto convertToCommentDto(Comment comment, List<Reply> replies) {
+        List<ReplyDto> replyDtos = replies.stream()
                 .filter(reply -> !reply.getIsDeleted())
                 .map(reply -> ReplyDto.builder()
                         .replyId(reply.getReplyId())

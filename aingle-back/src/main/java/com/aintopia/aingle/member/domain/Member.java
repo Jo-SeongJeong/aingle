@@ -68,10 +68,6 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private MemberImage memberImage;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Post> post;
-
     public void updateMember(MemberUpdateRequestDto memberUpdateRequestDto) {
         this.name = memberUpdateRequestDto.getName();
         this.birth = memberUpdateRequestDto.getBirth();

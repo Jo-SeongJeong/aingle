@@ -62,10 +62,4 @@ public class Post {
     @JoinColumn(name = "character_id")
     private Character character;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Like> like;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Comment> comment;
-
 }
