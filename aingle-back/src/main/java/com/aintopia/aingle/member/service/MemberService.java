@@ -4,7 +4,6 @@ import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.dto.MemberDto;
-import com.aintopia.aingle.member.dto.MemberImageDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
@@ -40,22 +39,17 @@ public class MemberService {
         }
 
         // 이미지가 있는 경우 S3에 업로드 후 URL 저장
-        MemberImageDto memberImageDto = new MemberImageDto();
-        if (file != null && !file.isEmpty()) {
-            String url = s3Service.uploadFile(file);
-            memberImageDto.setMemberImage(url);
-        }
+        String url = "";
+        if (file != null && !file.isEmpty()) url = s3Service.uploadFile(file);
 
-        Member savedMember = memberRepository.save(Member.signupBuilder()
+        Member signUpMember = Member.signupBuilder()
                 .memberSignUpRequestDto(signUpMemberDto)
-                .build()
-        );
+                .build();
 
-        if (file != null && !file.isEmpty()) {
-            MemberImage memberImage = MemberImage.builder()
-                    .member(savedMember)
-                    .memberImage(memberImageDto.getMemberImage())
-                    .build();
+        Member savedMember = memberRepository.save(signUpMember);
+
+        if (url != null) {
+            MemberImage memberImage = MemberImage.createImage(savedMember, url);
             memberImageRepository.save(memberImage);
         }
 
@@ -67,14 +61,8 @@ public class MemberService {
                 NotFoundMemberException::new
         );
 
-        MemberDetailResponseDto memberDetailResponseDto = MemberDetailResponseDto.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .birth(member.getBirth())
-                .language(member.getLanguage())
-                .build();
-
-        if(member.getMemberImage() != null) memberDetailResponseDto.setMemberImageDto(new MemberImageDto(member.getMemberId(), member.getMemberImage().getMemberImage()));
+        MemberDetailResponseDto memberDetailResponseDto = new MemberDetailResponseDto();
+        memberDetailResponseDto.memberDetail(member);
 
         return memberDetailResponseDto;
     }
@@ -90,13 +78,21 @@ public class MemberService {
         if(file != null && !file.isEmpty()) {
             String url = s3Service.uploadFile(file);
 
-            MemberImage memberImage = MemberImage.builder()
-                    .memberId(memberId)
-                    .member(member)
-                    .memberImage(url)
-                    .build();
+            MemberImage memberImage= member.getMemberImage();
+
+            // 기존 이미지가 없는 경우 새로운 MemberImage 생성
+            if (memberImage == null) {
+                memberImage = MemberImage.builder()
+                        .member(member)
+                        .memberImage(url)
+                        .build();
+            }
+            // 기존 이미지가 있는 경우 URL 업데이트
+            else memberImage.updateMemberImage(url);
+
             member.updateImage(memberImage);
         }
+
         memberRepository.save(member);
         MemberDto memberDto = mapper.map(member, MemberDto.class);
         return new MemberUpdateResponseDto(jwtUtil.createAccessToken(memberDto));
