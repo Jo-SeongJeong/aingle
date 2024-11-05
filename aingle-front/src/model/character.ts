@@ -22,3 +22,15 @@ export interface CharacterInfo {
   imageUrl: string;
   isFollowed: boolean;
 }
+
+export interface ICharInfo {
+  name: string;
+  onClose: () => void;
+  userName: string;
+  age: number;
+  profileImg: string;
+  job: string;
+  personality: string;
+  tone: string;
+  talkType: string;
+}

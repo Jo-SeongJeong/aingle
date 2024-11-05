@@ -3,6 +3,8 @@ import React, { useRef, useState } from "react";
 import grayImg from "../../assets/images/grayImg.png";
 import add from "../../assets/icons/options/add.png";
 import sub from "../../assets/icons/options/sub.png";
+import CreateModal from "../../components/modal/CreateModal";
+import ShareModal from "../../components/modal/ShareModal";
 
 const CreateChar = () => {
   const [userName, setUserName] = useState("");
@@ -17,6 +19,9 @@ const CreateChar = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
   const [selectedImage, setSelectedImage] = useState<File | null>(null); // 이미지 파일을 저장할 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleImageClick = () => {
     fileInputRef.current?.click(); // 이미지 디브 클릭 시 파일 입력 클릭
@@ -50,10 +55,25 @@ const CreateChar = () => {
     }
   };
 
-  const handleSubmit = () => {};
-
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto">
+      {/* 나중에 이 모달 띄울때 모든 인풋 입력, 사진 선택됐는지 확인 필요 */}
+      {isCreateModalOpen && (
+        <CreateModal
+          name={userName}
+          profileImg={previewUrl || grayImg}
+          age={age}
+          job={job}
+          personality={personality}
+          talkType={talktype}
+          tone={tone}
+          userName={userName}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
+      )}
+      {isShareModalOpen && (
+        <ShareModal onClose={() => setIsShareModalOpen(false)} />
+      )}
       <TextHeader navTo={"/mypage"} headerText={"프로필 편집"} />
       <div className="flex flex-col h-full pt-[54px] pb-6 px-[23px] items-center">
         <form className="mt-[30px] w-full flex flex-col h-full flex-grow">
@@ -210,10 +230,13 @@ const CreateChar = () => {
           </div>
           <button
             type="submit"
-            onClick={handleSubmit}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsCreateModalOpen(true);
+            }}
             className="mt-auto  bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
           >
-            수정하기
+            게시하기
           </button>
         </form>
       </div>
