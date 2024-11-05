@@ -11,5 +11,10 @@ self.addEventListener("activate", (event) => {
 
 // 요청 가로채기 이벤트
 self.addEventListener("fetch", (event) => {
-  event.respondWith(fetch(event.request));
+  event.respondWith(
+    fetch(event.request, { mode: "cors", cache: "no-store" }).catch(() => {
+      // 오류 시 기본 응답 처리
+      return new Response("Network error occurred", { status: 408 });
+    })
+  );
 });
