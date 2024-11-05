@@ -1,7 +1,7 @@
 package com.aintopia.aingle.post.controller;
 
 import com.aintopia.aingle.common.util.MemberInfo;
-import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
+import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
 import com.aintopia.aingle.post.service.PostService;
@@ -67,11 +67,11 @@ public class PostController {
                     content = @Content(mediaType = "application/json")
             )
     })
-    ResponseEntity<?> registPost(@RequestPart("postRegistRequestDto") PostRegistRequestDto postRegistRequestDto,
+    ResponseEntity<?> registPost(@RequestPart("registPostRequestDto") RegistPostRequestDto registPostRequestDto,
                                  @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
         Long memberId = MemberInfo.getId();
 
-        postService.registPost(postRegistRequestDto, file, memberId);
+        postService.registPost(registPostRequestDto, file, memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
     }
