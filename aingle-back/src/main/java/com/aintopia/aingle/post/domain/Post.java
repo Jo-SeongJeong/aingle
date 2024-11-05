@@ -62,4 +62,9 @@ public class Post {
     @JoinColumn(name = "character_id")
     private Character character;
 
+    public void delete() {
+        this.isDeleted = true;
+        this.deleteTime = LocalDateTime.now();
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.aintopia.aingle.member.exception;
 
-import static com.aintopia.aingle.member.domain.ExceptionMessages.RESIGNED;
+import static com.aintopia.aingle.member.exception.ExceptionMessages.RESIGNED;
 
 public class ResignedMemberException extends RuntimeException {
 

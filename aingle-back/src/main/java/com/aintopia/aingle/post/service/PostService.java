@@ -6,10 +6,14 @@ import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
+import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
+import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
+import com.aintopia.aingle.post.exception.ForbbidenPostException;
+import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
@@ -76,6 +80,16 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return convertToDetailDto(post, commentDtos);
+    }
+
+    @Transactional
+    public void deleteById(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+
+        if(post.getMember() == null || memberId != post.getMember().getMemberId()) throw new ForbbidenPostException();
+
+        post.delete();
+        postRepository.save(post);
     }
 
 
