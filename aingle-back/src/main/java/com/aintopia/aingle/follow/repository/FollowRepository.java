@@ -5,8 +5,10 @@ import com.aintopia.aingle.follow.domain.Follow;
 import com.aintopia.aingle.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
     Optional<Follow> findByMemberAndCharacter(Member member, Character character);
+    List<Follow> findByMember(Member member);
 }

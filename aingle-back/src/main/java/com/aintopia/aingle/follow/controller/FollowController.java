@@ -1,6 +1,7 @@
 package com.aintopia.aingle.follow.controller;
 
 import com.aintopia.aingle.common.util.MemberInfo;
+import com.aintopia.aingle.follow.dto.FollowListResponse;
 import com.aintopia.aingle.follow.service.FollowService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,7 +19,7 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "팔로우 등록", description = "팔로우 등록 시 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -37,7 +38,7 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "팔로우 취소", description = "팔로우 취소 시 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -54,5 +55,25 @@ public class FollowController {
         Long memberId = MemberInfo.getId();
         followService.deleteFollow(memberId, characterId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "팔로우 리스트 조회", description = "현재 유저의 팔로잉 리스트 조회 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "팔로우 리스트 조회에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<FollowListResponse> getFollowList(){
+        Long memberId = MemberInfo.getId();
+        FollowListResponse followListResponse = followService.getFollowList(memberId);
+        return ResponseEntity.ok().body(followListResponse);
     }
 }
