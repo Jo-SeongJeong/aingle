@@ -63,17 +63,18 @@ public class MemberService {
     }
 
     public MemberDetailResponseDto findById(Long memberId) {
-        Optional<Member> member = memberRepository.findById(memberId);
-        if (member.isEmpty()) return null;
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                NotFoundMemberException::new
+        );
 
         MemberDetailResponseDto memberDetailResponseDto = MemberDetailResponseDto.builder()
-                .email(member.get().getEmail())
-                .name(member.get().getName())
-                .birth(member.get().getBirth())
-                .language(member.get().getLanguage())
+                .email(member.getEmail())
+                .name(member.getName())
+                .birth(member.getBirth())
+                .language(member.getLanguage())
                 .build();
 
-        if(member.get().getMemberImage() != null) memberDetailResponseDto.setMemberImageDto(new MemberImageDto(member.get().getMemberId(), member.get().getMemberImage().getMemberImage()));
+        if(member.getMemberImage() != null) memberDetailResponseDto.setMemberImageDto(new MemberImageDto(member.getMemberId(), member.getMemberImage().getMemberImage()));
 
         return memberDetailResponseDto;
     }
