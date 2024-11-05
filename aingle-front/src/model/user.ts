@@ -6,3 +6,7 @@ export interface ImemberSignUpRequestDto {
   language: "korean" | "english";
   file: File | null;
 }
+
+export type ImemberUpdateRequestDto = {
+  [key in "name" | "birth" | "language" | "file"]?: ImemberSignUpRequestDto[key];
+};
