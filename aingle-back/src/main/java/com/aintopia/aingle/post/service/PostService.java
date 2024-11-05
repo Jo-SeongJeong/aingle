@@ -4,10 +4,14 @@ import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
+import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
+import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
 import com.aintopia.aingle.post.repository.PostRepository;
@@ -17,7 +21,9 @@ import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +35,8 @@ public class PostService {
     private final FollowService followService;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
+    private final S3Service s3Service;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId) {
@@ -76,6 +84,25 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return convertToDetailDto(post, commentDtos);
+    }
+
+    @Transactional
+    public void registPost(PostRegistRequestDto postRegistRequestDto, MultipartFile file, Long memberId) throws IOException {
+        Member member = memberRepository.findById(memberId).orElse(null);
+
+        if(member == null) return;
+
+        // 이미지가 있는 경우 S3에 업로드 후 URL 저장
+        String url = null;
+        if (file != null && !file.isEmpty()) url = s3Service.uploadFile(file);
+
+        Post post = Post.registBuilder()
+                .postRegistRequestDto(postRegistRequestDto)
+                .url(url)
+                .member(member)
+                .build();
+
+        postRepository.save(post);
     }
 
 

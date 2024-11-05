@@ -3,7 +3,6 @@ package com.aintopia.aingle.comment.domain;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
-import com.aintopia.aingle.reply.domain.Reply;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +12,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "comment")
