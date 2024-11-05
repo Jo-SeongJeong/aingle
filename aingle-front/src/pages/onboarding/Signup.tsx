@@ -8,7 +8,7 @@ import { registUserInfo } from "../../api/userAPI.ts";
 
 const Signup = () => {
   const location = useLocation();
-
+  
   // SocialRedirection에서 받은 platform 정보
   const platform = location.state.method;
   // sessionStorage에 저장된 eamil 정보
