@@ -1,17 +1,24 @@
 package com.aintopia.aingle.character.service;
 
 import com.aintopia.aingle.character.domain.CharacterImage;
+import com.aintopia.aingle.character.dto.CharacterImageDto;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
+import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CharaterService {
 
     private final CharacterRepository characterRepository;
@@ -82,5 +89,18 @@ public class CharaterService {
             default:
                 throw new IllegalArgumentException("Invalid MBTI combination");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public AllCharacterResponse getAllCharacter() {
+        List<CharacterImageDto> characterImageDtos = new ArrayList<>();
+
+        characterImageRepository.findAll().forEach(characterImage -> {
+            CharacterImageDto characterImageDto = mapper.map(characterImage, CharacterImageDto.class);
+            characterImageDtos.add(characterImageDto);
+        });
+
+        return new AllCharacterResponse(characterImageDtos);
+
     }
 }
