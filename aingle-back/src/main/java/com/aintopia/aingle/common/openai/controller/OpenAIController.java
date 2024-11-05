@@ -8,11 +8,13 @@ import com.aintopia.aingle.common.openai.model.PostRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,5 +33,13 @@ public class OpenAIController {
         CharacterInfo characterInfo = character.toDTO();
         log.info("test ai : " + characterInfo);
         return openAIClient.createCommentByAI(postRequest, characterInfo);
+    }
+
+    @Operation(
+            summary = "AI 게시글 생성 테스트 API",
+            description = "캐릭터 유보은으로 게시글 생성 테스트")
+    @GetMapping("/test/post")
+    public String testAIPost() throws MalformedURLException {
+        return openAIClient.createImage();
     }
 }
