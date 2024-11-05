@@ -50,8 +50,9 @@ public class JwtUtil {
         claims.put("email", member.getEmail());
         claims.put("name", member.getName());
         claims.put("language", member.getLanguage());
-        claims.put("birth", member.getBirth());
-        claims.put("memberImage", member.getMemberImageDto().getMemberImage());
+        claims.put("birth", member.getBirth().toString());
+        // MemberImage가 있을 경우에만 추가
+        if (member.getMemberImage() != null) claims.put("memberImage", member.getMemberImage().getMemberImage());
 
         ZonedDateTime nowTime = ZonedDateTime.now();
         ZonedDateTime tokenValidityTime = nowTime.plusSeconds(expirationTime);
