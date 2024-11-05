@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PinkTextHeader from "../../components/header/PinkTextHeader";
 import Post, { IPost } from "../../components/Post/Post";
 import PostCommentModal from "../../components/Post/PostCommentModal";
+import { useRecoilState } from "recoil";
+import { jwtDecode } from "jwt-decode";
+import { userDataState } from "../../store/atoms";
 
 const Home = () => {
   const [postId, setPostId] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [userData, setUserData] = useRecoilState(userDataState);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setUserData(decoded);
+    }
+  }, []);
 
   const dummyData: IPost[] = [
     {
@@ -62,6 +74,7 @@ const Home = () => {
       <div className="overflow-auto w-full">
         {dummyData.map((data, idx) => (
           <div
+            key={idx}
             onClick={() => {
               setPostId(data.id);
               setIsModalOpen(true);
