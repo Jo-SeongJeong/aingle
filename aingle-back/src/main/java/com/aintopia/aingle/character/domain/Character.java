@@ -1,8 +1,11 @@
 package com.aintopia.aingle.character.domain;
 
 import com.aintopia.aingle.character.dto.CharacterInfo;
+import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -63,8 +66,16 @@ public class Character {
     @JoinColumn(name = "vote_id", nullable = false)
     private Vote vote;
 
+    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Post> post;
+
     public CharacterInfo toDTO() {
         return new CharacterInfo(this.name, this.job, this.age, this.personality, this.gender,
             this.tone, this.talkType, this.description);
+    }
+
+    public PostCharacter changeDto() {
+        return new PostCharacter(this.characterId, this.name);
     }
 }

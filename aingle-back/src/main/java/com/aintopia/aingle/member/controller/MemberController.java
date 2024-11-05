@@ -6,7 +6,6 @@ import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import com.aintopia.aingle.member.dto.response.MemberUpdateResponseDto;
 import com.aintopia.aingle.member.service.MemberService;
-import com.aintopia.aingle.security.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,7 +24,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/sign-up", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "회원가입", description = "회원가입 할 때 사용하는 API")

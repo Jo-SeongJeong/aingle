@@ -1,8 +1,10 @@
 package com.aintopia.aingle.member.domain;
 
+import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
-import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
+import com.aintopia.aingle.post.domain.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -12,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -65,6 +68,10 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private MemberImage memberImage;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Post> post;
+
     public void updateMember(MemberUpdateRequestDto memberUpdateRequestDto) {
         this.name = memberUpdateRequestDto.getName();
         this.birth = memberUpdateRequestDto.getBirth();
@@ -87,5 +94,9 @@ public class Member {
         this.birth = memberSignUpRequestDto.getBirth();
         this.platform = memberSignUpRequestDto.getPlatform();
         this.language = memberSignUpRequestDto.getLanguage();
+    }
+
+    public PostMember changeDto() {
+        return new PostMember(this.memberId, this.name);
     }
 }
