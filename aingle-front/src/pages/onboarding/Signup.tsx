@@ -65,16 +65,19 @@ const Signup = () => {
     try {
       // 회원가입 요청 
       const response = await registUserInfo(inputInfo);
-      const { token, id, email, name, iat, exp } = response;
+      const { token, id, email, name, language, birth, file, iat, exp } = response;
 
       // 유저 정보 저장
       setUserData({
+        token, 
         id,
         email,
         name,
+        language,
+        birth,
+        file,
         iat,
         exp,
-        token, 
       });
       
       // 회원가입 이후 메인 페이지로 리다이렉트
