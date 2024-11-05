@@ -18,4 +18,6 @@ public class MemberDto {
     private LocalDate resignTime;
     private Boolean isResigned;
     private Integer alarmCount;
+
+    private MemberImageDto memberImageDto;
 }
