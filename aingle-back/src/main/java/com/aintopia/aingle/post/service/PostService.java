@@ -9,6 +9,7 @@ import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
+import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.Request.PostRegistRequestDto;
@@ -71,7 +72,7 @@ public class PostService {
     }
 
     public PostDetailResponseDto findById(Long postId) {
-        Post post = postRepository.findById(postId).orElse(null);
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundMemberException::new);
         List<Comment> comments = commentRepository. findByPost_PostId(post.getPostId());
 
         // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
