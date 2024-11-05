@@ -74,6 +74,7 @@ const Home = () => {
       <div className="overflow-auto w-full">
         {dummyData.map((data, idx) => (
           <div
+            key={idx}
             onClick={() => {
               setPostId(data.id);
               setIsModalOpen(true);
