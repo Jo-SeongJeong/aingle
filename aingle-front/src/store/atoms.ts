@@ -14,7 +14,9 @@ export const userDataState = atom({
     name: "",
     iat: 0,
     exp: 0,
-    // profile: "",
+    birth: "",
+    language: "",
+    file: "",
   },
   effects_UNSTABLE: [persistAtom],
 });
