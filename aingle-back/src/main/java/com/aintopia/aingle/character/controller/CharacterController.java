@@ -2,8 +2,8 @@ package com.aintopia.aingle.character.controller;
 
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
+import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.character.service.CharaterService;
-import com.aintopia.aingle.follow.dto.FollowListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,6 +50,25 @@ public class CharacterController {
     public ResponseEntity<AllCharacterResponse> getAllCharacter(){
         AllCharacterResponse allCharacterResponse = charaterService.getAllCharacter();
         return ResponseEntity.ok().body(allCharacterResponse);
+    }
+
+    @GetMapping(value = "/{characterId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "캐릭터 특징 상세 조회", description = "AI 캐릭터 특징 상세 조회 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "캐릭터 특징 상세 조회에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<CharacterDetailResponse> getCharacterDetailById(@PathVariable Long characterId){
+        CharacterDetailResponse characterDetailResponse = charaterService.getCharacterDetailById(characterId);
+        return ResponseEntity.ok().body(characterDetailResponse);
     }
 
 }

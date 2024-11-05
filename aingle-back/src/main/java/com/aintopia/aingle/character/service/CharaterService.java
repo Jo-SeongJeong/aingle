@@ -1,10 +1,13 @@
 package com.aintopia.aingle.character.service;
 
+import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.dto.CharacterImageDto;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
+import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
+import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 
@@ -102,5 +105,15 @@ public class CharaterService {
 
         return new AllCharacterResponse(characterImageDtos);
 
+    }
+
+    @Transactional(readOnly = true)
+    public CharacterDetailResponse getCharacterDetailById(Long characterId) {
+        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        CharacterImage characterImage = characterImageRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        return CharacterDetailResponse.builder()
+                .character(character)
+                .imageUrl(characterImage.getUrl())
+                .build();
     }
 }
