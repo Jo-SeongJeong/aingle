@@ -2,6 +2,7 @@ package com.aintopia.aingle.member.domain;
 
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
+import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

@@ -32,7 +32,18 @@ public class MemberImage {
     private String memberImage;
 
 
-    public void updateMemberImage(MemberImageDto memberImageDto) {
+    public void updateMemberImage(String memberImage) {
+        this.memberImage = memberImage;
+    }
+
+    public static MemberImage createImage(Member member, String url) {
+        return MemberImage.builder()
+                .member(member)
+                .memberImage(url)
+                .build();
+    }
+
+    public void saveImage(MemberImageDto memberImageDto) {
         this.memberImage = memberImageDto.getMemberImage();
     }
 }

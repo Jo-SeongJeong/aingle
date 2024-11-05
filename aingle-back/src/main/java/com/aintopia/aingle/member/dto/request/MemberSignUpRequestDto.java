@@ -16,5 +16,4 @@ public class MemberSignUpRequestDto {
     private LocalDate birth;
     private Platform platform;
     private Language language;
-//    private MemberImageDto memberImage;
 }
