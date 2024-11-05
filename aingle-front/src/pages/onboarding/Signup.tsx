@@ -1,17 +1,16 @@
 import React, { useRef, useState } from "react";
+import { useSetRecoilState } from "recoil"; 
 import TextHeader from "../../components/header/TextHeader";
 import grayImg from "../../assets/images/grayImg.png";
-import { ImemberSignUpRequestDto } from "../../model/user.ts";
-import { useLocation } from "react-router-dom";
-import { registUserInfo } from "../../api/userAPI.ts";
-
+import { ImemberSignUpRequestDto } from "../../model/user";
+import { useLocation, useNavigate } from "react-router-dom";
+import { registUserInfo } from "../../api/userAPI";
+import { userDataState } from "../../store/atoms"; 
 
 const Signup = () => {
   const location = useLocation();
-  
-  // SocialRedirection에서 받은 platform 정보
+  const navigate = useNavigate();
   const platform = location.state.method;
-  // sessionStorage에 저장된 eamil 정보
   const email = sessionStorage.getItem("email")!;
 
   const [inputInfo, setInputInfo] = useState<ImemberSignUpRequestDto>({
@@ -25,6 +24,8 @@ const Signup = () => {
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const setUserData = useSetRecoilState(userDataState);
 
   const handleChange = (
     field: keyof ImemberSignUpRequestDto,
@@ -43,7 +44,7 @@ const Signup = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleChange("file", file); 
+      handleChange("file", file);
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
@@ -54,19 +55,33 @@ const Signup = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    // 폼 제출 막기
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputInfo.file) {
-      // 파일이 없으면 경고 표시
       alert("프로필 이미지를 선택해주세요.");
       return;
     }
-    // 디버깅용 출력문
-    console.log(inputInfo);
 
-    // 회원가입 요청 보내기
-    registUserInfo(inputInfo);
+    try {
+      // 회원가입 요청 
+      const response = await registUserInfo(inputInfo);
+      const { token, id, email, name, iat, exp } = response;
+
+      // 유저 정보 저장
+      setUserData({
+        id,
+        email,
+        name,
+        iat,
+        exp,
+        token, 
+      });
+      
+      // 회원가입 이후 메인 페이지로 리다이렉트
+      navigate("/home");
+    } catch (error) {
+      console.error("회원 가입 실패 :", error);
+    }
   };
 
   return (
