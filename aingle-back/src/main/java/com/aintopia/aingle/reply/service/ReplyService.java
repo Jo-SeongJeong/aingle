@@ -1,13 +1,11 @@
-package com.aintopia.aingle.comment.service;
+package com.aintopia.aingle.reply.service;
 
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
-import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.comment.exception.ForbiddenCommentException;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
-import com.aintopia.aingle.like.repository.LikeRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -18,6 +16,7 @@ import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
+import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService {
+public class ReplyService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
@@ -43,40 +42,32 @@ public class CommentService {
     }
 
     @Transactional
-    public List<CommentDto> registComment(RegistCommentRequestDto registCommentRequestDto, Long memberId) {
-        Post post = postRepository.findById(registCommentRequestDto.getPostId()).orElseThrow(NotFoundPostException::new);
+    public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto, Long memberId) {
+        Comment comment = commentRepository.findById(registReplyRequestDto.getCommentId()).orElseThrow(NotFoundCommentException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
-        if(post.getIsDeleted()) throw new ForbiddenCommentException();
+        if(comment.getIsDeleted()) throw new ForbiddenCommentException();
 
-        post.increaseComment();
-        postRepository.save(post);
-
-        commentRepository.save(Comment.commentBuilder()
-                .post(post)
+        replyRepository.save(Reply.replyBuilder()
+                .comment(comment)
                 .member(member)
-                .registCommentRequestDto(registCommentRequestDto)
+                .registReplyRequestDto(registReplyRequestDto)
                 .build());
 
-        return getCommentsWithReplies(post.getPostId());
+        return getCommentsWithReplies(comment.getPost().getPostId());
     }
 
     @Transactional
-    public List<CommentDto> deleteComment(Long commentId, Long memberId) {
-        Comment c = commentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
+    public List<CommentDto> deleteReply(Long replyId, Long memberId) {
+        Reply reply = replyRepository.findById(replyId).orElseThrow(NotFoundCommentException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-
-        if(memberId != member.getMemberId()) throw new ForbiddenCommentException();
-
+        Comment c = commentRepository.findById(reply.getComment().getCommentId()).orElseThrow(NotFoundCommentException::new);
         Post post = postRepository.findById(c.getPost().getPostId()).orElseThrow(NotFoundPostException::new);
 
-        if(post.getIsDeleted()) throw new ForbiddenCommentException();
+        if(post.getIsDeleted() || c.getIsDeleted() || memberId != member.getMemberId()) throw new ForbiddenCommentException();
 
-        post.decreaseComment();
-        postRepository.save(post);
-
-        c.delete();
-        commentRepository.save(c);
+        reply.delete();
+        replyRepository.save(reply);
 
         return getCommentsWithReplies(post.getPostId());
     }

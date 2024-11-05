@@ -4,8 +4,6 @@ import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.comment.service.CommentService;
 import com.aintopia.aingle.common.util.MemberInfo;
-import com.aintopia.aingle.like.dto.Request.DeleteLikeRequestDto;
-import com.aintopia.aingle.like.dto.Request.RegistLikeRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
