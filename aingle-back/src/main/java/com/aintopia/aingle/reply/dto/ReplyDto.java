@@ -1,5 +1,7 @@
 package com.aintopia.aingle.reply.dto;
 
+import com.aintopia.aingle.character.dto.PostCharacter;
+import com.aintopia.aingle.member.dto.PostMember;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +17,6 @@ public class ReplyDto {
     private Long replyId;
     private String content;
     private LocalDateTime createTime;
+    private PostMember member;
+    private PostCharacter character;
 }

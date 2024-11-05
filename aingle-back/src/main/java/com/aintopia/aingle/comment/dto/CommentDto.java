@@ -1,6 +1,8 @@
 // CommentDto.java
 package com.aintopia.aingle.comment.dto;
 
+import com.aintopia.aingle.character.dto.PostCharacter;
+import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.reply.dto.ReplyDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +20,8 @@ public class CommentDto {
     private Long commentId;
     private String content;
     private LocalDateTime createTime;
+    private PostMember member;
+    private PostCharacter character;
 
     private List<ReplyDto> replies; // 대댓글 리스트
 }
