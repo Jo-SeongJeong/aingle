@@ -27,6 +27,7 @@ const App = () => {
       </Routes>
       {!matchPostDetail &&
         location.pathname !== "/write" &&
+        location.pathname !== "/vote/create" &&
         location.pathname !== "/" &&
         location.pathname !== "/mypage/edit" &&
         location.pathname !== "/login" &&
