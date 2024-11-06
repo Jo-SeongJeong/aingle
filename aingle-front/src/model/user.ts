@@ -1,4 +1,6 @@
 // Recoil에서 관리하는 userDataState 인터페이스
+import { IPost } from "../components/card/PostCard";
+
 export interface IuserDataState {
   id: number;
   email: string;
@@ -32,6 +34,6 @@ export type ImemberUpdateRequestDto = {
 
 export interface ImyData {
   followCount: number;
-  post: [];
+  post: IPost[];
   postCount: number;
 }
