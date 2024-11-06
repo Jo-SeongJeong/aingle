@@ -1,28 +1,51 @@
 import React, { useEffect, useRef, useState } from "react";
 import TextHeader from "../../components/header/TextHeader";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { userDataState } from "../../store/atoms";
+import { ImemberUpdateRequestDto } from "../../model/user";
+import { patchUserInfo } from "../../api/userAPI";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const EditProfile = () => {
-  const [birthday, setBirthday] = useState("2000-01-01");
-  const [userName, setUserName] = useState("정채린");
-  const [language, setLanguage] = useState("한국어");
-  const [profileImg, setProfileImg] = useState("");
+  // 유저 정보 상태관리
+  const userInfo = useRecoilValue(userDataState);
+  const setUserData = useSetRecoilState(userDataState);
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
-  const [selectedImage, setSelectedImage] = useState<File | null>(null); // 이미지 파일을 저장할 상태
-  const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
+  // 유저 정보 수정 이후 마이페이지로 리다이렉트 시킬 navigate
+  const navigate = useNavigate();
+
+  // 유저 정보 수정 api 요청 할 때 인수로 사용할 객체 생성
+  const [updateInfo, setUpdateInfo] = useState<ImemberUpdateRequestDto>({
+    name: userInfo.name,
+    birth: userInfo.birth,
+    language: userInfo.language,
+    file: userInfo.memberImage,
+  });
+  console.log(updateInfo);
+  // 유저 사진 상태관리
+  const [profileImg, setProfileImg] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   //이 코드는 나중에 지움
   useEffect(() => {
-    setProfileImg("");
-    setSelectedImage(selectedImage);
-  }, []);
+    if (userInfo.file) {
+      setPreviewUrl(userInfo.file);
+    } else {
+      setProfileImg("");
+    }
+  }, [userInfo]);
 
-  const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBirthday(e.target.value);
-  };
-
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
+  // 값 변경때 사용하는 함수
+  const handleChange = (
+    field: keyof ImemberUpdateRequestDto,
+    value: string | File | null
+  ) => {
+    setUpdateInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleImageClick = () => {
@@ -32,7 +55,7 @@ const EditProfile = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImage(file); // 선택한 파일을 상태에 저장
+      handleChange("file", file); // 선택한 파일을 상태에 저장
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
@@ -43,7 +66,22 @@ const EditProfile = () => {
     }
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await patchUserInfo(updateInfo);
+
+      // 정보 수정 이후 발급된 토큰을 새로 세션 스토리지에 저장
+      sessionStorage.setItem("accessToken", response.token);
+      const decoded = jwtDecode(response.token);
+      setUserData(decoded);
+
+      // 회원가입 이후 메인 페이지로 리다이렉트
+      navigate("/mypage");
+    } catch (error) {
+      console.error("회원 정보 수정 실패 : ", error);
+    }
+  };
 
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto">
@@ -56,7 +94,7 @@ const EditProfile = () => {
               className="w-[100px] h-[100px]  rounded-full bg-gray-200 flex items-center mb-[30px]"
               onClick={handleImageClick}
               style={{
-                backgroundImage: `url(${profileImg})`,
+                backgroundImage: `url(${userInfo.memberImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -83,9 +121,9 @@ const EditProfile = () => {
               <input
                 className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                 type="text"
-                value={userName}
+                value={updateInfo.name}
                 onChange={(e) => {
-                  setUserName(e.target.value);
+                  handleChange("name", e.target.value);
                 }}
               />
             </div>
@@ -94,8 +132,9 @@ const EditProfile = () => {
               <input
                 className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                 type="date"
-                value={birthday}
-                onChange={handleBirthdayChange}
+                value={updateInfo.birth}
+                onChange={(e) => handleChange("birth", e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
               />
             </div>
             <div className="flex items-center gap-4 mb-[15px]">
@@ -103,9 +142,9 @@ const EditProfile = () => {
               <div className="flex gap-4 w-full">
                 <button
                   type="button"
-                  onClick={() => handleLanguageChange("한국어")}
+                  onClick={() => handleChange("language", "korean")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
-                    language === "한국어"
+                    updateInfo.language === "korean"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
                       : "bg-gray-100 text-gray-500"
                   }`}
@@ -114,9 +153,9 @@ const EditProfile = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleLanguageChange("영어")}
+                  onClick={() => handleChange("language", "english")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
-                    language === "영어"
+                    updateInfo.language === "english"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
                       : "bg-gray-100 text-gray-500"
                   }`}

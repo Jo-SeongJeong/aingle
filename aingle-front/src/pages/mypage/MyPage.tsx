@@ -2,9 +2,12 @@ import bgbg from "../../assets/images/bgbg.png";
 import PostCard from "../../components/card/PostCard";
 import cog from "../../assets/icons/settings.png";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const userData = useRecoilValue(userDataState);
 
   // 더미 데이터 생성
   const posts = [
@@ -37,11 +40,11 @@ const MyPage = () => {
       {/* 프로필 섹션 */}
       <div className="relative flex items-center justify-center z-50 mt-[95px] flex-col">
         <img
-          src="/path/to/profile-image.jpg" // 실제 이미지 URL로 변경하세요
+          src={userData.memberImage} // 실제 이미지 URL로 변경하세요
           className="bg-black w-[100px] h-[100px] rounded-full border-[3px] border-[#FB599A] mb-[10px]"
           alt="프로필 이미지"
         />
-        <h1 className="text-[20px] font-semibold mb-3">정채린</h1>
+        <h1 className="text-[20px] font-semibold mb-3">{userData.name}</h1>
         <div className="bg-[#FFE8F1] py-[15px] px-[40px] flex gap-[80px] rounded-[10px]">
           <div className="text-center">
             <h1 className="text-lg font-bold text-pink-base">4</h1>
