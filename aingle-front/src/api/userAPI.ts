@@ -53,6 +53,7 @@ export const getUserInfo = async () => {
 export const deleteUser = async () => {
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/members`);
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("회원 탈퇴 실패 : ", error);

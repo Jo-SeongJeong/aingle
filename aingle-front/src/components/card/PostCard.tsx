@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
 
-interface PostCardProps {
+export interface PostCardProps {
   id: number;
   image: string;
+}
+
+export interface IPost {
+  postId: number;
+  image: string; // image가 null일 수도 있으므로 null을 허용
 }
 
 const PostCard: React.FC<PostCardProps> = ({ id, image }) => {

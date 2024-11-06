@@ -1,29 +1,26 @@
 import { BASE_URL } from "./APIconfig";
-import { IcreatePost , IPost } from "../model/post";
-import axiosInstance from "./axiosInstance";
+import { IcreatePost, IPost } from "../model/post";
+import axiosInstance from "./axiosinstance";
 
 // 게시글 전체 조회 api
 export const getPost = async (): Promise<IPost[]> => {
   try {
-
     const response = await axiosInstance.get<IPost[]>(`${BASE_URL}/posts`);
     return response.data;
-
   } catch (error) {
     console.error("게시글 조회 실패:", error);
     throw error;
   }
-
 };
 
 // 게시글 상세 조회 api
-export const getPostDetail = async (postId: number) => {
+export const getPostDetail = async (postId: string) => {
   try {
-
-    const response = await axiosInstance.get(`${BASE_URL}/posts/details/${postId}`);
+    const response = await axiosInstance.get(
+      `${BASE_URL}/posts/details/${postId}`
+    );
 
     return response;
-
   } catch (error) {
     console.error(`${postId}번 게시글 상세 조회 실패 : `, error);
     throw error;
@@ -31,12 +28,10 @@ export const getPostDetail = async (postId: number) => {
 };
 
 // 게시글 삭제 api
-export const deletePopst = async (postId : number) => {
+export const deletePopst = async (postId: number) => {
   try {
-
     const response = await axiosInstance.delete(`${BASE_URL}/posts/${postId}`);
     return response;
-    
   } catch (error) {
     console.error("게시글 삭제 실패 : ", error);
     throw error;
@@ -49,10 +44,9 @@ export const createPost = async (post: IcreatePost) => {
     // 게시글 등록을 위한 formData 생성
     const formData = new FormData();
 
-    
     const postData = {
-      content: post.content
-    }
+      content: post.content,
+    };
 
     // 게시글 본문을 registPostRequestDto 이름으로 append
     formData.append("registPostRequestDto", JSON.stringify(postData));

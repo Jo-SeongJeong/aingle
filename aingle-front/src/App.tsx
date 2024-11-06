@@ -28,6 +28,7 @@ const App = () => {
       {!matchPostDetail &&
         location.pathname !== "/result" &&
         location.pathname !== "/write" &&
+        location.pathname !== "/vote/create" &&
         location.pathname !== "/" &&
         location.pathname !== "/mypage/edit" &&
         location.pathname !== "/login" &&
