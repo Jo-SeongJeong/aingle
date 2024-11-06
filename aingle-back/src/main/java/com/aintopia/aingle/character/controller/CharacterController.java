@@ -97,4 +97,24 @@ public class CharacterController {
         return ResponseEntity.ok().build();
     }
 
+
+    @DeleteMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "나만의 캐릭터 삭제", description = "내가 만든 캐릭터 삭제하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "캐릭터 삭제에 성공하였습니다!"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<Void> deleteCharacter(@RequestParam Long characterId){
+        Long memberId = MemberInfo.getId();
+        characterService.deleteCharacter(memberId, characterId);
+        return ResponseEntity.ok().build();
+    }
+
 }

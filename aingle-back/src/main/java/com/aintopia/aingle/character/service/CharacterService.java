@@ -9,6 +9,7 @@ import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
 import com.aintopia.aingle.character.exception.CharacterCreateLimitException;
+import com.aintopia.aingle.character.exception.CharacterForbiddenException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
@@ -156,5 +157,17 @@ public class CharacterService {
                         .character(saveCharacter)
                         .url(imageUrl)
                 .build());
+    }
+
+    public void deleteCharacter(Long memberId, Long characterId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+
+        // 캐릭터 만든 사람이 내가 아니면 삭제 불가
+        if(!character.getMember().equals(member)) {
+            throw new CharacterForbiddenException();
+        }
+
+        character.deleteSoftly(character);
     }
 }

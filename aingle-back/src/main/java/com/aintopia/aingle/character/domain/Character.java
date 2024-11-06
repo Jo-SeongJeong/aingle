@@ -108,4 +108,9 @@ public class Character {
         this.gender = characterCreateRequest.getGender();
         this.isPublic = false;
     }
+
+    public void deleteSoftly(Character character){
+        this.isDeleted = true;
+        this.deleteTime = LocalDateTime.now();
+    }
 }
