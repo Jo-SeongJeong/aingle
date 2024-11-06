@@ -77,5 +77,25 @@ public class VoteController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(value = "/character")
+    @Operation(summary = "캐릭터 투표 등록", description = "투표 후보에 캐릭터 등록하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "캐릭터 등록에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<Void> registerCharacterToVote(@RequestParam Long characterId){
+        Long memberId = MemberInfo.getId();
+        voteService.registerCharacterToVote(characterId, memberId);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

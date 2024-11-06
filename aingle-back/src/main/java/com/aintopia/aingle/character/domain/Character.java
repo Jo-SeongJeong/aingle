@@ -126,4 +126,9 @@ public class Character {
     public void plusVoteCount(){
         this.voteCount++;
     }
+
+    public void registerVote(Vote vote){
+        this.vote = vote;
+        this.voteCount = 0;
+    }
 }
