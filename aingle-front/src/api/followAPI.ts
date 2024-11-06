@@ -7,7 +7,7 @@ export const getFollowingList = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters/follows`);
     console.log("팔로우 리스트 조회 성공 : ", response.data);
-    return response.data.data;
+    return response.data.data || [];
   } catch (error) {
     console.log("팔로우 리스트 조회 에러 : ", error);
   }

@@ -4,39 +4,32 @@ import FollowingCard, {
   IFollowCard,
 } from "../../components/card/FollowingCard";
 import TextHeader from "../../components/header/TextHeader";
+import { useQuery } from "@tanstack/react-query";
 
 const Following = () => {
-  const [follows, setFollows] = useState<IFollowCard[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getFollowingList();
-      console.log(response);
-      setFollows(response);
-    };
-    fetchData();
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["followingList"],
+    queryFn: getFollowingList,
+    initialData: { followList: [] },
+  });
 
   return (
     <div className="h-full w-[375px] relative bg-white  pt-[13px] overflow-auto">
       <TextHeader navTo="/mypage" headerText="팔로잉 리스트" />
       <div className="px-4 pt-[20px] mt-8">
-        {follows &&
-          follows.map((bot, idx) => {
-            return (
-              <FollowingCard
-                characterId={bot.characterId}
-                name={bot.name}
-                job={bot.job}
-                age={bot.age}
-                tone={bot.tone}
-                talkType={bot.talkType}
-                personality={bot.personality}
-                imageUrl={bot.imageUrl}
-                key={idx}
-              />
-            );
-          })}
+        {data?.followList?.map((bot: IFollowCard, idx: number) => (
+          <FollowingCard
+            characterId={bot.characterId}
+            name={bot.name}
+            job={bot.job}
+            age={bot.age}
+            tone={bot.tone}
+            talkType={bot.talkType}
+            personality={bot.personality}
+            imageUrl={bot.imageUrl}
+            key={idx}
+          />
+        ))}
       </div>
     </div>
   );
