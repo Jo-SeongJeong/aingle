@@ -1,5 +1,6 @@
 package com.aintopia.aingle.member.dto;
 
+import com.aintopia.aingle.member.domain.MemberImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,4 +9,5 @@ import lombok.Getter;
 public class PostMember {
     private Long memberId;
     private String name;
+    private String memberImage;
 }

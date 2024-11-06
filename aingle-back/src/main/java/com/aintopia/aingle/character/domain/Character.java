@@ -4,6 +4,7 @@ import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -78,9 +79,8 @@ public class Character {
     @Column(name = "summary")
     private String summary;
 
-    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Post> post;
+    @OneToOne(mappedBy = "character", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private CharacterImage characterImage;
 
     @Column(name = "is_public")
     private Boolean isPublic;
@@ -91,7 +91,7 @@ public class Character {
     }
 
     public PostCharacter changeDto() {
-        return new PostCharacter(this.characterId, this.name);
+        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getUrl() : null);
     }
 
     @Builder

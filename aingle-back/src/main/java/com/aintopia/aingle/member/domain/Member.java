@@ -97,6 +97,6 @@ public class Member {
     }
 
     public PostMember changeDto() {
-        return new PostMember(this.memberId, this.name);
+        return new PostMember(this.memberId, this.name, this.memberImage != null ? this.memberImage.getMemberImage() : null);
     }
 }
