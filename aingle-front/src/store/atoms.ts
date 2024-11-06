@@ -16,7 +16,7 @@ export const userDataState = atom({
     exp: 0,
     birth: "",
     language: "",
-    file: "",
+    memberImage: "",
   },
   effects_UNSTABLE: [persistAtom],
 });
