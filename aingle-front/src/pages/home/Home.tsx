@@ -1,66 +1,20 @@
 import { useEffect, useState } from "react";
 import PinkTextHeader from "../../components/header/PinkTextHeader";
-import Post, { IPost } from "../../components/Post/Post";
+import Post from "../../components/Post/Post";
 import PostCommentModal from "../../components/Post/PostCommentModal";
-import { useRecoilState } from "recoil";
-import { jwtDecode } from "jwt-decode";
-import { userDataState } from "../../store/atoms";
+import { usePostStore } from "../../store/usePostStore";
+import { IPost } from "../../model/post";
+
 
 const Home = () => {
   const [postId, setPostId] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [userData, setUserData] = useRecoilState(userDataState);
+
+  const {posts , fetchPosts} = usePostStore();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserData(decoded);
-    }
+    fetchPosts();
   }, []);
-
-  const dummyData: IPost[] = [
-    {
-      id: 1,
-      profileURL: "",
-      writer: "John Doe",
-      time: "2시간 전",
-      likeCnt: "120",
-      commentCnt: "45",
-      postImgURL: "",
-      postText: "What a beautiful day!",
-    },
-    {
-      id: 2,
-      profileURL: "",
-      writer: "Jane Smith",
-      time: "5시간 전",
-      likeCnt: "89",
-      commentCnt: "32",
-      postImgURL: "https://via.placeholder.com/340x340",
-      postText: "Loving this new recipe I tried!",
-    },
-    {
-      id: 3,
-      profileURL: "",
-      writer: "Alice Kim",
-      time: "1일 전",
-      likeCnt: "200",
-      commentCnt: "60",
-      postImgURL: "https://via.placeholder.com/340x340",
-      postText: "Feeling grateful for today. #blessed",
-    },
-    {
-      id: 4,
-      profileURL: "",
-      writer: "Bob Lee",
-      time: "3일 전",
-      likeCnt: "150",
-      commentCnt: "40",
-      postImgURL: "https://via.placeholder.com/340x340",
-      postText: "Nature never ceases to amaze me.",
-    },
-  ];
 
   return (
     <div className="bg-white h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative">
@@ -72,25 +26,15 @@ const Home = () => {
       )}
 
       <div className="overflow-auto w-full">
-        {dummyData.map((data, idx) => (
+        {posts.map((post : IPost) => (
           <div
-            key={idx}
+            key={post.postId}
             onClick={() => {
-              setPostId(data.id);
+              setPostId(post.postId);
               setIsModalOpen(true);
             }}
           >
-            <Post
-              key={idx}
-              id={data.id}
-              profileURL={data.profileURL}
-              writer={data.writer}
-              time={data.time}
-              likeCnt={data.likeCnt}
-              commentCnt={data.commentCnt}
-              postImgURL={data.postImgURL}
-              postText={data.postText}
-            />
+            <Post post={post}/>
           </div>
         ))}
       </div>
