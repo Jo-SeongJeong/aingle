@@ -110,4 +110,16 @@ public class Character {
         this.isDeleted = true;
         this.deleteTime = LocalDateTime.now();
     }
+
+    @Override
+    public String toString() {
+        return "Character{" +
+                "characterId=" + characterId +
+                ", name='" + name + '\'' +
+                ", voteCount=" + voteCount +
+                ", vote=" + vote +
+                ", characterImage=" + characterImage +
+                ", isPublic=" + isPublic +
+                '}';
+    }
 }
