@@ -7,6 +7,7 @@ import com.aintopia.aingle.member.dto.MemberDto;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.oauth.dto.KakaoMemberResponseDto;
 import com.aintopia.aingle.oauth.exception.AlreadySignUpException;
+import com.aintopia.aingle.oauth.exception.ResignedException;
 import com.aintopia.aingle.security.util.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +49,7 @@ public class KakaoService {
         Optional<Member> member = memberRepository.findByEmail(kakaoMemberResponseDto.getEmail());
         if (member.isPresent()) {
             MemberDto memberDto = mapper.map(member.get(), MemberDto.class);
+            if(memberDto.getIsResigned()) throw new ResignedException();
             String token = jwtUtil.createAccessToken(memberDto);
             throw new AlreadySignUpException(token);
         }
