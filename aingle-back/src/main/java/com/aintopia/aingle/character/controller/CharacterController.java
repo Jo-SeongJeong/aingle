@@ -97,7 +97,7 @@ public class CharacterController {
         return ResponseEntity.ok().body(characterDetailResponse);
     }
 
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "")
     @Operation(summary = "나만의 캐릭터 생성", description = "나만의 AI 캐릭터 생성 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -119,7 +119,7 @@ public class CharacterController {
     }
 
 
-    @DeleteMapping(value = "/{characterId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{characterId}")
     @Operation(summary = "나만의 캐릭터 삭제", description = "내가 만든 캐릭터 삭제하는 API")
     @ApiResponses(value = {
             @ApiResponse(
