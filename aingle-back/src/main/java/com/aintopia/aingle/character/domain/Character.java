@@ -2,13 +2,19 @@ package com.aintopia.aingle.character.domain;
 
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
+import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +22,9 @@ import java.util.List;
 @Entity
 @Table(name = "character")
 @Getter
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Character {
 
     @Id
@@ -64,7 +73,7 @@ public class Character {
     private Integer voteCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vote_id", nullable = false)
+    @JoinColumn(name = "vote_id")
     private Vote vote;
 
     @Column(name = "summary")
@@ -73,6 +82,9 @@ public class Character {
     @OneToOne(mappedBy = "character", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private CharacterImage characterImage;
 
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
     public CharacterInfo toDTO() {
         return new CharacterInfo(this.name, this.job, this.age, this.personality, this.gender,
             this.tone, this.talkType, this.description);
@@ -80,5 +92,25 @@ public class Character {
 
     public PostCharacter changeDto() {
         return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getUrl() : null);
+    }
+
+    @Builder
+    public Character(CharacterCreateRequest characterCreateRequest, Member member){
+        this.name = characterCreateRequest.getName();
+        this.job = characterCreateRequest.getJob();
+        this.age = characterCreateRequest.getAge();
+        this.personality = characterCreateRequest.getPersonality();
+        this.tone = characterCreateRequest.getTone();
+        this.talkType = characterCreateRequest.getTalkType();
+        this.description = characterCreateRequest.getDescription();
+        this.createTime = LocalDateTime.now();
+        this.member = member;
+        this.gender = characterCreateRequest.getGender();
+        this.isPublic = false;
+    }
+
+    public void deleteSoftly(Character character){
+        this.isDeleted = true;
+        this.deleteTime = LocalDateTime.now();
     }
 }
