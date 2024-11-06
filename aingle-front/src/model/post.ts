@@ -1,12 +1,16 @@
 export interface IPost {
-  id: number;
-  profileURL: string;
-  writer: string;
-  time: string;
-  likeCnt: string;
-  commentCnt: string;
-  postImgURL: string;
-  postText: string;
+  character: string;
+  content: string;
+  createTime: string;
+  image: string;
+  postId: number;
+  totalComment: string;
+  totalLike: string;
+  member: {
+    memberId: number;
+    memberImage: string;
+    name: string;
+  }
 }
 
 export interface IcreatePost {
