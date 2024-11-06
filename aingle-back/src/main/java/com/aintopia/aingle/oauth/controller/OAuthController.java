@@ -3,7 +3,9 @@ package com.aintopia.aingle.oauth.controller;
 import com.aintopia.aingle.oauth.dto.AlreadySignUpResponseDto;
 import com.aintopia.aingle.oauth.dto.GoogleMemberResponseDto;
 import com.aintopia.aingle.oauth.dto.KakaoMemberResponseDto;
+import com.aintopia.aingle.oauth.dto.ResignedResponseDto;
 import com.aintopia.aingle.oauth.exception.AlreadySignUpException;
+import com.aintopia.aingle.oauth.exception.ResignedException;
 import com.aintopia.aingle.oauth.service.GoogleService;
 import com.aintopia.aingle.oauth.service.KakaoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,5 +87,20 @@ public class OAuthController {
         return ResponseEntity.status(303)
             .contentType(MediaType.APPLICATION_JSON)
             .body(responseBody);
+    }
+
+    @ExceptionHandler(ResignedException.class)
+    public ResponseEntity<?> resigned()
+            throws JsonProcessingException {
+        ResignedResponseDto resignedResponseDto = new ResignedResponseDto(
+                303,
+                "이미 탈퇴한 회원입니다.",
+                LocalDateTime.now()
+        );
+
+        String responseBody = objectMapper.writeValueAsString(resignedResponseDto);
+        return ResponseEntity.status(303)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responseBody);
     }
 }

@@ -1,7 +1,6 @@
 package com.aintopia.aingle.member.dto.request;
 
 import com.aintopia.aingle.member.domain.Language;
-import com.aintopia.aingle.member.dto.MemberImageDto;
 import lombok.Data;
 
 import java.time.LocalDate;

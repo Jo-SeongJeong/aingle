@@ -1,6 +1,5 @@
 package com.aintopia.aingle.member.dto;
 
-import com.aintopia.aingle.member.domain.MemberImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
