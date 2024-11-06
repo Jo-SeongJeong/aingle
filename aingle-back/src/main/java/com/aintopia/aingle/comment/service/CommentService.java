@@ -7,7 +7,6 @@ import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.comment.exception.ForbiddenCommentException;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
-import com.aintopia.aingle.like.repository.LikeRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;

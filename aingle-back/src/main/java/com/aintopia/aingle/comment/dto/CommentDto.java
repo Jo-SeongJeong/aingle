@@ -1,4 +1,3 @@
-// CommentDto.java
 package com.aintopia.aingle.comment.dto;
 
 import com.aintopia.aingle.character.dto.PostCharacter;

@@ -3,8 +3,6 @@ package com.aintopia.aingle.member.domain;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
-import com.aintopia.aingle.post.domain.Post;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -14,7 +12,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "member")
