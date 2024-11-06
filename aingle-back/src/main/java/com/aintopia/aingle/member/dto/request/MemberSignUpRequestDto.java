@@ -2,7 +2,6 @@ package com.aintopia.aingle.member.dto.request;
 
 import com.aintopia.aingle.member.domain.Language;
 import com.aintopia.aingle.member.domain.Platform;
-import com.aintopia.aingle.member.dto.MemberImageDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,4 +15,6 @@ public class MemberSignUpRequestDto {
     private LocalDate birth;
     private Platform platform;
     private Language language;
+
+    private Long characterId;
 }
