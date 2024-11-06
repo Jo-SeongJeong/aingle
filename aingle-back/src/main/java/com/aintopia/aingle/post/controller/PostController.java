@@ -35,9 +35,10 @@ public class PostController {
                     content = @Content(mediaType = "application/json")
             )
     })
-    ResponseEntity<?> findById() {
+    ResponseEntity<?> findById(@RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "size", defaultValue = "10") int size) {
         Long memberId = MemberInfo.getId();
-        List<PostResponseDto> postResponseDtoList = postService.getAllPost(memberId);
+        List<PostResponseDto> postResponseDtoList = postService.getAllPost(memberId, page, size);
 
         return ResponseEntity.ok(postResponseDtoList);
     }
