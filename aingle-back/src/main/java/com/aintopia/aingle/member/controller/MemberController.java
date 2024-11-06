@@ -47,7 +47,7 @@ public class MemberController {
     }
 
     @GetMapping
-    @Operation(summary = "회원정보 조회", description = "회원정보 조회시 사용하는 API")
+    @Operation(summary = "회원정보 조회(본인 게시글 및 팔로워수, 게시글 수 조회)", description = "회원정보 조회시 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",

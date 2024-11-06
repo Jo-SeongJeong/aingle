@@ -1,6 +1,8 @@
 package com.aintopia.aingle.member.service;
 
 import com.aintopia.aingle.common.service.S3Service;
+import com.aintopia.aingle.follow.domain.Follow;
+import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.dto.MemberDto;
@@ -12,6 +14,8 @@ import com.aintopia.aingle.member.exception.MemberDuplicateException;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberImageRepository;
 import com.aintopia.aingle.member.repository.MemberRepository;
+import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +35,8 @@ public class MemberService {
     private final S3Service s3Service;
     private final JwtUtil jwtUtil;
     private final ModelMapper mapper;
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
     @Transactional
     public String signUp(MemberSignUpRequestDto signUpMemberDto, MultipartFile file) throws IOException {
@@ -64,10 +71,13 @@ public class MemberService {
                 NotFoundMemberException::new
         );
 
-        MemberDetailResponseDto memberDetailResponseDto = new MemberDetailResponseDto();
-        memberDetailResponseDto.memberDetail(member);
+        List<Post> post = postRepository.findByMemberId(memberId);
+        Integer postCount = post.size();
 
-        return memberDetailResponseDto;
+        List<Follow> follows = followRepository.findByMember(member);
+        Integer followCount = follows.size();
+
+        return new MemberDetailResponseDto(post, postCount, followCount);
     }
 
     @Transactional
