@@ -1,5 +1,6 @@
 package com.aintopia.aingle.character.dto;
 
+import com.aintopia.aingle.character.domain.CharacterImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,4 +9,5 @@ import lombok.Getter;
 public class PostCharacter {
     private Long characterId;
     private String name;
+    private String characterImage;
 }
