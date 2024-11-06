@@ -15,10 +15,9 @@ export interface CharacterInfo {
   name: string;
   job: string;
   age: number;
-  tone: boolean;
+  tone: string;
+  talkType: string;
   personality: string;
-  talkType: boolean;
-  etc: any;
   imageUrl: string;
-  isFollowed: boolean;
+  summary: string;
 }
