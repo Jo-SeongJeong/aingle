@@ -8,8 +8,12 @@ import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +21,9 @@ import java.util.List;
 @Entity
 @Table(name = "character")
 @Getter
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Character {
 
     @Id

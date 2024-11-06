@@ -22,7 +22,6 @@ import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
-import com.aintopia.aingle.post.domain.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -111,11 +110,13 @@ public class CharacterService {
     @Transactional(readOnly = true)
     public AllCharacterResponse getAllCharacter() {
         List<CharacterImageDto> characterImageDtos = new ArrayList<>();
+        List<Character> publicCharacters = characterRepository.findByIsPublicTrue();
 
-        characterImageRepository.findAll().forEach(characterImage -> {
+        for (Character character : publicCharacters) {
+            CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
             CharacterImageDto characterImageDto = mapper.map(characterImage, CharacterImageDto.class);
             characterImageDtos.add(characterImageDto);
-        });
+        }
 
         return new AllCharacterResponse(characterImageDtos);
 
