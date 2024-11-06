@@ -3,7 +3,7 @@ import { BASE_URL } from "./APIconfig";
 
 const axiosInstance = axios.create({
   baseURL: `${BASE_URL}`, // 배포 URL
-  timeout: 50000, 
+  timeout: 50000,
 });
 
 // 이거 임포트 받아서 요청 보내면 됨

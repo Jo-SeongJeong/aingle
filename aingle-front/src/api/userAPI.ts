@@ -4,7 +4,7 @@ import {
   ImemberSignUpRequestDto,
   ImemberUpdateRequestDto,
 } from "../model/user";
-import axiosInstance from "./axiosinstance";
+import axiosInstance from "./axiosInstance";
 
 // 회원 가입 api
 export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
@@ -41,6 +41,7 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
 export const getUserInfo = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/members`);
+
     return response.data;
   } catch (error) {
     console.error("회원 정보 조회 실패 : ", error);
@@ -94,15 +95,3 @@ export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
     throw error;
   }
 };
-
-//회원정보 조회(본인 게시글 수 및 어쩌구)
-// export const getMyInfo = async () => {
-//   try {
-//     const response = await axiosInstance.get(`${BASE_URL}/members`);
-
-//     return response.data.data;
-//   } catch (error) {
-//     console.error("회원 정보 조회 실패 : ", error);
-//     throw error;
-//   }
-// };

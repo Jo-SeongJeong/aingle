@@ -1,6 +1,5 @@
-import axios from "axios";
 import { BASE_URL } from "./APIconfig";
-import axiosInstance from "./axiosinstance";
+import axiosInstance from "./axiosInstance";
 
 //팔로우 리스트 조회
 export const getFollowingList = async () => {

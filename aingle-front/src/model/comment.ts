@@ -1,7 +1,3 @@
-export interface IwriteComment {
-  postId: number;
-  content: string;
-}
 export interface IComment {
   character: string;
   commentId: number;
@@ -12,7 +8,7 @@ export interface IComment {
     name: string;
     memberImage: string;
   };
-  // reply[] 타입 추가 예정
+  replies: Ireply[];
 }
 
 export interface IcreateComment {
