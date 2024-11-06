@@ -1,11 +1,11 @@
-export interface IComment {
-  id: number;
-  writer: string;
-  time: string;
-  content: string;
+import { IComment } from "../../model/comment";
+
+interface ICommentProps {
+  comment : IComment
 }
 
-const Postcomment = ({ writer, time, content }: IComment) => {
+const Postcomment = ({ comment }: ICommentProps) => {
+  const { member } = comment;
   return (
     <div className="w-full bg-white flex items-start">
       <div className="mr-[10px] self-start flex-shrink-0">
@@ -13,10 +13,10 @@ const Postcomment = ({ writer, time, content }: IComment) => {
       </div>
       <div className="">
         <div className="flex space-x-[5px] items-center">
-          <h1 className="text-[13px] font-semibold ">{writer}</h1>
-          <h1 className="text-[10px] font-medium text-[#A6A6A6]">{time}</h1>
+          <h1 className="text-[13px] font-semibold ">{member.name}</h1>
+          <h1 className="text-[10px] font-medium text-[#A6A6A6]">{comment.createTime}</h1>
         </div>
-        <span>{content}</span>
+        <span>{comment.content}</span>
         <h1 className="text-[10px] text-[#A6A6A6] pt-[5px] pb-[10px]">
           답글 달기
         </h1>
