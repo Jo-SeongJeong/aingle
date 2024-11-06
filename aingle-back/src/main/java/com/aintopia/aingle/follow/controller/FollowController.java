@@ -19,7 +19,7 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "")
     @Operation(summary = "팔로우 등록", description = "팔로우 등록 시 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -38,7 +38,7 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{characterId}")
     @Operation(summary = "팔로우 취소", description = "팔로우 취소 시 사용하는 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -51,7 +51,7 @@ public class FollowController {
                     content = @Content(mediaType = "application/json")
             ),
     })
-    public ResponseEntity<Void> deleteFollow(@RequestParam Long characterId){
+    public ResponseEntity<Void> deleteFollow(@PathVariable Long characterId){
         Long memberId = MemberInfo.getId();
         followService.deleteFollow(memberId, characterId);
         return ResponseEntity.ok().build();
