@@ -1,3 +1,6 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { unfollowBot } from "../../api/followAPI";
+
 export interface IFollowCard {
   characterId: number;
   name: string;
@@ -19,10 +22,22 @@ export const FollowingCard = ({
   personality,
   imageUrl,
 }: IFollowCard) => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (id: number) => unfollowBot(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["followingList"] });
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
   return (
-    <div className=" flex border-[1px] border-pink-light px-[12px] py-[8px] rounded-[10px] gap-5 items-center">
+    <div className=" flex border-[1px] border-pink-light px-[12px] py-[8px] rounded-[10px] gap-5 items-center mb-3">
       <div
-        className="bg-black w-[60px] h-[60px] rounded-full bg-cover bg-center"
+        className="bg-black w-[60px] h-[60px] rounded-full bg-cover bg-center  flex-shrink-0"
         style={{
           backgroundImage: `url(${imageUrl})`,
         }}
@@ -43,7 +58,12 @@ export const FollowingCard = ({
           </span>
         </div>
       </div>
-      <button className="py-[12px] px-5 rounded-[10px] bg-pink-100 text-pink-base">
+      <button
+        onClick={() => {
+          mutation.mutate(characterId);
+        }}
+        className="py-[12px] px-5 rounded-[10px] bg-pink-100 text-pink-base  flex-shrink-0"
+      >
         언팔로우
       </button>
     </div>

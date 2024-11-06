@@ -13,6 +13,8 @@ const Following = () => {
     initialData: { followList: [] },
   });
 
+  console.log(data);
+
   return (
     <div className="h-full w-[375px] relative bg-white  pt-[13px] overflow-auto">
       <TextHeader navTo="/mypage" headerText="팔로잉 리스트" />
