@@ -1,69 +1,71 @@
-import axios from "axios";
-import axiosInstance from "./axiosinstance";
 import { BASE_URL } from "./APIconfig";
-import { IregistPostRequestDto } from "../model/post";
+import { IcreatePost, IPost } from "../model/post";
+import axiosInstance from "./axiosinstance";
 
-//게시글 전체 조회
-export const getAllPosts = async () => {
+// 게시글 전체 조회 api
+export const getPost = async (): Promise<IPost[]> => {
   try {
-    const response = await axiosInstance.get(`${BASE_URL}/posts`);
-    console.log("게시글 전체 조회 성공 : ", response);
+    const response = await axiosInstance.get<IPost[]>(`${BASE_URL}/posts`);
     return response.data;
   } catch (error) {
-    console.error("게시글 전체 조회 에러 : ", error);
+    console.error("게시글 조회 실패:", error);
     throw error;
   }
 };
 
-//게시글 등록
-export const writePost = async (postContent: IregistPostRequestDto) => {
-  try {
-    const formData = new FormData();
-
-    const sendingData = {
-      content: postContent.content,
-    };
-
-    formData.append("registPostRequestDto", JSON.stringify(sendingData));
-
-    if (postContent.file) {
-      formData.append("file", postContent.file);
-    }
-
-    const response = await axios.post(`${BASE_URL}/posts`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("게시글 전체 조회 에러 : ", error);
-    throw error;
-  }
-};
-
-//게시글 상세 조회
+// 게시글 상세 조회 api
 export const getPostDetail = async (postId: string) => {
   try {
     const response = await axiosInstance.get(
       `${BASE_URL}/posts/details/${postId}`
     );
-    console.log("게시글 디테일 조회 성공 : ", response);
-    return response.data;
+
+    return response;
   } catch (error) {
-    console.error("게시글 디테일 조회 에러 : ", error);
+    console.error(`${postId}번 게시글 상세 조회 실패 : `, error);
     throw error;
   }
 };
 
-//게시글 삭제
-export const deletePost = async (postId: number) => {
+// 게시글 삭제 api
+export const deletePopst = async (postId: number) => {
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/posts/${postId}`);
-    console.log("게시글 삭제 성공 : ", response);
-    return response.data;
+    return response;
   } catch (error) {
-    console.error("게시글 삭제 에러 : ", error);
+    console.error("게시글 삭제 실패 : ", error);
+    throw error;
+  }
+};
+
+// 게시글 생성 api (완료)
+export const createPost = async (post: IcreatePost) => {
+  try {
+    // 게시글 등록을 위한 formData 생성
+    const formData = new FormData();
+
+    const postData = {
+      content: post.content,
+    };
+
+    // 게시글 본문을 registPostRequestDto 이름으로 append
+    formData.append("registPostRequestDto", JSON.stringify(postData));
+
+    // 게시글 사진을 file 이름으로 append
+    if (post.postImage) {
+      formData.append("file", post.postImage);
+    }
+
+    // formData 인수로 담아서 요청
+    const response = await axiosInstance.post(`${BASE_URL}/posts`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error("게시글 등록 실패 : ", error);
     throw error;
   }
 };
