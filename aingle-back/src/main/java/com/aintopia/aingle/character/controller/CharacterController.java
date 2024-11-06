@@ -53,7 +53,8 @@ public class CharacterController {
             ),
     })
     public ResponseEntity<AllCharacterResponse> getAllCharacter(){
-        AllCharacterResponse allCharacterResponse = characterService.getAllCharacter();
+        Long memberId = MemberInfo.getId();
+        AllCharacterResponse allCharacterResponse = characterService.getAllCharacter(memberId);
         return ResponseEntity.ok().body(allCharacterResponse);
     }
 

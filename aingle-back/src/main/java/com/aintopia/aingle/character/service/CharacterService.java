@@ -2,6 +2,7 @@ package com.aintopia.aingle.character.service;
 
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.domain.CharacterImage;
+import com.aintopia.aingle.character.dto.AllCharacterDto;
 import com.aintopia.aingle.character.dto.CharacterImageDto;
 import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.aintopia.aingle.common.service.S3Service;
+import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
@@ -40,6 +42,7 @@ public class CharacterService {
     private final CharacterImageRepository characterImageRepository;
     private final ModelMapper mapper;
     private final MemberRepository memberRepository;
+    private final FollowRepository followRepository;
     private final S3Service s3Service;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
@@ -109,18 +112,25 @@ public class CharacterService {
     }
 
     @Transactional(readOnly = true)
-    public AllCharacterResponse getAllCharacter() {
-        List<CharacterImageDto> characterImageDtos = new ArrayList<>();
+    public AllCharacterResponse getAllCharacter(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        List<AllCharacterDto> allCharacterDtos = new ArrayList<>();
         //공개된 캐릭터와 삭제되지 않은 캐릭터만 조회
         List<Character> publicCharacters = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
 
         for (Character character : publicCharacters) {
             CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
-            CharacterImageDto characterImageDto = mapper.map(characterImage, CharacterImageDto.class);
-            characterImageDtos.add(characterImageDto);
+            // 팔로우 여부
+            boolean isFollow = followRepository.findByMemberAndCharacter(member, character).isPresent();
+            AllCharacterDto allCharacterDto = AllCharacterDto.builder()
+                    .character(character)
+                    .imageUrl(characterImage.getUrl())
+                    .isFollow(isFollow)
+                    .build();
+            allCharacterDtos.add(allCharacterDto);
         }
 
-        return new AllCharacterResponse(characterImageDtos);
+        return new AllCharacterResponse(allCharacterDtos);
 
     }
 
