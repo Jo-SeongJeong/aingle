@@ -91,7 +91,7 @@ public class Character {
     }
 
     public PostCharacter changeDto() {
-        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getUrl() : null);
+        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getImageUrl() : null);
     }
 
     @Builder

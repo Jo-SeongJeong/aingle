@@ -62,7 +62,7 @@ public class FollowService {
             CharacterImage characterImage = characterImageRepository.findById(follow.getCharacter().getCharacterId()).orElseThrow(NotFoundCharacterException::new);
             FollowInfo followInfo = FollowInfo.builder()
                     .character(follow.getCharacter())
-                    .imageUrl(characterImage.getUrl())
+                    .imageUrl(characterImage.getImageUrl())
                     .build();
             followInfos.add(followInfo);
         }

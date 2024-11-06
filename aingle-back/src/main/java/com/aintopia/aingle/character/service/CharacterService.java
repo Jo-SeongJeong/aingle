@@ -66,7 +66,7 @@ public class CharacterService {
             .orElseThrow(() -> new NoSuchElementException(
                 "Image not found for character with id: " + characterId));
 
-        characterSurveyResponseDto.setImageUrl(characterImage.getUrl());
+        characterSurveyResponseDto.setImageUrl(characterImage.getImageUrl());
 
         return characterSurveyResponseDto;
 
@@ -124,7 +124,7 @@ public class CharacterService {
             boolean isFollow = followRepository.findByMemberAndCharacter(member, character).isPresent();
             AllCharacterDto allCharacterDto = AllCharacterDto.builder()
                     .character(character)
-                    .imageUrl(characterImage.getUrl())
+                    .imageUrl(characterImage.getImageUrl())
                     .isFollow(isFollow)
                     .build();
             allCharacterDtos.add(allCharacterDto);
@@ -143,7 +143,7 @@ public class CharacterService {
         CharacterImage characterImage = characterImageRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
         return CharacterDetailResponse.builder()
                 .character(character)
-                .imageUrl(characterImage.getUrl())
+                .imageUrl(characterImage.getImageUrl())
                 .build();
     }
 
