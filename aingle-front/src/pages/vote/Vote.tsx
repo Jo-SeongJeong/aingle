@@ -60,12 +60,12 @@ const Vote = () => {
   return (
     <div className="bg-[#ffe8f1] h-full w-full px-[16px] py-[34px] flex flex-col items-center relative overflow-scroll">
       <PinkTextHeader />
-      <div className="w-full h-[110px] py-[10px] px-[5px]">
+      <div className="w-full h-[110px] py-[10px] px-[5px]" onClick={goVoteMain}>
         <button className="bg-white w-full h-full rounded-2xl flex">
           <div className="w-1/4 h-full flex justify-center items-center">
             <img src={trophy} alt="" className="w-[50px] h-[50px]" />
           </div>
-          <div className="w-2/4 h-full py-4" onClick={goVoteMain}>
+          <div className="w-2/4 h-full py-4">
             <div className="w-full pt-[4px] pb-[4px] flex items-start justify-start">
               <h1 className="text-[16px] text-pink-base font-semibold">
                 새로운 앵표가 있앵

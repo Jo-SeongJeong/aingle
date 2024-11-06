@@ -12,7 +12,7 @@ export const getPublicCharacter = async () => {
   }
 };
 
-// public 캐릭터 전체 조회
+// 캐릭터 상세 조회
 export const getCharacterDetail = async (id: number) => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters/${id}`);
@@ -22,16 +22,37 @@ export const getCharacterDetail = async (id: number) => {
     throw error;
   }
 };
-// 나만의 캐릭터 조회
+// 나만의 작은 캐릭터 조회
 export const getPrivateCharacter = async () => {
   try {
     const response = await axiosInstance.get(
       `${BASE_URL}/characters/my-character`
     );
-
     return response.data;
   } catch (error) {
-    console.error("회원 정보 조회 실패 : ", error);
+    console.error("나만의 작은 캐릭터 조회 실패 : ", error);
+    throw error;
+  }
+};
+
+// 투표 대상 캐릭터 조회
+export const getVoteCharacter = async () => {
+  try {
+    const response = await axiosInstance.get(`${BASE_URL}/votes`);
+    return response.data;
+  } catch (error) {
+    console.error("투표 대상 캐릭터 조회 실패 : ", error);
+    throw error;
+  }
+};
+
+// 투표 대상 캐릭터 상세 조회
+export const getVoteCharacterDetail = async (id: number) => {
+  try {
+    const response = await axiosInstance.get(`${BASE_URL}/votes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("투표 대상 캐릭터 상세 조회 실패 : ", error);
     throw error;
   }
 };
