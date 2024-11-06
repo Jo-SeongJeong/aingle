@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
-import Postcomment, { IComment } from "../../components/Post/Postcomment";
+import Postcomment from "../../components/Post/Postcomment";
+import { IComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
 import trump from "../../assets/test/trump.jpg";
 import trumpProfile from "../../assets/test/trumpProfile.jpg";
@@ -19,78 +20,68 @@ const PostDetail = () => {
     enabled: !!id,
   });
 
-  const dummyData = {
-    // profileURL: "",
-    writer: "trump",
-    // postImgURL: "sadfasdfasdf",
-    time: "",
-    likeCnt: 0,
-    postText: "Make America Great Again!",
-    commentCnt: 0,
-  };
-
-  const dummyComments: IComment[] = [
-    {
-      id: 1,
-      writer: "홍길동",
-      time: "방금 전",
-      content: "정말 유익한 글이네요! 공유해주셔서 감사합니다.",
-    },
-    {
-      id: 2,
-      writer: "김철수",
-      time: "2시간 전",
-      content: "저도 같은 생각을 했습니다. 훌륭한 포스팅입니다.",
-    },
-    {
-      id: 3,
-      writer: "이영희",
-      time: "어제",
-      content: "추가로 생각해볼 만한 부분이 있어요.",
-    },
-    {
-      id: 4,
-      writer: "박민수",
-      time: "3일 전",
-      content: "이 주제에 대해 더 알고 싶습니다. 좋은 정보 감사합니다!",
-    },
-    {
-      id: 5,
-      writer: "최지우",
-      time: "1주일 전",
-      content: "이 글 덕분에 많은 도움이 되었습니다.",
-    },
-    {
-      id: 1,
-      writer: "홍길동",
-      time: "방금 전",
-      content: "정말 유익한 글이네요! 공유해주셔서 감사합니다.",
-    },
-    {
-      id: 2,
-      writer: "김철수",
-      time: "2시간 전",
-      content: "저도 같은 생각을 했습니다. 훌륭한 포스팅입니다.",
-    },
-    {
-      id: 3,
-      writer: "이영희",
-      time: "어제",
-      content: "추가로 생각해볼 만한 부분이 있어요.",
-    },
-    {
-      id: 4,
-      writer: "박민수",
-      time: "3일 전",
-      content: "이 주제에 대해 더 알고 싶습니다. 좋은 정보 감사합니다!",
-    },
-    {
-      id: 5,
-      writer: "최지우",
-      time: "1주일 전",
-      content: "이 글 덕분에 많은 도움이 되었습니다.",
-    },
-  ];
+  // const dummyComments: IComment[] = [
+  //   {
+  //     id: 1,
+  //     writer: "홍길동",
+  //     time: "방금 전",
+  //     content: "정말 유익한 글이네요! 공유해주셔서 감사합니다.",
+  //   },
+  //   {
+  //     id: 2,
+  //     writer: "김철수",
+  //     time: "2시간 전",
+  //     content: "저도 같은 생각을 했습니다. 훌륭한 포스팅입니다.",
+  //   },
+  //   {
+  //     id: 3,
+  //     writer: "이영희",
+  //     time: "어제",
+  //     content: "추가로 생각해볼 만한 부분이 있어요.",
+  //   },
+  //   {
+  //     id: 4,
+  //     writer: "박민수",
+  //     time: "3일 전",
+  //     content: "이 주제에 대해 더 알고 싶습니다. 좋은 정보 감사합니다!",
+  //   },
+  //   {
+  //     id: 5,
+  //     writer: "최지우",
+  //     time: "1주일 전",
+  //     content: "이 글 덕분에 많은 도움이 되었습니다.",
+  //   },
+  //   {
+  //     id: 1,
+  //     writer: "홍길동",
+  //     time: "방금 전",
+  //     content: "정말 유익한 글이네요! 공유해주셔서 감사합니다.",
+  //   },
+  //   {
+  //     id: 2,
+  //     writer: "김철수",
+  //     time: "2시간 전",
+  //     content: "저도 같은 생각을 했습니다. 훌륭한 포스팅입니다.",
+  //   },
+  //   {
+  //     id: 3,
+  //     writer: "이영희",
+  //     time: "어제",
+  //     content: "추가로 생각해볼 만한 부분이 있어요.",
+  //   },
+  //   {
+  //     id: 4,
+  //     writer: "박민수",
+  //     time: "3일 전",
+  //     content: "이 주제에 대해 더 알고 싶습니다. 좋은 정보 감사합니다!",
+  //   },
+  //   {
+  //     id: 5,
+  //     writer: "최지우",
+  //     time: "1주일 전",
+  //     content: "이 글 덕분에 많은 도움이 되었습니다.",
+  //   },
+  // ];
 
   return (
     <div className="bg-white h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative pt-[50px]">
