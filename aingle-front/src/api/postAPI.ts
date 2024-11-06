@@ -1,18 +1,19 @@
 import { BASE_URL } from "./APIconfig";
-import { IcreatePost } from "../model/post";
+import { IcreatePost , IPost } from "../model/post";
 import axiosInstance from "./axiosInstance";
 
 // 게시글 전체 조회 api
-export const getPost = async () => {
+export const getPost = async (): Promise<IPost[]> => {
   try {
-    const response = await axiosInstance.get(`${BASE_URL}/posts`);
 
-    return response;
+    const response = await axiosInstance.get<IPost[]>(`${BASE_URL}/posts`);
+    return response.data;
 
   } catch (error) {
-    console.error("게시글 조회 실패 : ", error);
+    console.error("게시글 조회 실패:", error);
     throw error;
   }
+
 };
 
 // 게시글 상세 조회 api
@@ -42,7 +43,7 @@ export const deletePopst = async (postId : number) => {
   }
 };
 
-// 게시글 생성 api (완료!)
+// 게시글 생성 api (완료)
 export const createPost = async (post: IcreatePost) => {
   try {
     // 게시글 등록을 위한 formData 생성
