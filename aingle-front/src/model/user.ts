@@ -1,4 +1,3 @@
-
 // Recoil에서 관리하는 userDataState 인터페이스
 export interface IuserDataState {
   id: number;
@@ -24,5 +23,15 @@ export interface ImemberSignUpRequestDto {
 
 // 회원 정보 수정에 사용하는 인터페이스
 export type ImemberUpdateRequestDto = {
-  [key in | "name" | "birth" | "language" | "file"]?: ImemberSignUpRequestDto[key];
+  [key in
+    | "name"
+    | "birth"
+    | "language"
+    | "file"]?: ImemberSignUpRequestDto[key];
 };
+
+export interface ImyData {
+  followCount: number;
+  post: [];
+  postCount: number;
+}

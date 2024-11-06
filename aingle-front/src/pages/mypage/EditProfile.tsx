@@ -3,7 +3,7 @@ import TextHeader from "../../components/header/TextHeader";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userDataState } from "../../store/atoms";
 import { ImemberUpdateRequestDto } from "../../model/user";
-import { patchUserInfo } from "../../api/userAPI";
+import { deleteUser, patchUserInfo } from "../../api/userAPI";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
@@ -159,13 +159,24 @@ const EditProfile = () => {
               </div>
             </div>
           </div>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
-          >
-            수정하기
-          </button>
+          <div className="mt-auto">
+            <h1
+              onClick={() => {
+                deleteUser();
+                navigate("/");
+              }}
+              className="text-3 text-[#91919C] mb-[15px] ml-auto underline text-right"
+            >
+              회원탈퇴
+            </h1>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className=" bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
+            >
+              수정하기
+            </button>
+          </div>
         </form>
       </div>
     </div>

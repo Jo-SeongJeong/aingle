@@ -4,10 +4,28 @@ import cog from "../../assets/icons/settings.png";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
+import { getUserInfo } from "../../api/userAPI";
+import { useEffect, useState } from "react";
+import { ImyData } from "../../model/user";
 
 const MyPage = () => {
   const navigate = useNavigate();
   const userData = useRecoilValue(userDataState);
+  const [myData, setMyData] = useState<ImyData>({
+    followCount: 0,
+    post: [],
+    postCount: 0,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getUserInfo();
+      console.log(response);
+      setMyData(response);
+    };
+
+    fetchData();
+  }, []);
 
   // 더미 데이터 생성
   const posts = [
@@ -47,7 +65,9 @@ const MyPage = () => {
         <h1 className="text-[20px] font-semibold mb-3">{userData.name}</h1>
         <div className="bg-[#FFE8F1] py-[15px] px-[40px] flex gap-[80px] rounded-[10px]">
           <div className="text-center">
-            <h1 className="text-lg font-bold text-pink-base">4</h1>
+            <h1 className="text-lg font-bold text-pink-base">
+              {myData.postCount}
+            </h1>
             <h1 className="text-[#6A6A6A]">게시물</h1>
           </div>
           <div
@@ -56,7 +76,9 @@ const MyPage = () => {
               navigate("/mypage/following");
             }}
           >
-            <h1 className="text-lg font-bold text-pink-base">4</h1>
+            <h1 className="text-lg font-bold text-pink-base">
+              {myData.followCount}
+            </h1>
             <h1 className="text-[#6A6A6A]">팔로워</h1>
           </div>
         </div>

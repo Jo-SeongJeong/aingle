@@ -2,22 +2,11 @@ import axios from "axios";
 import { BASE_URL } from "./APIconfig";
 import axiosInstance from "./axiosinstance";
 
-export const getUserInfo = async () => {
-  try {
-    const response = await axiosInstance.get(`${BASE_URL}/members`);
-
-    return response.data;
-  } catch (error) {
-    console.error("회원 정보 조회 실패 : ", error);
-    throw error;
-  }
-};
-
 //팔로우 리스트 조회
 export const getFollowingList = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters/follows`);
-    console.log("팔로우 리스트 조회 성공 : ", response.data.data);
+    console.log("팔로우 리스트 조회 성공 : ", response.data);
     return response.data.data;
   } catch (error) {
     console.log("팔로우 리스트 조회 에러 : ", error);
