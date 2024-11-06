@@ -1,5 +1,8 @@
 package com.aintopia.aingle.comment.service;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
+import com.aintopia.aingle.alarm.repository.AlarmRepository;
+import com.aintopia.aingle.alarm.service.AlarmService;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
@@ -32,6 +35,8 @@ public class CommentService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
+    private final AlarmService alarmService;
+    private final AlarmRepository alarmRepository;
 
     public List<CommentDto> findByPostId(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
@@ -56,6 +61,16 @@ public class CommentService {
                 .member(member)
                 .registCommentRequestDto(registCommentRequestDto)
                 .build());
+
+        // 게시물 작성자에게 알림(본인 게시물, 본인 댓글 아닐 때)
+        if(post.getMember() != null && post.getMember() != member) {
+            Member alarmMember = memberRepository.findById(post.getMember().getMemberId()).orElseThrow(NotFoundMemberException::new);
+
+            alarmRepository.save(Alarm.alarmPostBuilder()
+                    .member(alarmMember)
+                    .post(post)
+                    .build());
+        }
 
         return getCommentsWithReplies(post.getPostId());
     }
