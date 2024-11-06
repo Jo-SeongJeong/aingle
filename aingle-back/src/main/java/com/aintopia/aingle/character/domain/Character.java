@@ -122,4 +122,8 @@ public class Character {
                 ", isPublic=" + isPublic +
                 '}';
     }
+
+    public void plusVoteCount(){
+        this.voteCount++;
+    }
 }
