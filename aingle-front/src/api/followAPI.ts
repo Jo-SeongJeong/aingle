@@ -1,6 +1,5 @@
-import axios from "axios";
 import { BASE_URL } from "./APIconfig";
-import axiosInstance from "./axiosinstance";
+import axiosInstance from "./axiosInstance";
 
 export const getUserInfo = async () => {
   try {

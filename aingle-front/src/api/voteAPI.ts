@@ -1,5 +1,5 @@
 import { BASE_URL } from "./APIconfig";
-import axiosInstance from "./axiosinstance";
+import axiosInstance from "./axiosInstance";
 
 // public 캐릭터 전체 조회
 export const getPublicCharacter = async () => {
