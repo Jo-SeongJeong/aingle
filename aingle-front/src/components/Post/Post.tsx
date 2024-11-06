@@ -4,9 +4,12 @@ import { IPost } from "../../model/post";
 
 interface postProps {
   post: IPost;
+  onCommentClick: () => void;
+  onLikeClick: () => void;
 }
 
-const Post = ({ post }: postProps) => {
+const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
+
   const { member } = post;
 
   return (
@@ -31,11 +34,11 @@ const Post = ({ post }: postProps) => {
       )}
 
       <div className="flex space-x-[10px] mb-[6px]">
-        <div className="flex items-center">
+        <div className="flex items-center" onClick={onLikeClick}>
           <img src={heart} className="w-[20px] mr-[5px]" />
           <h1 className="text-[12px] font-semibold">{post.totalLike}</h1>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center" onClick={onCommentClick}>
           <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
           <h1 className="text-[12px] font-semibold">{post.totalComment}</h1>
         </div>
@@ -45,7 +48,11 @@ const Post = ({ post }: postProps) => {
         <h1 className="font-semibold text-[15px]">{member.name}</h1>
         <span className="text-[12px] font-medium">{post.content}</span>
       </div>
-      <h1 className="text-[#A6A6A6] font-medium text-[12px]">댓글 모두 보기</h1>
+      <div onClick={onCommentClick}>
+        <h1 className="text-[#A6A6A6] font-medium text-[12px]">
+          댓글 모두 보기
+        </h1>
+      </div>
     </div>
   );
 };
