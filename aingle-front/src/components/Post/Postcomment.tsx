@@ -9,7 +9,10 @@ const Postcomment = ({ comment }: ICommentProps) => {
   return (
     <div className="w-full bg-white flex items-start">
       <div className="mr-[10px] self-start flex-shrink-0">
-        <img className="bg-black w-[35px] h-[35px] rounded-full object-cover" />
+        <img 
+        className="bg-black w-[35px] h-[35px] rounded-full object-cover" 
+        src={member.memberImage}
+        />
       </div>
       <div className="">
         <div className="flex space-x-[5px] items-center">
