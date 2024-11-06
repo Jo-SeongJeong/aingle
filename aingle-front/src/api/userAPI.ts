@@ -1,14 +1,14 @@
 import axios from "axios";
-import {BASE_URL} from "./APIconfig";
-import { ImemberSignUpRequestDto, ImemberUpdateRequestDto } from "../model/user";
-import axiosInstance from "./axiosinstance";
-
+import { BASE_URL } from "./APIconfig";
+import {
+  ImemberSignUpRequestDto,
+  ImemberUpdateRequestDto,
+} from "../model/user";
+import axiosInstance from "./axiosInstance";
 
 // 회원 가입 api
 export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
-
   try {
-
     const formData = new FormData();
     const memberData = {
       name: userInfo.name,
@@ -37,43 +37,34 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
   }
 };
 
-
 // 회원 정보 조회 api
-export const getUserInfo = async() => {
+export const getUserInfo = async () => {
   try {
+    const response = await axiosInstance.get(`${BASE_URL}/members`);
 
-    const response = await axiosInstance.get(`${BASE_URL}/members`) 
-    
     return response.data;
-    
   } catch (error) {
-    
-    console.error("회원 정보 조회 실패 : " , error);
+    console.error("회원 정보 조회 실패 : ", error);
     throw error;
-
   }
-}
+};
 
 // 회원 탈퇴 api
-export const deleteUser = async() => {
+export const deleteUser = async () => {
   try {
-
     const response = await axiosInstance.delete(`${BASE_URL}/members`);
     return response.data;
-
   } catch (error) {
-
-    console.error("회원 탈퇴 실패 : " , error);
+    console.error("회원 탈퇴 실패 : ", error);
     throw error;
-    
   }
-}
+};
 
 // 회원 정보 수정 api
 export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
   try {
     const formData = new FormData();
-    
+
     const patchData = {
       name: patchInfo.name,
       birth: patchInfo.birth,
@@ -87,14 +78,17 @@ export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
       formData.append("file", patchInfo.file);
     }
 
-    const response = await axiosInstance.patch(`${BASE_URL}/members`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    
-    return response.data;
+    const response = await axiosInstance.patch(
+      `${BASE_URL}/members`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
+    return response.data;
   } catch (error) {
     console.error("회원 정보 수정 실패 : ", error);
     throw error;
