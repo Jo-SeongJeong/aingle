@@ -79,12 +79,9 @@ public class CommentService {
     public List<CommentDto> deleteComment(Long commentId, Long memberId) {
         Comment c = commentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-
-        if(memberId != member.getMemberId()) throw new ForbiddenCommentException();
-
         Post post = postRepository.findById(c.getPost().getPostId()).orElseThrow(NotFoundPostException::new);
 
-        if(post.getIsDeleted()) throw new ForbiddenCommentException();
+        if(post.getIsDeleted() || memberId != member.getMemberId()) throw new ForbiddenCommentException();
 
         post.decreaseComment();
         postRepository.save(post);
