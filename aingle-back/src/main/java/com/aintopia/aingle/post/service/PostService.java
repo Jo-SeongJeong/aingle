@@ -16,6 +16,7 @@ import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
 import com.aintopia.aingle.post.dto.Response.PostResponseDto;
+import com.aintopia.aingle.post.exception.BadReqeustPostException;
 import com.aintopia.aingle.post.exception.ForbbidenPostException;
 import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
@@ -92,13 +93,11 @@ public class PostService {
 
     @Transactional
     public void registPost(RegistPostRequestDto registPostRequestDto, MultipartFile file, Long memberId) throws IOException {
-        Member member = memberRepository.findById(memberId).orElse(null);
-
-        if(member == null) return;
-
         // 이미지가 있는 경우 S3에 업로드 후 URL 저장
-        String url = null;
-        if (file != null && !file.isEmpty()) url = s3Service.uploadFile(file);
+        if (file == null || file.isEmpty()) throw new BadReqeustPostException();
+        String url = s3Service.uploadFile(file);
+
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
         Post post = Post.registBuilder()
                 .registPostRequestDto(registPostRequestDto)
