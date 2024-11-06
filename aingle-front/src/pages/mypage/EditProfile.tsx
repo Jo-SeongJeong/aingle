@@ -1,21 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
 import TextHeader from "../../components/header/TextHeader";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userDataState } from "../../store/atoms";
+import { ImemberUpdateRequestDto } from "../../model/user";
 import { patchUserInfo } from "../../api/userAPI";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const EditProfile = () => {
+  // 유저 정보 상태관리
+  const userInfo = useRecoilValue(userDataState);
+  const setUserData = useSetRecoilState(userDataState);
+
+  // 유저 정보 수정 이후 마이페이지로 리다이렉트 시킬 navigate
+  const navigate = useNavigate();
+
+  // 유저 정보 수정 api 요청 할 때 인수로 사용할 객체 생성
+  const [updateInfo, setUpdateInfo] = useState<ImemberUpdateRequestDto>({
+    name: userInfo.name,
+    birth: userInfo.birth,
+    language: userInfo.language,
+    file: userInfo.memberImage,
+  });
+  console.log(updateInfo);
   const [birthday, setBirthday] = useState("2000-01-01");
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("정채린");
   const [language, setLanguage] = useState("korean");
   const [profileImg, setProfileImg] = useState("");
 
   const userData = useRecoilValue(userDataState);
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
+  const [selectedImage, setSelectedImage] = useState<File | null>(null); // 이미지 파일을 저장할 상태
+  const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
 
+  //이 코드는 나중에 지움
   useEffect(() => {
     setProfileImg(userData.memberImage);
     setSelectedImage(selectedImage);
@@ -44,7 +63,6 @@ const EditProfile = () => {
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
           setPreviewUrl(reader.result); // 미리보기 URL을 상태에 저장
-          setProfileImg(reader.result);
         }
       };
       reader.readAsDataURL(file);
@@ -69,6 +87,11 @@ const EditProfile = () => {
                 backgroundPosition: "center",
               }}
             >
+              {/* {!previewUrl && (
+                <>
+                  <img src={profileImg} className="w-[30px] h-[30px]" />
+                </>
+              )} */}
               <input
                 type="file"
                 accept="image/*"
@@ -106,6 +129,7 @@ const EditProfile = () => {
                 <button
                   type="button"
                   onClick={() => handleLanguageChange("korean")}
+                  onClick={() => handleChange("language", "korean")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
                     language === "korean"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"

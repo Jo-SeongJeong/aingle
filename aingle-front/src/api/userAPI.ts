@@ -73,7 +73,7 @@ export const deleteUser = async() => {
 export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
   try {
     const formData = new FormData();
-
+    
     const patchData = {
       name: patchInfo.name,
       birth: patchInfo.birth,
@@ -87,9 +87,14 @@ export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
       formData.append("file", patchInfo.file);
     }
 
-    const response = await axiosInstance.patch(`${BASE_URL}/members`,patchInfo);
-
+    const response = await axiosInstance.patch(`${BASE_URL}/members`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    
     return response.data;
+
   } catch (error) {
     console.error("회원 정보 수정 실패 : ", error);
     throw error;
