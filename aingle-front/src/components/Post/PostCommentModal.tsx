@@ -9,7 +9,7 @@ import send from "../../assets/icons/comment/send.png";
 import thumb from "../../assets/icons/comment/thumb.png";
 import { useState, useRef, useEffect } from "react";
 import { IComment, IcreateComment } from "../../model/comment";
-import { getComments , createComment } from "../../api/commentAPI";
+import { getComments, createComment, createReply } from "../../api/commentAPI";
 
 interface PostCommentModalProps {
   id: number;
@@ -23,23 +23,23 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const CLOSE_THRESHOLD = 100;
 
-  const [comments , setComments] = useState<IComment[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [commentId, setCommentId] = useState(0);
 
-   const [inputComment, setInputcomment] = useState<IcreateComment>({
-     postId: id,
-     content: "",
-   });
+  const [inputComment, setInputcomment] = useState<IcreateComment>({
+    postId: id,
+    content: "",
+  });
 
-const handleChange = (
-  field: keyof IcreateComment,
-  value: string | number | null
-) => {
-  setInputcomment((prev) => ({
-    ...prev,
-    [field]: value,
-  }));
-};
-
+  const handleChange = (
+    field: keyof IcreateComment,
+    value: string | number | null
+  ) => {
+    setInputcomment((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -81,16 +81,16 @@ const handleChange = (
   // 모달창 띄워질때 댓글 목록 가져오기
   useEffect(() => {
     const fetchComment = async () => {
-        try {
-          const response = await getComments(id);
-          setComments(response);
-        } catch (error) {
-          console.error("댓글 조회 실패 : ", error);
-        }
-      };
-      
-      fetchComment();
-  }, [id])
+      try {
+        const response = await getComments(id);
+        setComments(response);
+      } catch (error) {
+        console.error("댓글 조회 실패 : ", error);
+      }
+    };
+
+    fetchComment();
+  }, [id]);
 
   useEffect(() => {
     if (isDragging) {
@@ -118,17 +118,17 @@ const handleChange = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      try {
-        const response = await createComment(inputComment);
+    try {
+      const response = await createComment(inputComment);
 
-        setComments(response);
-           setInputcomment((prev) => ({
-             ...prev,
-             content: "",
-           }));
-      } catch (error) {
-        console.error("댓글 등록 실패 : ", error);
-      }
+      setComments(response);
+      setInputcomment((prev) => ({
+        ...prev,
+        content: "",
+      }));
+    } catch (error) {
+      console.error("댓글 등록 실패 : ", error);
+    }
   };
 
   if (comments === null) {
@@ -161,17 +161,16 @@ const handleChange = (
             className="absolute top-[15px] mb-[10px] w-[48px] h-[5px]"
             alt="drag bar"
           />
-          <h1 className="font-semibold absolute top-[30px]">댓글 {comments.length}</h1>
+          <h1 className="font-semibold absolute top-[30px]">
+            댓글 {comments.length}
+          </h1>
         </div>
         <div
           className="px-[18px] pt-[25px] overflow-y-auto"
           style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
         >
           {comments.map((comment) => (
-            <Postcomment
-              key={comment.commentId}
-              comment={comment}
-            />
+            <Postcomment key={comment.commentId} comment={comment} />
           ))}
         </div>
 
@@ -192,7 +191,7 @@ const handleChange = (
             />
             <form onSubmit={handleSubmit}>
               <input
-                onChange={(e) => handleChange("content" , e.target.value)}
+                onChange={(e) => handleChange("content", e.target.value)}
                 value={inputComment.content}
                 type="text"
                 placeholder="댓글 달기"

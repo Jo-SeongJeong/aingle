@@ -1,6 +1,6 @@
 import { IcreateComment } from "../model/comment";
 import { BASE_URL } from "./APIconfig";
-import axiosInstance from "./axiosinstance";
+import axiosInstance from "./axiosInstance";
 
 // 댓글 등록 api (완료)
 export const createComment = async (comment: IcreateComment) => {

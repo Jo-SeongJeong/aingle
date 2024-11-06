@@ -5,6 +5,7 @@ import { userDataState } from "../../store/atoms";
 import { ImemberUpdateRequestDto } from "../../model/user";
 import { deleteUser, patchUserInfo } from "../../api/userAPI";
 import { useNavigate } from "react-router-dom";
+// import { jwtDecode } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 
 const EditProfile = () => {
@@ -22,7 +23,7 @@ const EditProfile = () => {
     language: userInfo.language,
     file: userInfo.memberImage,
   });
-  
+
   // 유저 사진 상태관리
   const [profileImg, setProfileImg] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

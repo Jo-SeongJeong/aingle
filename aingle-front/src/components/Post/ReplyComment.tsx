@@ -4,10 +4,10 @@ interface ICommentProps {
   comment: IComment;
 }
 
-const Postcomment = ({ comment }: ICommentProps) => {
+const ReplyComment = ({ comment }: ICommentProps) => {
   const { member } = comment;
   return (
-    <div className="w-full bg-white flex items-start">
+    <div className="w-full bg-white flex items-start ml-5">
       <div className="mr-[10px] self-start flex-shrink-0">
         <img
           className="bg-black w-[35px] h-[35px] rounded-full object-cover"
@@ -22,12 +22,9 @@ const Postcomment = ({ comment }: ICommentProps) => {
           </h1>
         </div>
         <span>{comment.content}</span>
-        <h1 className="text-[10px] text-[#A6A6A6] pt-[5px] pb-[10px]">
-          답글 달기
-        </h1>
       </div>
     </div>
   );
 };
 
-export default Postcomment;
+export default ReplyComment;
