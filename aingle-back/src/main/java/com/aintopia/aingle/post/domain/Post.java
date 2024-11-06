@@ -2,6 +2,7 @@ package com.aintopia.aingle.post.domain;
 
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.post.dto.AlarmPost;
 import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -89,4 +90,7 @@ public class Post {
         this.totalComment--;
     }
 
+    public AlarmPost changeDto() {
+        return new AlarmPost(this.postId, this.image);
+    }
 }
