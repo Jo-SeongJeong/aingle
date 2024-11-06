@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const EditProfile = () => {
-  
   // 유저 정보 상태관리
   const userInfo = useRecoilValue(userDataState);
   const setUserData = useSetRecoilState(userDataState);
@@ -26,17 +25,17 @@ const EditProfile = () => {
   console.log(updateInfo);
   // 유저 사진 상태관리
   const [profileImg, setProfileImg] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);  
-  const fileInputRef = useRef<HTMLInputElement | null>(null); 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   //이 코드는 나중에 지움
-useEffect(() => {
-  if (userInfo.file) {
-    setPreviewUrl(userInfo.file);
-  } else {
-    setProfileImg("");
-  }
-}, [userInfo]);
+  useEffect(() => {
+    if (userInfo.file) {
+      setPreviewUrl(userInfo.file);
+    } else {
+      setProfileImg("");
+    }
+  }, [userInfo]);
 
   // 값 변경때 사용하는 함수
   const handleChange = (
@@ -56,7 +55,7 @@ useEffect(() => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleChange("file" , file); // 선택한 파일을 상태에 저장
+      handleChange("file", file); // 선택한 파일을 상태에 저장
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
@@ -71,18 +70,16 @@ useEffect(() => {
     e.preventDefault();
     try {
       const response = await patchUserInfo(updateInfo);
-  
-      // 정보 수정 이후 발급된 토큰을 새로 세션 스토리지에 저장 
+
+      // 정보 수정 이후 발급된 토큰을 새로 세션 스토리지에 저장
       sessionStorage.setItem("accessToken", response.token);
       const decoded = jwtDecode(response.token);
       setUserData(decoded);
-       
 
       // 회원가입 이후 메인 페이지로 리다이렉트
       navigate("/mypage");
-
     } catch (error) {
-      console.error("회원 정보 수정 실패 : " , error);
+      console.error("회원 정보 수정 실패 : ", error);
     }
   };
 
