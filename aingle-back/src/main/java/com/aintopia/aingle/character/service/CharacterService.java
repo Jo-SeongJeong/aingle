@@ -111,7 +111,8 @@ public class CharacterService {
     @Transactional(readOnly = true)
     public AllCharacterResponse getAllCharacter() {
         List<CharacterImageDto> characterImageDtos = new ArrayList<>();
-        List<Character> publicCharacters = characterRepository.findByIsPublicTrue();
+        //공개된 캐릭터와 삭제되지 않은 캐릭터만 조회
+        List<Character> publicCharacters = characterRepository.findByIsPublicTrueAAndIsDeletedFalse();
 
         for (Character character : publicCharacters) {
             CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
@@ -126,6 +127,9 @@ public class CharacterService {
     @Transactional(readOnly = true)
     public CharacterDetailResponse getCharacterDetailById(Long characterId) {
         Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        //삭제된 캐릭터 예외처리
+        if(character.getIsDeleted()) throw new NotFoundCharacterException();
+
         CharacterImage characterImage = characterImageRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
         return CharacterDetailResponse.builder()
                 .character(character)

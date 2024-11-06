@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {
     int countByMember(Member member);
-    List<Character> findByIsPublicTrue();
+    List<Character> findByIsPublicTrueAAndIsDeletedFalse();
 }
