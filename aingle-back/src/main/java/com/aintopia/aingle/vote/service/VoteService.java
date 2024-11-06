@@ -13,10 +13,7 @@ import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.vote.domain.MemberVote;
 import com.aintopia.aingle.vote.domain.Vote;
 import com.aintopia.aingle.vote.dto.VoteCharacterDetailResponse;
-import com.aintopia.aingle.vote.exception.BadRequestVoteException;
-import com.aintopia.aingle.vote.exception.NotFoundCharacterImageException;
-import com.aintopia.aingle.vote.exception.NotFoundVoteCharacterException;
-import com.aintopia.aingle.vote.exception.NotFoundVoteException;
+import com.aintopia.aingle.vote.exception.*;
 import com.aintopia.aingle.vote.repository.MemberVoteRepository;
 import com.aintopia.aingle.vote.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -137,5 +134,25 @@ public class VoteService {
         // 현재 시각과 vote_time의 차이를 24시간으로 비교
         long hoursDifference = ChronoUnit.HOURS.between(voteTime, LocalDateTime.now());
         return hoursDifference >= 24; // 24시간 이상 경과하면 투표 가능
+    }
+
+    public void registerCharacterToVote(Long characterId, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        Vote vote = voteRepository.findById(currentVoteId).orElseThrow(NotFoundVoteException::new);
+        //이미 등록된 캐릭터
+        //해당 voteId를 가지고, 삭제되지 않은 캐릭터만 조회
+        List<Character> voteCharacters = characterRepository.findByVoteAndIsDeletedFalse(vote);
+        if(voteCharacters.contains(character)){
+            throw new DuplicateCharacterException();
+        }
+        //한 사람 당 한 캐릭터만 등록 가능
+        for(Character voteCharacter : voteCharacters){
+            if(voteCharacter.getMember().equals(member)){
+                throw new BadRequestCharacterException();
+            }
+        }
+
+        character.registerVote(vote);
     }
 }
