@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
-import { useSetRecoilState } from "recoil"; 
+import { useSetRecoilState } from "recoil";
 import TextHeader from "../../components/header/TextHeader";
 import grayImg from "../../assets/images/grayImg.png";
 import { ImemberSignUpRequestDto } from "../../model/user";
 import { useLocation, useNavigate } from "react-router-dom";
 import { registUserInfo } from "../../api/userAPI";
-import { userDataState } from "../../store/atoms"; 
+import { userDataState } from "../../store/atoms";
 
 const Signup = () => {
   const location = useLocation();
@@ -63,13 +63,14 @@ const Signup = () => {
     }
 
     try {
-      // 회원가입 요청 
+      // 회원가입 요청
       const response = await registUserInfo(inputInfo);
-      const { token, id, email, name, language, birth, file, iat, exp } = response;
+      const { token, id, email, name, language, birth, file, iat, exp } =
+        response;
 
       // 유저 정보 저장
       setUserData({
-        token, 
+        token,
         id,
         email,
         name,
@@ -79,7 +80,7 @@ const Signup = () => {
         iat,
         exp,
       });
-      
+
       // 회원가입 이후 메인 페이지로 리다이렉트
       navigate("/home");
     } catch (error) {

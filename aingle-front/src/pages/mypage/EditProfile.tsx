@@ -1,20 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import TextHeader from "../../components/header/TextHeader";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
+import { patchUserInfo } from "../../api/userAPI";
 
 const EditProfile = () => {
   const [birthday, setBirthday] = useState("2000-01-01");
-  const [userName, setUserName] = useState("정채린");
-  const [language, setLanguage] = useState("한국어");
+  const [userName, setUserName] = useState("");
+  const [language, setLanguage] = useState("korean");
   const [profileImg, setProfileImg] = useState("");
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
-  const [selectedImage, setSelectedImage] = useState<File | null>(null); // 이미지 파일을 저장할 상태
-  const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
+  const userData = useRecoilValue(userDataState);
 
-  //이 코드는 나중에 지움
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   useEffect(() => {
-    setProfileImg("");
+    setProfileImg(userData.memberImage);
     setSelectedImage(selectedImage);
+    setUserName(userData.name);
+    setBirthday(userData.birth);
+    setLanguage(userData.language);
   }, []);
 
   const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +44,7 @@ const EditProfile = () => {
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
           setPreviewUrl(reader.result); // 미리보기 URL을 상태에 저장
+          setProfileImg(reader.result);
         }
       };
       reader.readAsDataURL(file);
@@ -61,12 +69,6 @@ const EditProfile = () => {
                 backgroundPosition: "center",
               }}
             >
-              {" "}
-              {!previewUrl && (
-                <>
-                  <img src={profileImg} className="w-[30px] h-[30px]" />
-                </>
-              )}
               <input
                 type="file"
                 accept="image/*"
@@ -103,9 +105,9 @@ const EditProfile = () => {
               <div className="flex gap-4 w-full">
                 <button
                   type="button"
-                  onClick={() => handleLanguageChange("한국어")}
+                  onClick={() => handleLanguageChange("korean")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
-                    language === "한국어"
+                    language === "korean"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
                       : "bg-gray-100 text-gray-500"
                   }`}
@@ -114,9 +116,9 @@ const EditProfile = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleLanguageChange("영어")}
+                  onClick={() => handleLanguageChange("english")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
-                    language === "영어"
+                    language === "english"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
                       : "bg-gray-100 text-gray-500"
                   }`}
