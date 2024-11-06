@@ -1,10 +1,12 @@
 package com.aintopia.aingle.comment.domain;
 
 import com.aintopia.aingle.character.domain.Character;
+import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -49,4 +51,17 @@ public class Comment {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "character_id")
     private Character character;
+
+    @Builder(builderMethodName = "commentBuilder")
+    public Comment(Post post, Member member, RegistCommentRequestDto registCommentRequestDto) {
+        this.post = post;
+        this.member = member;
+        this.content = registCommentRequestDto.getContent();
+        this.isDeleted = false;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deleteTime = LocalDateTime.now();
+    }
 }

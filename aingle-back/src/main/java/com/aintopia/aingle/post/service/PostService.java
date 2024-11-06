@@ -119,9 +119,6 @@ public class PostService {
         postRepository.save(post);
     }
 
-
-
-
     // Post를 PostResponseDto로 변환하는 메서드
     private PostResponseDto convertToDto(Post post) {
         PostMember memberDto = null;
@@ -162,19 +159,35 @@ public class PostService {
 
     // Comment를 CommentDto로 변환하는 메서드
     private CommentDto convertToCommentDto(Comment comment, List<Reply> replies) {
+        PostMember memberDto = null;
+        if (comment.getMember() != null) memberDto = comment.getMember().changeDto();
+
+        PostCharacter characterDto = null;
+        if (comment.getCharacter() != null) characterDto = comment.getCharacter().changeDto();
+
         List<ReplyDto> replyDtos = replies.stream()
                 .filter(reply -> !reply.getIsDeleted())
-                .map(reply -> ReplyDto.builder()
-                        .replyId(reply.getReplyId())
-                        .content(reply.getContent())
-                        .createTime(reply.getCreateTime())
-                        .build())
+                .map(reply -> {
+                    // Reply의 Member와 Character를 PostMember와 PostCharacter로 변환
+                    PostMember replyMemberDto = reply.getMember() != null ? reply.getMember().changeDto() : null;
+                    PostCharacter replyCharacterDto = reply.getCharacter() != null ? reply.getCharacter().changeDto() : null;
+
+                    return ReplyDto.builder()
+                            .replyId(reply.getReplyId())
+                            .content(reply.getContent())
+                            .createTime(reply.getCreateTime())
+                            .member(replyMemberDto) // 변환된 MemberDto 설정
+                            .character(replyCharacterDto) // 변환된 CharacterDto 설정
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return CommentDto.builder()
                 .commentId(comment.getCommentId())
                 .content(comment.getContent())
                 .createTime(comment.getCreateTime())
+                .member(memberDto)
+                .character(characterDto)
                 .replies(replyDtos) // 대댓글 리스트
                 .build();
     }

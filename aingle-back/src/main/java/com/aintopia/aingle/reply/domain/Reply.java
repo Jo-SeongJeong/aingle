@@ -2,10 +2,13 @@ package com.aintopia.aingle.reply.domain;
 
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.comment.domain.Comment;
+import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -50,4 +53,17 @@ public class Reply {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "character_id")
     private Character character;
+
+    @Builder(builderMethodName = "replyBuilder")
+    public Reply(Comment comment, Member member, RegistReplyRequestDto registReplyRequestDto) {
+        this.comment = comment;
+        this.member = member;
+        this.content = registReplyRequestDto.getContent();
+        this.isDeleted = false;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deleteTime = LocalDateTime.now();
+    }
 }
