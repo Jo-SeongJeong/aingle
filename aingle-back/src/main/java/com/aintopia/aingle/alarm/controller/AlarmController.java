@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,5 +36,22 @@ public class AlarmController {
         List<AlarmResponseDto> allAlarmList = alarmService.selectAllAlarms(memberId, page, size);
 
         return ResponseEntity.status(HttpStatus.OK).body(allAlarmList);
+    }
+
+    @PatchMapping("/{alarmId}")
+    @Operation(summary = "알람 읽음 처리", description = "알람 읽음 처리시 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "알람 읽음 처리 성공",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    public ResponseEntity<?> readAlarm(@PathVariable("alarmId") Long alarmId) {
+        Long memberId = MemberInfo.getId();
+
+        alarmService.readAlarm(alarmId, memberId);
+
+        return ResponseEntity.status(HttpStatus.OK).body("읽음 처리가 완료되었습니다.");
     }
 }

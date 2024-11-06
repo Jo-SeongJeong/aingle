@@ -43,4 +43,8 @@ public class Alarm {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vote_id")
     private Vote vote;
+
+    public void isRead() {
+        this.isRead = true;
+    }
 }

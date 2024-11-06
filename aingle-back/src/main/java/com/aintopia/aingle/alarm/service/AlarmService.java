@@ -2,6 +2,8 @@ package com.aintopia.aingle.alarm.service;
 
 import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.dto.response.AlarmResponseDto;
+import com.aintopia.aingle.alarm.exception.ForbiddenAlarmException;
+import com.aintopia.aingle.alarm.exception.NotFoundAlarmException;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -43,5 +45,14 @@ public class AlarmService {
 
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void readAlarm(Long alarmId, Long memberId) {
+        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(NotFoundAlarmException::new);
+
+        if(memberId != alarm.getMember().getMemberId()) throw new ForbiddenAlarmException();
+
+        alarm.isRead();
+        alarmRepository.save(alarm);
     }
 }
