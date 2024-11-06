@@ -2,15 +2,38 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
-import Postcomment from "../../components/Post/Postcomment";
-import { IComment } from "../../model/comment";
+import { IComment, IcreateComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
 import { getPostDetail } from "../../api/postAPI";
 import { IPost } from "../../model/post";
+import clap from "../../assets/icons/comment/clap.png";
+import fire from "../../assets/icons/comment/fire.png";
+import face from "../../assets/icons/comment/face.png";
+import left from "../../assets/icons/comment/left.png";
+import redHeart from "../../assets/icons/comment/redHeart.png";
+import send from "../../assets/icons/comment/send.png";
+import thumb from "../../assets/icons/comment/thumb.png";
 
 const PostDetail = () => {
   const { id } = useParams();
   const [postData, setPostData] = useState<IPost | null>(null);
+
+  const [inputComment, setInputcomment] = useState<IcreateComment>({
+    postId: Number(id),
+    content: "",
+  });
+
+  const handleSubmit = () => {};
+
+  const handleChange = (
+    field: keyof IcreateComment,
+    value: string | number | null
+  ) => {
+    setInputcomment((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +102,38 @@ const PostDetail = () => {
             style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
           >
             {/* Render comments if necessary */}
+          </div>
+        </div>
+
+        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px]">
+          <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
+            <img src={redHeart} className="w-[24px]" alt="redHeart" />
+            <img src={face} className="w-[24px]" alt="face" />
+            <img src={clap} className="w-[24px]" alt="clap" />
+            <img src={fire} className="w-[24px]" alt="fire" />
+            <img src={thumb} className="w-[24px]" alt="thumb" />
+          </div>
+          <div className="w-full h-full flex items-center justify-center space-x-[10px] pb-[57px]">
+            <img
+              src={left}
+              className="w-[35px] h-[35px] rounded-full"
+              alt="left"
+            />
+            <form onSubmit={handleSubmit}>
+              <input
+                onChange={(e) => handleChange("content", e.target.value)}
+                value={inputComment.content}
+                type="text"
+                placeholder="댓글 달기"
+                className="border-[#CFCFCF] border-[1px] h-[34px] px-[15px] rounded-full"
+              />
+            </form>
+            <img
+              onClick={handleSubmit}
+              src={send}
+              className="w-[30px] h-[30px] rounded-full cursor-pointer"
+              alt="send"
+            />
           </div>
         </div>
       </div>

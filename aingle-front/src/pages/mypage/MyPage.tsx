@@ -20,7 +20,7 @@ const MyPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUserInfo();
-      console.log(response);
+      console.log(response.data);
       setMyData(response);
     };
 
@@ -76,93 +76,13 @@ const MyPage = () => {
       {/* 게시물 리스트 섹션 */}
       <div className="px-[23px] pt-[24px] grid grid-cols-3 gap-4">
         {/* 게시물 데이터 매핑 */}
-        {myData.post.map((post) => (
-          <PostCard key={post.postId} id={post.postId} image={post.image} />
-        ))}
+        {myData.post &&
+          myData.post.map((post) => (
+            <PostCard key={post.postId} id={post.postId} image={post.image} />
+          ))}
       </div>
     </div>
   );
 };
 
 export default MyPage;
-
-/*
-{
-  "post": [
-    {
-      "postId": 1,
-      "content": "asdasdasdasdasdasfasfaf",
-      "image": null,
-      "createTime": "2024-11-05T05:51:45.762138",
-      "deleteTime": null,
-      "isDeleted": false,
-      "totalLike": 0,
-      "totalComment": 0,
-      "member": {
-        "memberId": 28,
-        "email": "hjx66@naver.com",
-        "name": "희정",
-        "birth": "2000-11-05",
-        "platform": "kakao",
-        "language": "korean",
-        "createTime": "2024-11-05T10:44:49.342013",
-        "resignTime": null,
-        "isResigned": false,
-        "alarmCount": 0,
-        "memberImage": null
-      },
-      "character": null
-    },
-    {
-      "postId": 5,
-      "content": "자 드가자",
-      "image": null,
-      "createTime": "2024-11-05T17:50:14.093021",
-      "deleteTime": null,
-      "isDeleted": false,
-      "totalLike": 0,
-      "totalComment": 0,
-      "member": {
-        "memberId": 28,
-        "email": "hjx66@naver.com",
-        "name": "희정",
-        "birth": "2000-11-05",
-        "platform": "kakao",
-        "language": "korean",
-        "createTime": "2024-11-05T10:44:49.342013",
-        "resignTime": null,
-        "isResigned": false,
-        "alarmCount": 0,
-        "memberImage": null
-      },
-      "character": null
-    },
-    {
-      "postId": 6,
-      "content": "자 드가자",
-      "image": "https://ainglebucket.s3.ap-northeast-2.amazonaws.com/5b96cc28-7e36-4af5-a436-5d576d8571b9-%EC%83%81%EC%A0%90%EC%A3%BC%EC%9D%B82.jpeg",
-      "createTime": "2024-11-05T17:50:41.591804",
-      "deleteTime": null,
-      "isDeleted": false,
-      "totalLike": 0,
-      "totalComment": 0,
-      "member": {
-        "memberId": 28,
-        "email": "hjx66@naver.com",
-        "name": "희정",
-        "birth": "2000-11-05",
-        "platform": "kakao",
-        "language": "korean",
-        "createTime": "2024-11-05T10:44:49.342013",
-        "resignTime": null,
-        "isResigned": false,
-        "alarmCount": 0,
-        "memberImage": null
-      },
-      "character": null
-    }
-  ],
-  "postCount": 3,
-  "followCount": 4
-}
-*/
