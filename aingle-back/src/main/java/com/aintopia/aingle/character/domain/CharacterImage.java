@@ -31,12 +31,12 @@ public class CharacterImage {
     private Character character;
 
     @NotNull
-    @Column(name = "url", length = 255)
-    private String url;
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
 
     @Builder
     public CharacterImage(Character character, String url) {
         this.character = character;
-        this.url = url;
+        this.imageUrl = url;
     }
 }

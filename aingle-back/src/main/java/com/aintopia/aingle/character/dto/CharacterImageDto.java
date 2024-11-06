@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class CharacterImageDto {
     private Long characterId;
-    private String url;
+    private String imageUrl;
 }
