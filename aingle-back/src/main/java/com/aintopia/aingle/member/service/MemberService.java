@@ -1,7 +1,11 @@
 package com.aintopia.aingle.member.service;
 
+import com.aintopia.aingle.character.domain.Character;
+import com.aintopia.aingle.character.exception.NotFoundCharacterException;
+import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.domain.Follow;
+import com.aintopia.aingle.follow.exception.FollowDuplicateException;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.domain.MemberImage;
@@ -37,6 +41,7 @@ public class MemberService {
     private final ModelMapper mapper;
     private final PostRepository postRepository;
     private final FollowRepository followRepository;
+    private final CharacterRepository characterRepository;
 
     @Transactional
     public String signUp(MemberSignUpRequestDto signUpMemberDto, MultipartFile file) throws IOException {
@@ -60,8 +65,14 @@ public class MemberService {
             MemberImage mI = memberImageRepository.save(memberImage);
             savedMember.saveImage(mI);
         }
+        Character character = characterRepository.findById(signUpMemberDto.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
 
+        if(followRepository.findByMemberAndCharacter(savedMember, character).isPresent()) throw new FollowDuplicateException();
 
+        followRepository.save(Follow.builder()
+                .member(savedMember)
+                .character(character)
+                .build());
 
         return jwtUtil.createAccessToken(mapper.map(savedMember, MemberDto.class));
     }
