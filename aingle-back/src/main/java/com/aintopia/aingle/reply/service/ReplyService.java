@@ -33,14 +33,6 @@ public class ReplyService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
 
-    public List<CommentDto> findByPostId(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-
-        if(post.getIsDeleted()) throw new ForbbidenPostException();
-
-        return getCommentsWithReplies(post.getPostId());
-    }
-
     @Transactional
     public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto, Long memberId) {
         Comment comment = commentRepository.findById(registReplyRequestDto.getCommentId()).orElseThrow(NotFoundCommentException::new);

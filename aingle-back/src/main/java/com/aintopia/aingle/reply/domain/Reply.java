@@ -2,9 +2,7 @@ package com.aintopia.aingle.reply.domain;
 
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.comment.domain.Comment;
-import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
