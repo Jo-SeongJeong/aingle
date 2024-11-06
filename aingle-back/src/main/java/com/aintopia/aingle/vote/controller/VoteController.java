@@ -1,6 +1,7 @@
 package com.aintopia.aingle.vote.controller;
 
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
+import com.aintopia.aingle.common.util.MemberInfo;
 import com.aintopia.aingle.vote.dto.VoteCharacterDetailResponse;
 import com.aintopia.aingle.vote.service.VoteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,4 +56,26 @@ public class VoteController {
         VoteCharacterDetailResponse voteCharacterDetailResponse = voteService.getVoteCharacterDetailById(characterId);
         return ResponseEntity.ok().body(voteCharacterDetailResponse);
     }
+
+    @PostMapping(value = "/{characterId}")
+    @Operation(summary = "캐릭터 투표하기", description = "해당 캐릭터에 투표하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "투표에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<Void> voteCharacter(@PathVariable Long characterId){
+        Long memberId = MemberInfo.getId();
+        voteService.voteCharacter(characterId, memberId);
+        return ResponseEntity.ok().build();
+    }
+
+
 }
