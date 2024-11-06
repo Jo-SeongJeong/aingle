@@ -112,7 +112,7 @@ public class CharacterService {
     public AllCharacterResponse getAllCharacter() {
         List<CharacterImageDto> characterImageDtos = new ArrayList<>();
         //공개된 캐릭터와 삭제되지 않은 캐릭터만 조회
-        List<Character> publicCharacters = characterRepository.findByIsPublicTrueAAndIsDeletedFalse();
+        List<Character> publicCharacters = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
 
         for (Character character : publicCharacters) {
             CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
@@ -173,5 +173,21 @@ public class CharacterService {
         }
 
         character.deleteSoftly(character);
+    }
+
+    @Transactional(readOnly = true)
+    public AllCharacterResponse getAllMyCharacter(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        List<CharacterImageDto> characterImageDtos = new ArrayList<>();
+        //내가 만든 캐릭터와 삭제되지 않은 캐릭터만 조회
+        List<Character> myCharacters = characterRepository.findByMemberAndIsDeletedFalse(member);
+
+        for (Character character : myCharacters) {
+            CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
+            CharacterImageDto characterImageDto = mapper.map(characterImage, CharacterImageDto.class);
+            characterImageDtos.add(characterImageDto);
+        }
+
+        return new AllCharacterResponse(characterImageDtos);
     }
 }

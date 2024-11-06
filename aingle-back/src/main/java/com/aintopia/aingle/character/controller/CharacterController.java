@@ -39,7 +39,7 @@ public class CharacterController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "캐릭터 리스트 조회", description = "모든 AI 캐릭터 리스트 조회 API")
+    @Operation(summary = "캐릭터 리스트 조회", description = "public한 모든 AI 캐릭터 리스트 조회 API")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -54,6 +54,26 @@ public class CharacterController {
     })
     public ResponseEntity<AllCharacterResponse> getAllCharacter(){
         AllCharacterResponse allCharacterResponse = characterService.getAllCharacter();
+        return ResponseEntity.ok().body(allCharacterResponse);
+    }
+
+    @GetMapping(value = "/my-character", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "나만의 캐릭터 리스트 조회", description = "내가 만든 캐릭터 리스트 조회 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "나만의 캐릭터 리스트 조회에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<AllCharacterResponse> getAllMyCharacter(){
+        Long memberId = MemberInfo.getId();
+        AllCharacterResponse allCharacterResponse = characterService.getAllMyCharacter(memberId);
         return ResponseEntity.ok().body(allCharacterResponse);
     }
 
@@ -98,7 +118,7 @@ public class CharacterController {
     }
 
 
-    @DeleteMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{characterId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "나만의 캐릭터 삭제", description = "내가 만든 캐릭터 삭제하는 API")
     @ApiResponses(value = {
             @ApiResponse(
@@ -111,7 +131,7 @@ public class CharacterController {
                     content = @Content(mediaType = "application/json")
             ),
     })
-    public ResponseEntity<Void> deleteCharacter(@RequestParam Long characterId){
+    public ResponseEntity<Void> deleteCharacter(@PathVariable Long characterId){
         Long memberId = MemberInfo.getId();
         characterService.deleteCharacter(memberId, characterId);
         return ResponseEntity.ok().build();
