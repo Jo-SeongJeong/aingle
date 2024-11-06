@@ -10,10 +10,10 @@ export interface IPost {
     memberId: number;
     memberImage: string;
     name: string;
-  }
+  };
 }
 
 export interface IcreatePost {
-    content : string;
-    postImage : File | null;
+  content: string;
+  postImage: File | null;
 }

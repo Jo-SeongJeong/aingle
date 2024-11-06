@@ -22,8 +22,8 @@ const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
         <div>
           <h1 className="text-[15px] text-black font-semibold">
             {member.name}
-          </h1>{" "}
-          <h1 className="text-[10px] text-[#A6A6A6]">{post.createTime}</h1>{" "}
+          </h1>
+          <h1 className="text-[10px] text-[#A6A6A6]">{post.createTime}</h1>
         </div>
       </div>
       {post.image != "" && (
@@ -36,19 +36,17 @@ const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
       <div className="flex space-x-[10px] mb-[6px]">
         <div className="flex items-center" onClick={onLikeClick}>
           <img src={heart} className="w-[20px] mr-[5px]" />
-          <h1 className="text-[12px] font-semibold">{post.totalLike}</h1>{" "}
+          <h1 className="text-[12px] font-semibold">{post.totalLike}</h1>
         </div>
         <div className="flex items-center" onClick={onCommentClick}>
           <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
-          <h1 className="text-[12px] font-semibold">
-            {post.totalComment}
-          </h1>{" "}
+          <h1 className="text-[12px] font-semibold">{post.totalComment}</h1>
         </div>
       </div>
 
       <div className="flex space-x-[15px] items-center mb-[10px]">
-        <h1 className="font-semibold text-[15px]">{member.name}</h1>{" "}
-        <span className="text-[12px] font-medium">{post.content}</span>{" "}
+        <h1 className="font-semibold text-[15px]">{member.name}</h1>
+        <span className="text-[12px] font-medium">{post.content}</span>
       </div>
       <div onClick={onCommentClick}>
         <h1 className="text-[#A6A6A6] font-medium text-[12px]">

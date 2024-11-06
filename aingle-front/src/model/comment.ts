@@ -1,14 +1,14 @@
 export interface IComment {
-    character: string;
-    commentId: number;
-    content: string;
-    createTime: string;
-    member : {
-        memberId: number;
-        name: string;
-        memberImage: string;
-    }
-    replies : Ireply[];
+  character: string;
+  commentId: number;
+  content: string;
+  createTime: string;
+  member: {
+    memberId: number;
+    name: string;
+    memberImage: string;
+  };
+  replies: Ireply[];
 }
 
 export interface IcreateComment {
@@ -17,14 +17,13 @@ export interface IcreateComment {
 }
 
 export interface Ireply {
-    character: string;
-    replyId: number;
-    content: string;
-    createTime: string;
-    member : {
-        memberId: number;
-        name: string;
-        memberImage: string;
-    }
+  character: string;
+  replyId: number;
+  content: string;
+  createTime: string;
+  member: {
+    memberId: number;
+    name: string;
+    memberImage: string;
+  };
 }
-
