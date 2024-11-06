@@ -1,6 +1,8 @@
 package com.aintopia.aingle.post.service;
 
+import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.PostCharacter;
+import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
@@ -24,6 +26,10 @@ import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,33 +50,23 @@ public class PostService {
     private final ReplyRepository replyRepository;
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
+    private final CharacterRepository characterRepository;
 
     @Transactional
-    public List<PostResponseDto> getAllPost(Long memberId) {
-        // 사용자 게시글 조회
-        List<Post> memberPost = postRepository.findByMemberId(memberId);
-        List<Post> characterPost = new ArrayList<>();
+    public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
-        // 팔로우 캐릭터 조회
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "postId"));
+
+        // 팔로우한 캐릭터 조회
         List<FollowInfo> followInfo = followService.getFollowList(memberId).getFollowList();
+        List<Character> characters = followInfo.stream()
+                .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
+                .filter(Objects::nonNull) // null 값 제외
+                .collect(Collectors.toList());
 
-        // 팔로우 캐릭터 게시글 조회
-        for (FollowInfo index : followInfo) {
-            Long id = index.getCharacterId();
-            List<Post> temp = postRepository.findByCharacterId(id);
-
-            if (temp.isEmpty()) continue;
-
-            characterPost.addAll(temp);
-        }
-
-        // 합치기
-        List<Post> post = new ArrayList<>();
-        post.addAll(memberPost);
-        post.addAll(characterPost);
-
-        // 최신순
-        post.sort((a, b) -> b.getCreateTime().compareTo(a.getCreateTime()));
+        // 페이지네이션과 최신순 정렬 적용
+        Page<Post> post = postRepository.findByMemberOrCharacterIn(member, characters, pageable);
 
         return post.stream()
                 .map(this::convertToDto) // Post를 PostResponseDto로 변환
