@@ -1,7 +1,6 @@
 package com.aintopia.aingle.vote.controller;
 
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
-import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.vote.dto.VoteCharacterDetailResponse;
 import com.aintopia.aingle.vote.service.VoteService;
 import io.swagger.v3.oas.annotations.Operation;
