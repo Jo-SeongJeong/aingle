@@ -1,9 +1,11 @@
 package com.aintopia.aingle.character.controller;
 
+import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
-import com.aintopia.aingle.character.service.CharaterService;
+import com.aintopia.aingle.character.service.CharacterService;
+import com.aintopia.aingle.common.util.MemberInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,13 +15,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequestMapping("/characters")
 @RestController
 @RequiredArgsConstructor
 public class CharacterController {
 
-    private final CharaterService charaterService;
+    private final CharacterService characterService;
 
     @PostMapping("/survey")
     @Operation(summary = "초기 설문조사 결과에 따른 캐릭터 반환 값 API", description = " MBTI 기반"
@@ -30,7 +35,7 @@ public class CharacterController {
     public ResponseEntity<?> survey(
         @RequestBody CharacterSurveyRequestDto characterSurveyRequestDto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(charaterService.getCharacterSurvey(characterSurveyRequestDto));
+            .body(characterService.getCharacterSurvey(characterSurveyRequestDto));
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,7 +53,7 @@ public class CharacterController {
             ),
     })
     public ResponseEntity<AllCharacterResponse> getAllCharacter(){
-        AllCharacterResponse allCharacterResponse = charaterService.getAllCharacter();
+        AllCharacterResponse allCharacterResponse = characterService.getAllCharacter();
         return ResponseEntity.ok().body(allCharacterResponse);
     }
 
@@ -67,8 +72,29 @@ public class CharacterController {
             ),
     })
     public ResponseEntity<CharacterDetailResponse> getCharacterDetailById(@PathVariable Long characterId){
-        CharacterDetailResponse characterDetailResponse = charaterService.getCharacterDetailById(characterId);
+        CharacterDetailResponse characterDetailResponse = characterService.getCharacterDetailById(characterId);
         return ResponseEntity.ok().body(characterDetailResponse);
+    }
+
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "나만의 캐릭터 생성", description = "나만의 AI 캐릭터 생성 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "캐릭터 생성에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error Message 로 전달함",
+                    content = @Content(mediaType = "application/json")
+            ),
+    })
+    public ResponseEntity<Void> createCharacter(@RequestPart("characterCreateRequest") CharacterCreateRequest characterCreateRequest,
+                                                @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+        Long memberId = MemberInfo.getId();
+        characterService.createCharacter(memberId, characterCreateRequest, file);
+        return ResponseEntity.ok().build();
     }
 
 }

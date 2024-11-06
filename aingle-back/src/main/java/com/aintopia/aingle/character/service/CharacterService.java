@@ -3,30 +3,44 @@ package com.aintopia.aingle.character.service;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.dto.CharacterImageDto;
+import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
+import com.aintopia.aingle.character.exception.CharacterCreateLimitException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import com.aintopia.aingle.common.service.S3Service;
+import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.member.exception.NotFoundMemberException;
+import com.aintopia.aingle.member.repository.MemberRepository;
+import com.aintopia.aingle.post.domain.Post;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CharaterService {
+@Slf4j
+public class CharacterService {
 
     private final CharacterRepository characterRepository;
     private final CharacterImageRepository characterImageRepository;
     private final ModelMapper mapper;
+    private final MemberRepository memberRepository;
+    private final S3Service s3Service;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -115,5 +129,31 @@ public class CharaterService {
                 .character(character)
                 .imageUrl(characterImage.getUrl())
                 .build();
+    }
+
+    public void createCharacter(Long memberId, CharacterCreateRequest characterCreateRequest, MultipartFile file) throws IOException {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        // 한 사람 당 3개만 생성 가능
+        int characterCnt = characterRepository.countByMember(member);
+        if(characterCnt == 3) {
+            throw new CharacterCreateLimitException();
+        }
+
+        // 이미지가 있는 경우 S3에 업로드 후 URL 저장
+        String imageUrl = null;
+        if (file != null && !file.isEmpty()) imageUrl = s3Service.uploadFile(file);
+        
+        //캐릭터 저장
+        Character saveCharacter = characterRepository.save(Character.builder()
+                .characterCreateRequest(characterCreateRequest)
+                .member(member)
+                .build());
+        log.info("캐릭터 저장 : " + saveCharacter.getCharacterId());
+        //캐릭터 이미지 저장
+        characterImageRepository.save(CharacterImage.builder()
+                        .character(saveCharacter)
+                        .url(imageUrl)
+                .build());
     }
 }
