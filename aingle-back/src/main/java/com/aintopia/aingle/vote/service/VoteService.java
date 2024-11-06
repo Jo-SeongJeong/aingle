@@ -136,9 +136,6 @@ public class VoteService {
     private boolean canVote(LocalDateTime voteTime){
         // 현재 시각과 vote_time의 차이를 24시간으로 비교
         long hoursDifference = ChronoUnit.HOURS.between(voteTime, LocalDateTime.now());
-        if (hoursDifference >= 24) {
-            return true; // 24시간 이상 경과하면 투표 가능
-        }
-        return false; // 24시간 미만이면 투표 불가능
+        return hoursDifference >= 24; // 24시간 이상 경과하면 투표 가능
     }
 }
