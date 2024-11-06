@@ -1,10 +1,12 @@
 package com.aintopia.aingle.alarm.domain;
 
+import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -43,6 +45,13 @@ public class Alarm {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vote_id")
     private Vote vote;
+
+    @Builder(builderMethodName = "alarmPostBuilder")
+    public Alarm(Post post, Member member) {
+        this.post = post;
+        this.member = member;
+    }
+
 
     public void isRead() {
         this.isRead = true;

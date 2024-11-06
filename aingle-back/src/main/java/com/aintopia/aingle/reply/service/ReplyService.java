@@ -1,5 +1,7 @@
 package com.aintopia.aingle.reply.service;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
+import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
@@ -11,7 +13,6 @@ import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
-import com.aintopia.aingle.post.exception.ForbbidenPostException;
 import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
@@ -32,6 +33,7 @@ public class ReplyService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto, Long memberId) {
@@ -45,6 +47,17 @@ public class ReplyService {
                 .member(member)
                 .registReplyRequestDto(registReplyRequestDto)
                 .build());
+
+        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
+        if(comment.getMember() != null && comment.getMember() != member) {
+            Post post = postRepository.findById(comment.getPost().getPostId()).orElseThrow(NotFoundPostException::new);
+            Member alarmMember = memberRepository.findById(post.getMember().getMemberId()).orElseThrow(NotFoundMemberException::new);
+
+            alarmRepository.save(Alarm.alarmPostBuilder()
+                    .member(alarmMember)
+                    .post(post)
+                    .build());
+        }
 
         return getCommentsWithReplies(comment.getPost().getPostId());
     }
