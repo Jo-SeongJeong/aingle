@@ -5,7 +5,6 @@ import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
-import com.aintopia.aingle.comment.exception.ForbiddenCommentException;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.member.domain.Member;
@@ -18,6 +17,8 @@ import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
 import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
+import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
+import com.aintopia.aingle.reply.exception.NotFoundReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,9 @@ public class ReplyService {
     public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto, Long memberId) {
         Comment comment = commentRepository.findById(registReplyRequestDto.getCommentId()).orElseThrow(NotFoundCommentException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Post post = postRepository.findById(comment.getPost().getPostId()).orElseThrow(NotFoundPostException::new);
 
-        if(comment.getIsDeleted()) throw new ForbiddenCommentException();
+        if(comment.getIsDeleted() || post.getIsDeleted()) throw new ForbiddenReplyException();
 
         replyRepository.save(Reply.replyBuilder()
                 .comment(comment)
@@ -50,7 +52,6 @@ public class ReplyService {
 
         // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
         if(comment.getMember() != null && comment.getMember() != member) {
-            Post post = postRepository.findById(comment.getPost().getPostId()).orElseThrow(NotFoundPostException::new);
             Member alarmMember = memberRepository.findById(post.getMember().getMemberId()).orElseThrow(NotFoundMemberException::new);
 
             alarmRepository.save(Alarm.alarmPostBuilder()
@@ -64,12 +65,12 @@ public class ReplyService {
 
     @Transactional
     public List<CommentDto> deleteReply(Long replyId, Long memberId) {
-        Reply reply = replyRepository.findById(replyId).orElseThrow(NotFoundCommentException::new);
+        Reply reply = replyRepository.findById(replyId).orElseThrow(NotFoundReplyException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
         Comment c = commentRepository.findById(reply.getComment().getCommentId()).orElseThrow(NotFoundCommentException::new);
         Post post = postRepository.findById(c.getPost().getPostId()).orElseThrow(NotFoundPostException::new);
 
-        if(post.getIsDeleted() || c.getIsDeleted() || memberId != member.getMemberId()) throw new ForbiddenCommentException();
+        if(post.getIsDeleted() || c.getIsDeleted() || memberId != member.getMemberId()) throw new ForbiddenReplyException();
 
         reply.delete();
         replyRepository.save(reply);
