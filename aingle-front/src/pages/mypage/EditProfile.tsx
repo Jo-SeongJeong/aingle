@@ -94,17 +94,11 @@ const EditProfile = () => {
               className="w-[100px] h-[100px]  rounded-full bg-gray-200 flex items-center mb-[30px]"
               onClick={handleImageClick}
               style={{
-                backgroundImage: `url(${userInfo.memberImage})`,
+                backgroundImage: `url(${previewUrl || userInfo.memberImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
-              {" "}
-              {!previewUrl && (
-                <>
-                  <img src={profileImg} className="w-[30px] h-[30px]" />
-                </>
-              )}
               <input
                 type="file"
                 accept="image/*"
