@@ -7,9 +7,11 @@ import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
-import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.vote.domain.Vote;
+import com.aintopia.aingle.vote.dto.VoteCharacterDetailResponse;
+import com.aintopia.aingle.vote.exception.NotFoundCharacterImageException;
+import com.aintopia.aingle.vote.exception.NotFoundVoteCharacterException;
+import com.aintopia.aingle.vote.exception.NotFoundVoteException;
 import com.aintopia.aingle.vote.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,20 +62,31 @@ public class VoteService {
     @Transactional(readOnly = true)
     public AllCharacterResponse getCharacterByVoteId() {
         List<CharacterImageDto> characterImageDtos = new ArrayList<>();
-        Vote vote = voteRepository.findById(currentVoteId).orElseThrow();
+        Vote vote = voteRepository.findById(currentVoteId).orElseThrow(NotFoundVoteException::new);
         // 해당 voteId를 가지고, 삭제되지 않은 캐릭터만 조회
         List<Character> voteCharacters = characterRepository.findByVoteAndIsDeletedFalse(vote);
         // 득표수 기준으로 내림차순 정렬
         voteCharacters.sort(Comparator.comparing(Character::getVoteCount).reversed());
         log.info("voteCharacters: " + voteCharacters);
+
         for (Character character : voteCharacters) {
             CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
             CharacterImageDto characterImageDto = mapper.map(characterImage, CharacterImageDto.class);
             characterImageDtos.add(characterImageDto);
         }
-
         return new AllCharacterResponse(characterImageDtos);
 
     }
 
+    @Transactional(readOnly = true)
+    public VoteCharacterDetailResponse getVoteCharacterDetailById(Long characterId) {
+        Vote vote = voteRepository.findById(currentVoteId).orElseThrow(NotFoundVoteException::new);
+        // 해당 캐릭터id와 지금 투표
+        Character character = characterRepository.findByCharacterIdAndIsDeletedFalseAndVote(characterId, vote).orElseThrow(NotFoundVoteCharacterException::new);
+        CharacterImage characterImage = characterImageRepository.findById(characterId).orElseThrow(NotFoundCharacterImageException::new);
+        return VoteCharacterDetailResponse.builder()
+                .character(character)
+                .imageUrl(characterImage.getImageUrl())
+                .build();
+    }
 }
