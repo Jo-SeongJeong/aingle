@@ -4,7 +4,7 @@ import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
-import com.aintopia.aingle.character.repository.CharaterRepository;
+import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.follow.domain.Follow;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.dto.FollowListResponse;
@@ -28,12 +28,12 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
-    private final CharaterRepository charaterRepository;
+    private final CharacterRepository characterRepository;
     private final CharacterImageRepository characterImageRepository;
 
     public void resistFollow(Long memberId, Long characterId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-        Character character = charaterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
         //이미 팔로우한 캐릭터인 경우
         if(followRepository.findByMemberAndCharacter(member, character).isPresent()){
             throw new FollowDuplicateException();
@@ -47,7 +47,7 @@ public class FollowService {
 
     public void deleteFollow(Long memberId, Long characterId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-        Character character = charaterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
         Follow follow = followRepository.findByMemberAndCharacter(member, character).orElseThrow(FollowNotFoundException::new);
         followRepository.deleteById(follow.getFollowId());
     }
