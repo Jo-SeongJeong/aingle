@@ -22,7 +22,7 @@ const EditProfile = () => {
     language: userInfo.language,
     file: userInfo.memberImage,
   });
-  console.log(updateInfo);
+  
   // 유저 사진 상태관리
   const [profileImg, setProfileImg] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
