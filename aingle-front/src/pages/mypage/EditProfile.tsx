@@ -129,7 +129,6 @@ const EditProfile = () => {
                 <button
                   type="button"
                   onClick={() => handleLanguageChange("korean")}
-                  onClick={() => handleChange("language", "korean")}
                   className={`px-4 py-2 rounded-[10px] flex-grow ${
                     language === "korean"
                       ? "bg-pink-100 text-pink-500 border border-pink-500"
