@@ -4,10 +4,7 @@ import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.member.domain.MemberImage;
-import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -91,7 +88,7 @@ public class Character {
     }
 
     public PostCharacter changeDto() {
-        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getUrl() : null);
+        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getImageUrl() : null);
     }
 
     @Builder
