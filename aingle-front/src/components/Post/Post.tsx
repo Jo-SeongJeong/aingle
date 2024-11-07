@@ -36,9 +36,6 @@ const Post = ({ post, onCommentClick, onLikeClick }: postProps) => {
           <h1 className="text-[15px] text-black font-semibold">
             {member?.name || character?.name || "Unknown User"}
           </h1>
-          <h1 className="text-[10px] text-[#A6A6A6]">
-            {post.createTime.split("T")[0]}
-          </h1>
           <h1 className="text-[10px] text-[#A6A6A6]">{calDate}</h1>
         </div>
       </div>

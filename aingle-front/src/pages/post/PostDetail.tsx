@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
-import { IcreateComment } from "../../model/comment";
+import { IComment, IcreateComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
 import { getPostDetail } from "../../api/postAPI";
 import { IPost } from "../../model/post";
@@ -18,6 +18,7 @@ import Postcomment from "../../components/Post/Postcomment";
 import ReplyComment from "../../components/Post/ReplyComment";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { calTime } from "../../utils/date";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -112,7 +113,7 @@ const PostDetail = () => {
                 {postData.member.name}
               </h1>
               <h1 className="text-[10px] text-[#A6A6A6]">
-                {postData.createTime.split("T")[0]}
+                {calTime(postData.createTime.split("T")[0])}
               </h1>
             </div>
           </div>
