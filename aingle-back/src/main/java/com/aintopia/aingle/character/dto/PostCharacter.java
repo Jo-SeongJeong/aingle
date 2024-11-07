@@ -10,4 +10,5 @@ public class PostCharacter {
     private Long characterId;
     private String name;
     private String characterImage;
+    private int commentDelayTime;
 }
