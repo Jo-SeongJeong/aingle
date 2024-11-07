@@ -8,13 +8,13 @@ interface AlarmProps {
 }
 
 const NoticeCard: React.FC<AlarmProps> = ({ alarm, onClickAlarm }) => {
-  const { sender, post, vote } = alarm;
-
+  const { sender, post, votewinnerCharacter } = alarm;
+  console.log(alarm)
   // 시간을 계산하는 함수 호출
   const time = calTime(alarm.createTime);
 
   // 알림 텍스트 설정
-  const alarmText = vote
+  const alarmText = votewinnerCharacter
     ? "이번달 투표 결과가 나왔습니다"
     : "회원님의 글에 반응을 남겼습니다";
 
