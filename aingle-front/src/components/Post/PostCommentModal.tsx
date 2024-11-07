@@ -227,7 +227,12 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
             </div>
           )}
           <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
-            <img src={redHeart} className="w-[24px]" alt="redHeart" />
+            <img
+              src={redHeart}
+              className="w-[24px]"
+              alt="redHeart"
+              onClick={() => {}}
+            />
             <img src={face} className="w-[24px]" alt="face" />
             <img src={clap} className="w-[24px]" alt="clap" />
             <img src={fire} className="w-[24px]" alt="fire" />
@@ -263,3 +268,4 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
 };
 
 export default PostCommentModal;
+// 😂❤️🔥👍👏

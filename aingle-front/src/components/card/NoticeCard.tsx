@@ -35,7 +35,7 @@ const NoticeCard: React.FC<AlarmProps> = ({ alarm, onClickAlarm }) => {
         <h1 className="text-[14px]">{alarmText}</h1>
         <span className="text-[#A6A6A6] text-[12px]">{time}</span>
       </div>
-      {post.image && (
+      {post?.image && (
         <img
           src={post.image}
           alt="콘텐츠 이미지"
