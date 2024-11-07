@@ -1,13 +1,11 @@
+import { ICharacter, IMember } from "./character";
+
 export interface IComment {
-  character: string;
+  character: ICharacter | null;
   commentId: number;
   content: string;
   createTime: string;
-  member: {
-    memberId: number;
-    name: string;
-    memberImage: string;
-  };
+  member: IMember | null;
   replies: Ireply[];
 }
 

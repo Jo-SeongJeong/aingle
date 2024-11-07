@@ -114,8 +114,8 @@ const VoteMain = () => {
                       selectedId === character.characterId
                         ? "border-2 border-red-500" // 선택된 항목에 빨간색 테두리
                         : index === 0 && selectedId !== character.characterId
-                        ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
-                        : ""
+                          ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
+                          : ""
                     }`}
                   >
                     {index === 0 && selectedId !== character.characterId && (

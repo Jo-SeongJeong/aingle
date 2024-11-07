@@ -9,7 +9,10 @@ import send from "../../assets/icons/comment/send.png";
 import thumb from "../../assets/icons/comment/thumb.png";
 import { useState, useRef, useEffect } from "react";
 import { IComment, IcreateComment } from "../../model/comment";
-import { getComments , createComment } from "../../api/commentAPI";
+import { getComments, createComment, createReply } from "../../api/commentAPI";
+import ReplyComment from "./ReplyComment";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface PostCommentModalProps {
   id: number;
@@ -23,23 +26,24 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const CLOSE_THRESHOLD = 100;
 
-  const [comments , setComments] = useState<IComment[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [commentId, setCommentId] = useState(0);
+  const [commentWriter, setCommentWriter] = useState("");
 
-   const [inputComment, setInputcomment] = useState<IcreateComment>({
-     postId: id,
-     content: "",
-   });
+  const [inputComment, setInputcomment] = useState<IcreateComment>({
+    postId: id,
+    content: "",
+  });
 
-const handleChange = (
-  field: keyof IcreateComment,
-  value: string | number | null
-) => {
-  setInputcomment((prev) => ({
-    ...prev,
-    [field]: value,
-  }));
-};
-
+  const handleChange = (
+    field: keyof IcreateComment,
+    value: string | number | null
+  ) => {
+    setInputcomment((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -81,16 +85,16 @@ const handleChange = (
   // 모달창 띄워질때 댓글 목록 가져오기
   useEffect(() => {
     const fetchComment = async () => {
-        try {
-          const response = await getComments(id);
-          setComments(response);
-        } catch (error) {
-          console.error("댓글 조회 실패 : ", error);
-        }
-      };
-      
-      fetchComment();
-  }, [id])
+      try {
+        const response = await getComments(id);
+        setComments(response);
+      } catch (error) {
+        console.error("댓글 조회 실패 : ", error);
+      }
+    };
+
+    fetchComment();
+  }, [id]);
 
   useEffect(() => {
     if (isDragging) {
@@ -118,17 +122,31 @@ const handleChange = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      try {
-        const response = await createComment(inputComment);
 
-        setComments(response);
-           setInputcomment((prev) => ({
-             ...prev,
-             content: "",
-           }));
-      } catch (error) {
-        console.error("댓글 등록 실패 : ", error);
+    try {
+      if (commentId === 0) {
+        // 일반 댓글 작성
+        await createComment(inputComment);
+        console.log(inputComment.content);
+      } else {
+        // 답글 작성
+        await createReply(commentId, inputComment.content);
       }
+
+      // 댓글 목록 다시 가져오기
+      const updatedComments = await getComments(id);
+      setComments(updatedComments);
+
+      // 입력 초기화
+      setInputcomment((prev) => ({
+        ...prev,
+        content: "",
+      }));
+      setCommentId(0); // 답글 작성 후 commentId 초기화
+      setCommentWriter("");
+    } catch (error) {
+      console.error("댓글 등록 실패 : ", error);
+    }
   };
 
   if (comments === null) {
@@ -161,22 +179,53 @@ const handleChange = (
             className="absolute top-[15px] mb-[10px] w-[48px] h-[5px]"
             alt="drag bar"
           />
-          <h1 className="font-semibold absolute top-[30px]">댓글 {comments.length}</h1>
+          <h1 className="font-semibold absolute top-[30px]">
+            댓글 {comments.length}
+          </h1>
         </div>
         <div
           className="px-[18px] pt-[25px] overflow-y-auto"
-          style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
+          style={{ maxHeight: "60vh" }}
         >
-          {comments.map((comment) => (
-            <Postcomment
-              key={comment.commentId}
-              comment={comment}
-            />
+          {comments.map((comment, idx) => (
+            <div
+              key={idx}
+              onClick={() => {
+                setCommentId(comment.commentId);
+                setCommentWriter(
+                  comment.member?.name ||
+                    comment.character?.name ||
+                    "Unknown User"
+                );
+              }}
+            >
+              <Postcomment key={comment.commentId} comment={comment} />
+              {comment.replies &&
+                comment.replies.map((reply, idx) => {
+                  return <ReplyComment key={idx} comment={reply} />;
+                })}
+            </div>
           ))}
         </div>
 
         {/* Icons and comment input */}
-        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px]">
+        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px] ">
+          {commentWriter != "" && (
+            <div
+              className="px-5 py-2 mb-3 text-white flex justify-between items-center"
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+            >
+              <h1>{commentWriter}에 답글 작성</h1>
+
+              <FontAwesomeIcon
+                icon={faXmark}
+                onClick={() => {
+                  setCommentId(0);
+                  setCommentWriter("");
+                }}
+              />
+            </div>
+          )}
           <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
             <img src={redHeart} className="w-[24px]" alt="redHeart" />
             <img src={face} className="w-[24px]" alt="face" />
@@ -192,8 +241,9 @@ const handleChange = (
             />
             <form onSubmit={handleSubmit}>
               <input
-                onChange={(e) => handleChange("content" , e.target.value)}
+                onChange={(e) => handleChange("content", e.target.value)}
                 value={inputComment.content}
+                required
                 type="text"
                 placeholder="댓글 달기"
                 className="border-[#CFCFCF] border-[1px] h-[34px] px-[15px] rounded-full"

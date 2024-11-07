@@ -16,7 +16,7 @@ const Following = () => {
   console.log(data);
 
   return (
-    <div className="h-full w-[375px] relative bg-white  pt-[13px] overflow-auto">
+    <div className="h-full w-[375px] relative bg-white  pt-[13px] overflow-auto pb-[80px]">
       <TextHeader navTo="/mypage" headerText="팔로잉 리스트" />
       <div className="px-4 pt-[20px] mt-8">
         {data?.followList?.map((bot: IFollowCard, idx: number) => (
