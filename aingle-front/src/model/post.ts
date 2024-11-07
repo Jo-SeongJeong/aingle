@@ -1,4 +1,5 @@
 import { ICharacter } from "./character";
+import { IMember } from "./character";
 
 export interface IPost {
   character: ICharacter;
@@ -8,12 +9,7 @@ export interface IPost {
   postId: number;
   totalComment: string;
   totalLike: string;
-  member: {
-    memberId: number;
-    memberImage: string;
-    characterImage: string;
-    name: string;
-  };
+  member: IMember;
 }
 
 export interface IcreatePost {
