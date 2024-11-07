@@ -195,7 +195,13 @@ const PostDetail = () => {
                   />
                   {comment.replies &&
                     comment.replies.map((reply, idx) => {
-                      return <ReplyComment key={idx} comment={reply} />;
+                      return (
+                        <ReplyComment
+                          key={idx}
+                          comment={reply}
+                          refreshComments={refreshComments}
+                        />
+                      );
                     })}
                 </div>
               ))}
