@@ -106,7 +106,7 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="bg-white h-full w-full  pb-[34px] flex flex-col items-center relative pt-[50px]">
+    <div className="bg-white h-full w-full  flex flex-col items-center relative pt-[50px] pb-[150px]">
       <TextHeader headerText="게시물" navTo="" />
       <div className="overflow-auto w-full  mt-1">
         <div className="w-full mb-[50px] px-[16px]">
@@ -120,7 +120,7 @@ const PostDetail = () => {
                 {postData.member.name}
               </h1>
               <h1 className="text-[10px] text-[#A6A6A6]">
-                {calTime(postData.createTime.split("T")[0])}
+                {calTime(postData.createTime)}
               </h1>
             </div>
           </div>
@@ -158,10 +158,7 @@ const PostDetail = () => {
             style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
           >
             {/* Render comments if necessary */}
-            <div
-              className=" overflow-y-auto mb-[130px]"
-              style={{ maxHeight: "60vh" }}
-            >
+            <div className="  mb-[130px]" style={{ maxHeight: "60vh" }}>
               {comments.map((comment, idx) => (
                 <div
                   key={idx}

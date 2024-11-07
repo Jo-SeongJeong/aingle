@@ -27,7 +27,7 @@ const MyPage = () => {
   }, []);
 
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto ">
+    <div className="h-full w-[375px] relative bg-white overflow-auto pb-[90px]">
       {/* 배경색 */}
       <div
         className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"
