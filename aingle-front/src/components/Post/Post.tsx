@@ -2,7 +2,8 @@ import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IPost } from "../../model/post";
 import { calTime } from "../../utils/date.ts";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
+import fillHeart from "../../assets/icons/fillHeart.png";
 
 interface postProps {
   post: IPost;
@@ -11,20 +12,24 @@ interface postProps {
   onNameClick: () => void;
 }
 
-const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) => {
-
+const Post = ({
+  post,
+  onCommentClick,
+  onLikeClick,
+  onNameClick,
+}: postProps) => {
   const { member, character } = post;
   const [profile, setProfile] = useState("");
   const calDate = calTime(post.createTime);
 
-   useEffect(() => {
-     if (member?.memberImage) {
-       setProfile(member.memberImage);
-     } else if (character?.characterImage) {
-       setProfile(character.characterImage);
-     }
-   }, [member, character]);
-   
+  useEffect(() => {
+    if (member?.memberImage) {
+      setProfile(member.memberImage);
+    } else if (character?.characterImage) {
+      setProfile(character.characterImage);
+    }
+  }, [member, character]);
+
   return (
     <div className="w-full mb-[50px]" key={post.postId}>
       <div className="flex items-center mb-[11px]">
@@ -48,7 +53,11 @@ const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) =
 
       <div className="flex space-x-[10px] mb-[6px]">
         <div className="flex items-center" onClick={onLikeClick}>
-          <img src={heart} className="w-[20px] mr-[5px]" />
+          {post.isLiked ? (
+            <img src={heart} className="w-[20px] mr-[5px]" />
+          ) : (
+            <img src={heart} className="w-[20px] mr-[5px]" />
+          )}
           <h1 className="text-[12px] font-semibold">{post.totalLike}</h1>
         </div>
         <div className="flex items-center" onClick={onCommentClick}>
