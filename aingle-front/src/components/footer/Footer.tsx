@@ -11,6 +11,7 @@ import plus from "../../assets/imgs/plus.png";
 import { useEffect, useState } from "react";
 import { getAlarm } from "../../api/alarm"; // 알람 API 가져오기
 import { Ialarm } from "../../model/alarm";
+import ReactGA from "react-ga4";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -30,21 +31,41 @@ const Footer = () => {
       setCategoryState(false);
       setNoticeState(false);
       setProfileState(false);
+      ReactGA.event({
+        category: "Button",
+        action: "Click",
+        label: "Footer_home",
+      });
     } else if (location.pathname.startsWith("/vote")) {
       setHomeState(false);
       setCategoryState(true);
       setNoticeState(false);
       setProfileState(false);
+      ReactGA.event({
+        category: "Button",
+        action: "Click",
+        label: "Footer_vote",
+      });
     } else if (location.pathname.startsWith("/notice")) {
       setHomeState(false);
       setCategoryState(false);
       setNoticeState(true);
       setProfileState(false);
+      ReactGA.event({
+        category: "Button",
+        action: "Click",
+        label: "Footer_notice",
+      });
     } else if (location.pathname.startsWith("/mypage")) {
       setHomeState(false);
       setCategoryState(false);
       setNoticeState(false);
       setProfileState(true);
+      ReactGA.event({
+        category: "Button",
+        action: "Click",
+        label: "Footer_mypage",
+      });
     }
   }, [location.pathname]);
 
@@ -53,7 +74,9 @@ const Footer = () => {
     const fetchUnreadAlarms = async () => {
       try {
         const response = await getAlarm({ page: 0, size: 10 });
-        const unreadAlarms = response.filter((alarm : Ialarm) => !alarm.isRead).length;
+        const unreadAlarms = response.filter(
+          (alarm: Ialarm) => !alarm.isRead
+        ).length;
         setUnreadAlarm(unreadAlarms);
       } catch (error) {
         console.error("알람 데이터 가져오기 실패:", error);
@@ -68,6 +91,7 @@ const Footer = () => {
     setCategoryState(false);
     setNoticeState(false);
     setProfileState(false);
+
     navigate("/home");
   };
 

@@ -6,6 +6,7 @@ export interface IPost {
   content: string;
   createTime: string;
   image: string;
+  isLiked: boolean;
   postId: number;
   totalComment: string;
   totalLike: string;
