@@ -6,10 +6,7 @@ import com.aintopia.aingle.character.dto.AllCharacterDto;
 import com.aintopia.aingle.character.dto.CharacterImageDto;
 import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
-import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
-import com.aintopia.aingle.character.dto.response.CharacterCreateResponseDto;
-import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
-import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
+import com.aintopia.aingle.character.dto.response.*;
 import com.aintopia.aingle.character.exception.CharacterCreateLimitException;
 import com.aintopia.aingle.character.exception.CharacterForbiddenException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
@@ -18,12 +15,17 @@ import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -43,6 +45,7 @@ public class CharacterService {
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
     private final S3Service s3Service;
+    private final PostRepository postRepository;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -217,5 +220,26 @@ public class CharacterService {
         }
 
         return new AllCharacterResponse(characterImageDtos);
+    }
+
+    @Transactional(readOnly = true)
+    public CharacterPostResponse getCharacterPostInfo(Long characterId, Long memberId) {
+        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        List<Post> characterPosts = postRepository.findByCharacter(character);
+        List<String> postImageUrls = characterPosts.stream()
+                .map(Post::getImage)
+                .collect(Collectors.toList());
+        // 팔로우 여부
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        boolean isFollow = followRepository.findByMemberAndCharacter(member, character)
+                .isPresent();
+        int followerCount =  followRepository.countByCharacterId(characterId);
+
+        return CharacterPostResponse.builder()
+                .postImageUrls(postImageUrls)
+                .character(character)
+                .isFollow(isFollow)
+                .followerCount(followerCount)
+                .build();
     }
 }
