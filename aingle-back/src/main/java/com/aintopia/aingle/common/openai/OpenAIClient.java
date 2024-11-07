@@ -86,8 +86,27 @@ public class OpenAIClient {
         return chatResponse.getResult().getOutput().getContent();
     }
 
+    public String createSummary(CharacterInfo characterInfo){
+        Prompt prompt = getSummaryPrompt(characterInfo);
+        ChatResponse chatResponse = chatModel.call(prompt);
+        log.info("chat response : " + chatResponse);
+        logTokensCount(chatResponse.getMetadata().getUsage());
 
+        return chatResponse.getResult().getOutput().getContent();
+    }
+    private Prompt getSummaryPrompt(CharacterInfo characterInfo){
+        List<Message> promptMessages = new ArrayList<>();
 
+        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
+        promptMessages.add(systemMessage);
+
+        String prompt = OpenAIPrompt.AI_CHARACTER_CREATE_SUMMARY_PROMPT.generateSummaryPrompt(characterInfo);
+        Message userMessage = new UserMessage(prompt);
+        promptMessages.add(userMessage);
+        log.info("promptMessages : " + promptMessages);
+        return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
+
+    }
 
     private Prompt getPrompt(PostRequest postRequest, CharacterInfo characterInfo) throws IOException {
         List<Message> promptMessages = new ArrayList<>();

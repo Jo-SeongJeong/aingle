@@ -96,7 +96,7 @@ public class Character {
     }
 
     @Builder
-    public Character(CharacterCreateRequest characterCreateRequest, Member member){
+    public Character(CharacterCreateRequest characterCreateRequest, Member member, String summary){
         this.name = characterCreateRequest.getName();
         this.job = characterCreateRequest.getJob();
         this.age = characterCreateRequest.getAge();
@@ -109,6 +109,7 @@ public class Character {
         this.gender = characterCreateRequest.getGender();
         this.isPublic = false;
         this.commentDelayTime = 3;
+        this.summary = summary;
     }
 
     public void deleteSoftly(Character character){
@@ -140,5 +141,9 @@ public class Character {
     public void resetVote(){
         this.voteCount = 0;
         this.vote = null;
+    }
+
+    public void updateSummary(String summary){
+        this.summary = summary;
     }
 }
