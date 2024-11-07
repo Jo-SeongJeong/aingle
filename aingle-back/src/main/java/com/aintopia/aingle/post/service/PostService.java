@@ -75,7 +75,7 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public PostDetailResponseDto findById(Long postId, Long memberId) {
+    public PostDetailResponseDto findByPostId(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundMemberException::new);
         List<Comment> comments = commentRepository. findByPost_PostId(post.getPostId());

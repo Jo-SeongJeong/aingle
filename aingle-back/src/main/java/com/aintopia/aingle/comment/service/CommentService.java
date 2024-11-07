@@ -117,6 +117,9 @@ public class CommentService {
             Comment comment = Comment.makeCommentByAI(post, character, commentContent);
 
             commentRepository.save(comment);
+
+            post.increaseComment();
+            postRepository.save(post);
         }
     }
 
