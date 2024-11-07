@@ -1,11 +1,14 @@
 package com.aintopia.aingle.post.service;
 
 import com.aintopia.aingle.character.domain.Character;
+import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.openai.OpenAIClient;
+import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
@@ -35,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,6 +53,7 @@ public class PostService {
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
+    private final OpenAIClient openAIClient;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
@@ -102,6 +107,26 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
+
+        //게시글 생성 이후 AI 댓글 요청
+        // 팔로우한 캐릭터 조회
+        List<FollowInfo> followInfo = followService.getFollowList(memberId).getFollowList();
+        List<Character> characters = followInfo.stream()
+                .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
+                .filter(Objects::nonNull) // null 값 제외
+                .collect(Collectors.toList());
+        for(Character character : characters) {
+            String commentContent = openAIClient.createCommentByAI(PostRequest.builder()
+                    .message(registPostRequestDto.getContent())
+                    .imageUrl(url)
+                    .build(), CharacterInfo.builder()
+                    .character(character)
+                    .build());
+            Comment comment = Comment.makeCommentByAI(post, character, commentContent);
+
+            commentRepository.save(comment);
+        }
+
     }
 
     @Transactional

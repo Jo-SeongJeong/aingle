@@ -82,13 +82,17 @@ public class Character {
     @Column(name = "is_public")
     private Boolean isPublic;
 
+    @Column(name = "comment_delay_time")
+    private Integer commentDelayTime;
+
+
     public CharacterInfo toDTO() {
         return new CharacterInfo(this.name, this.job, this.age, this.personality, this.gender,
             this.tone, this.talkType, this.description);
     }
 
     public PostCharacter changeDto() {
-        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getImageUrl() : null);
+        return new PostCharacter(this.characterId, this.name, this.characterImage != null ? this.characterImage.getImageUrl() : null, this.commentDelayTime);
     }
 
     @Builder
@@ -104,6 +108,7 @@ public class Character {
         this.member = member;
         this.gender = characterCreateRequest.getGender();
         this.isPublic = false;
+        this.commentDelayTime = 1;
     }
 
     public void deleteSoftly(Character character){

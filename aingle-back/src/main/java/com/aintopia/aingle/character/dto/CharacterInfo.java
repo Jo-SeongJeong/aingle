@@ -1,6 +1,8 @@
 package com.aintopia.aingle.character.dto;
 
+import com.aintopia.aingle.character.domain.Character;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
@@ -46,5 +48,17 @@ public class CharacterInfo {
                 ", talkType=" + talkType +
                 ", description=" + description +
                 '}';
+    }
+
+    @Builder
+    public CharacterInfo(Character character){
+        this.name = character.getName();
+        this.job = character.getJob();
+        this.age = character.getAge();
+        this.personality = character.getPersonality();
+        this.gender = character.getGender();
+        this.tone = character.getTone();
+        this.talkType = character.getTalkType();
+        this.description = character.getDescription();
     }
 }
