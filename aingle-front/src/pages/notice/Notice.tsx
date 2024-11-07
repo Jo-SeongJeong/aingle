@@ -11,8 +11,18 @@ const Notice = () => {
   const navigate = useNavigate();
   
   const handleAlarmClick = (alarm: Ialarm) => {
-   readAlarm(alarm.alarmId);
-   navigate(`/post/${alarm.post.postId}`)
+    readAlarm(alarm.alarmId);
+   
+   const {post , votewinnerCharacter} = alarm;
+
+   // 게시글 알람일 경우 게시글 디테일로 리다이렉트
+   if (post) {
+     navigate(`/post/${post.postId}`);
+     // 투표 알람일 경우 투표에 선정된 캐릭터 디테일로 리다이렉트
+   } else if (votewinnerCharacter) {
+    navigate(`/vote/chardetail/${votewinnerCharacter.characterId}`);
+   }
+
   };
 
   const numbers : IgetAlarm =  {
