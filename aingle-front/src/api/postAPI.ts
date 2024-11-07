@@ -1,11 +1,12 @@
 import { BASE_URL } from "./APIconfig";
 import { IcreatePost, IPost } from "../model/post";
-import axiosInstance from "./axiosinstance";
+import axiosInstance from "./axiosInstance";
 
 // 게시글 전체 조회 api
 export const getPost = async (): Promise<IPost[]> => {
   try {
     const response = await axiosInstance.get<IPost[]>(`${BASE_URL}/posts`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("게시글 조회 실패:", error);

@@ -41,6 +41,7 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
 export const getUserInfo = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/members`);
+    console.log("회원 정보 조회 성공 : ", response.data);
 
     return response.data;
   } catch (error) {

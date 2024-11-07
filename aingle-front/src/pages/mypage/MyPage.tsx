@@ -20,7 +20,6 @@ const MyPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUserInfo();
-      console.log(response.data);
       setMyData(response);
     };
 
