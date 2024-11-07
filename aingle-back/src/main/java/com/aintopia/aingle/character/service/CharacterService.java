@@ -7,6 +7,7 @@ import com.aintopia.aingle.character.dto.CharacterImageDto;
 import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
+import com.aintopia.aingle.character.dto.response.CharacterCreateResponseDto;
 import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.character.dto.response.CharacterSurveyResponseDto;
 import com.aintopia.aingle.character.exception.CharacterCreateLimitException;
@@ -14,17 +15,15 @@ import com.aintopia.aingle.character.exception.CharacterForbiddenException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -113,20 +112,23 @@ public class CharacterService {
 
     @Transactional(readOnly = true)
     public AllCharacterResponse getAllCharacter(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(NotFoundMemberException::new);
         List<AllCharacterDto> allCharacterDtos = new ArrayList<>();
         //공개된 캐릭터와 삭제되지 않은 캐릭터만 조회
         List<Character> publicCharacters = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
 
         for (Character character : publicCharacters) {
-            CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
+            CharacterImage characterImage = characterImageRepository.findById(
+                character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
             // 팔로우 여부
-            boolean isFollow = followRepository.findByMemberAndCharacter(member, character).isPresent();
+            boolean isFollow = followRepository.findByMemberAndCharacter(member, character)
+                .isPresent();
             AllCharacterDto allCharacterDto = AllCharacterDto.builder()
-                    .character(character)
-                    .imageUrl(characterImage.getImageUrl())
-                    .isFollow(isFollow)
-                    .build();
+                .character(character)
+                .imageUrl(characterImage.getImageUrl())
+                .isFollow(isFollow)
+                .build();
             allCharacterDtos.add(allCharacterDto);
         }
 
@@ -136,49 +138,62 @@ public class CharacterService {
 
     @Transactional(readOnly = true)
     public CharacterDetailResponse getCharacterDetailById(Long characterId) {
-        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        Character character = characterRepository.findById(characterId)
+            .orElseThrow(NotFoundCharacterException::new);
         //삭제된 캐릭터 예외처리
-        if(character.getIsDeleted()) throw new NotFoundCharacterException();
+        if (character.getIsDeleted()) {
+            throw new NotFoundCharacterException();
+        }
 
-        CharacterImage characterImage = characterImageRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        CharacterImage characterImage = characterImageRepository.findById(characterId)
+            .orElseThrow(NotFoundCharacterException::new);
         return CharacterDetailResponse.builder()
-                .character(character)
-                .imageUrl(characterImage.getImageUrl())
-                .build();
+            .character(character)
+            .imageUrl(characterImage.getImageUrl())
+            .build();
     }
 
-    public void createCharacter(Long memberId, CharacterCreateRequest characterCreateRequest, MultipartFile file) throws IOException {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+    public CharacterCreateResponseDto createCharacter(Long memberId,
+        CharacterCreateRequest characterCreateRequest, MultipartFile file) throws IOException {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(NotFoundMemberException::new);
 
         // 한 사람 당 3개만 생성 가능
         int characterCnt = characterRepository.countByMember(member);
-        if(characterCnt == 3) {
+        if (characterCnt == 3) {
             throw new CharacterCreateLimitException();
         }
 
         // 이미지가 있는 경우 S3에 업로드 후 URL 저장
         String imageUrl = null;
-        if (file != null && !file.isEmpty()) imageUrl = s3Service.uploadFile(file);
-        
+        if (file != null && !file.isEmpty()) {
+            imageUrl = s3Service.uploadFile(file);
+        }
+
         //캐릭터 저장
         Character saveCharacter = characterRepository.save(Character.builder()
-                .characterCreateRequest(characterCreateRequest)
-                .member(member)
-                .build());
+            .characterCreateRequest(characterCreateRequest)
+            .member(member)
+            .build());
         log.info("캐릭터 저장 : " + saveCharacter.getCharacterId());
         //캐릭터 이미지 저장
         characterImageRepository.save(CharacterImage.builder()
-                        .character(saveCharacter)
-                        .url(imageUrl)
-                .build());
+            .character(saveCharacter)
+            .url(imageUrl)
+            .build());
+
+        return CharacterCreateResponseDto.builder().characterId(saveCharacter.getCharacterId())
+            .build();
     }
 
     public void deleteCharacter(Long memberId, Long characterId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(NotFoundMemberException::new);
+        Character character = characterRepository.findById(characterId)
+            .orElseThrow(NotFoundCharacterException::new);
 
         // 캐릭터 만든 사람이 내가 아니면 삭제 불가
-        if(!character.getMember().equals(member)) {
+        if (!character.getMember().equals(member)) {
             throw new CharacterForbiddenException();
         }
 
@@ -187,14 +202,17 @@ public class CharacterService {
 
     @Transactional(readOnly = true)
     public AllCharacterResponse getAllMyCharacter(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(NotFoundMemberException::new);
         List<CharacterImageDto> characterImageDtos = new ArrayList<>();
         //내가 만든 캐릭터와 삭제되지 않은 캐릭터만 조회
         List<Character> myCharacters = characterRepository.findByMemberAndIsDeletedFalse(member);
 
         for (Character character : myCharacters) {
-            CharacterImage characterImage = characterImageRepository.findById(character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
-            CharacterImageDto characterImageDto = mapper.map(characterImage, CharacterImageDto.class);
+            CharacterImage characterImage = characterImageRepository.findById(
+                character.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
+            CharacterImageDto characterImageDto = mapper.map(characterImage,
+                CharacterImageDto.class);
             characterImageDtos.add(characterImageDto);
         }
 
