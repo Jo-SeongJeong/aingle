@@ -56,6 +56,15 @@ public class Alarm {
         this.sender = sender;
     }
 
+    public Alarm(Vote vote, Member member){
+        this.vote = vote;
+        this.member = member;
+    }
+
+    public static Alarm createVoteAlarm(Vote vote, Member member){
+        return new Alarm(vote, member);
+    }
+
 
     public void isRead() {
         this.isRead = true;

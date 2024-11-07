@@ -136,4 +136,9 @@ public class Character {
         this.vote = vote;
         this.voteCount = 0;
     }
+
+    public void resetVote(){
+        this.voteCount = 0;
+        this.vote = null;
+    }
 }

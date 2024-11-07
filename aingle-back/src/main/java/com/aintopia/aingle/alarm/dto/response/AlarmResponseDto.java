@@ -3,6 +3,7 @@ package com.aintopia.aingle.alarm.dto.response;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.post.dto.AlarmPost;
 import com.aintopia.aingle.vote.domain.Vote;
+import com.aintopia.aingle.vote.dto.VoteWinnerCharacter;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ public class AlarmResponseDto {
     private Long alarmId;
     private Boolean isRead;
     private AlarmPost post;
-    private Vote vote;
+    private VoteWinnerCharacter voteWinnerCharacter;
     private LocalDateTime createTime;
     private PostMember sender;
 
