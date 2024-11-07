@@ -38,7 +38,6 @@ public class LikeService {
         if(post.getIsDeleted()) throw new ForbiddenLikeException();
 
         post.increaseLike();
-
         postRepository.save(post);
 
         likeRepository.save(Like.likeBuilder()
