@@ -19,6 +19,8 @@ import ReplyComment from "../../components/Post/ReplyComment";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { calTime } from "../../utils/date";
+import fillHeart from "../../assets/icons/fillHeart.png";
+import { disLike, like } from "../../api/likeAPI";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -31,6 +33,10 @@ const PostDetail = () => {
     postId: Number(id),
     content: "",
   });
+
+  // 로컬 좋아요 상태와 수 관리
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [totalLike, setTotalLike] = useState<number>(0);
 
   const refreshComments = async () => {
     try {
@@ -62,25 +68,31 @@ const PostDetail = () => {
         await createReply(commentId, inputComment.content);
       }
 
-      // 댓글 목록 다시 가져오기
       const updatedComments = await getComments(Number(id));
       setComments(updatedComments);
 
-      // 입력 초기화
       setInputcomment((prev) => ({
         ...prev,
         content: "",
       }));
-      setCommentId(0); // 답글 작성 후 commentId 초기화
+      setCommentId(0);
       setCommentWriter("");
     } catch (error) {
       console.error("댓글 등록 실패 : ", error);
     }
   };
 
-  if (comments === null) {
-    return null; // comments가 null인 동안 아무것도 렌더링하지 않음
-  }
+  const handleLikeToggle = () => {
+    if (isLiked) {
+      setIsLiked(false);
+      setTotalLike((prev) => prev - 1);
+      disLike(postData!.postId);
+    } else {
+      setIsLiked(true);
+      setTotalLike((prev) => prev + 1);
+      like(postData!.postId);
+    }
+  };
 
   const handleChange = (
     field: keyof IcreateComment,
@@ -96,15 +108,18 @@ const PostDetail = () => {
     if (id) {
       setInputcomment((prev) => ({
         ...prev,
-        postId: parseInt(id, 10), // id가 string으로 나오는 경우 parseInt로 변환
+        postId: parseInt(id, 10),
       }));
 
       const fetchData = async () => {
         const response = await getPostDetail(id);
-        console.log("postData: ", response);
         setPostData(response);
 
-        const response2 = await getComments(parseInt(id, 10)); // id를 number로 변환
+        // 초기 좋아요 상태와 수 설정
+        setIsLiked(response.isLiked);
+        setTotalLike(response.totalLike);
+
+        const response2 = await getComments(parseInt(id, 10));
         setComments(response2);
       };
 
@@ -117,9 +132,9 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="bg-white h-full w-full  flex flex-col items-center relative pt-[50px] pb-[150px]">
+    <div className="bg-white h-full w-full flex flex-col items-center relative pt-[50px] pb-[150px]">
       <TextHeader headerText="게시물" navTo="" />
-      <div className="overflow-auto w-full  mt-1">
+      <div className="overflow-auto w-full mt-1">
         <div className="w-full mb-[50px] px-[16px]">
           <div className="flex items-center mb-[11px]">
             <img
@@ -151,10 +166,12 @@ const PostDetail = () => {
 
           <div className="flex space-x-[10px] mb-[6px]">
             <div className="flex items-center">
-              <img src={heart} className="w-[20px] mr-[5px]" />
-              <h1 className="text-[12px] font-semibold">
-                {postData.totalLike}
-              </h1>
+              <img
+                src={isLiked ? fillHeart : heart}
+                className="w-[20px] mr-[5px] cursor-pointer"
+                onClick={handleLikeToggle}
+              />
+              <h1 className="text-[12px] font-semibold">{totalLike}</h1>
             </div>
             <div className="flex items-center">
               <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
@@ -170,12 +187,8 @@ const PostDetail = () => {
             </h1>
             <span className="text-[12px] font-medium">{postData.content}</span>
           </div>
-          <div
-            className=" "
-            style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
-          >
-            {/* Render comments if necessary */}
-            <div className="  mb-[130px]" style={{ maxHeight: "60vh" }}>
+          <div style={{ maxHeight: "60vh" }}>
+            <div className="mb-[130px]" style={{ maxHeight: "60vh" }}>
               {comments.map((comment, idx) => (
                 <div
                   key={idx}
@@ -194,29 +207,26 @@ const PostDetail = () => {
                     refreshComments={refreshComments}
                   />
                   {comment.replies &&
-                    comment.replies.map((reply, idx) => {
-                      return (
-                        <ReplyComment
-                          key={idx}
-                          comment={reply}
-                          refreshComments={refreshComments}
-                        />
-                      );
-                    })}
+                    comment.replies.map((reply, idx) => (
+                      <ReplyComment
+                        key={idx}
+                        comment={reply}
+                        refreshComments={refreshComments}
+                      />
+                    ))}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px] ">
+        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px]">
           {commentWriter != "" && (
             <div
               className="px-5 py-2 mb-3 text-white flex justify-between items-center"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             >
               <h1>{commentWriter}에 답글 작성</h1>
-
               <FontAwesomeIcon
                 icon={faXmark}
                 onClick={() => {
