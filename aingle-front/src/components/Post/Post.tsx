@@ -2,6 +2,7 @@ import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IPost } from "../../model/post";
 import { calTime } from "../../utils/date.ts";
+import { useState , useEffect } from "react";
 
 interface postProps {
   post: IPost;
@@ -12,8 +13,18 @@ interface postProps {
 
 const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) => {
 
-  const { member } = post;
+  const { member, character } = post;
+  const [profile, setProfile] = useState("");
   const calDate = calTime(post.createTime);
+
+   useEffect(() => {
+     if (member?.memberImage) {
+       setProfile(member.memberImage);
+     } else if (character?.characterImage) {
+       setProfile(character.characterImage);
+     }
+   }, [member, character]);
+   
   return (
     <div className="w-full mb-[50px]" key={post.postId}>
       <div className="flex items-center mb-[11px]">
@@ -22,8 +33,8 @@ const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) =
           className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
         />
         <div>
-          <h1 className="text-[15px] text-black font-semibold" onClick={onNameClick}>
-            {member.name}
+          <h1 className="font-semibold text-[15px]" onClick={onNameClick}>
+            {member?.name || character?.name || "Unknown User"}
           </h1>
           <h1 className="text-[10px] text-[#A6A6A6]">{calDate}</h1>
         </div>
@@ -47,7 +58,9 @@ const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) =
       </div>
 
       <div className="flex space-x-[15px] items-center mb-[10px]">
-        <h1 className="font-semibold text-[15px]" onClick={onNameClick}>{member.name}</h1>
+        <h1 className="font-semibold text-[15px]" onClick={onNameClick}>
+          {member?.name || character?.name || "Unknown User"}
+        </h1>
         <span className="text-[12px] font-medium">{post.content}</span>
       </div>
       <div onClick={onCommentClick}>
