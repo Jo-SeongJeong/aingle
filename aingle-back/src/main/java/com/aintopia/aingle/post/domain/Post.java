@@ -3,6 +3,7 @@ package com.aintopia.aingle.post.domain;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.dto.AlarmPost;
+import com.aintopia.aingle.post.dto.MyPagePostDto;
 import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -96,5 +97,9 @@ public class Post {
 
     public AlarmPost changeDto() {
         return new AlarmPost(this.postId, this.image);
+    }
+
+    public MyPagePostDto changeToMyPagePostDto(){
+        return new MyPagePostDto(this.postId, this.image);
     }
 }
