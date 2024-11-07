@@ -21,7 +21,6 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 
@@ -51,7 +50,7 @@ public class OpenAIClient {
 
         String response = chatResponse.getResult().getOutput().getContent();
 
-        chatHistory.add(Pair.of(postRequest.getMessage(), response));
+//        chatHistory.add(Pair.of(postRequest.getMessage(), response));
         log.info(chatHistory.toString());
         return response;
     }
@@ -96,10 +95,10 @@ public class OpenAIClient {
         Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
         promptMessages.add(systemMessage);
 
-        chatHistory.forEach(pair -> {
-            promptMessages.add(new UserMessage(pair.getLeft()));
-            promptMessages.add(new AssistantMessage(pair.getRight()));
-        });
+//        chatHistory.forEach(pair -> {
+//            promptMessages.add(new UserMessage(pair.getLeft()));
+//            promptMessages.add(new AssistantMessage(pair.getRight()));
+//        });
 
         Message userMessage;
         URL imageUrl = URI.create(postRequest.getImageUrl()).toURL();

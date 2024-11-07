@@ -3,6 +3,8 @@ package com.aintopia.aingle.comment.service;
 import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.alarm.service.AlarmService;
+import com.aintopia.aingle.character.domain.Character;
+import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
@@ -10,11 +12,14 @@ import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.comment.exception.ForbiddenCommentException;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.openai.OpenAIClient;
+import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import com.aintopia.aingle.post.exception.ForbbidenPostException;
 import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
@@ -22,14 +27,18 @@ import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
@@ -37,6 +46,7 @@ public class CommentService {
     private final ReplyRepository replyRepository;
     private final AlarmService alarmService;
     private final AlarmRepository alarmRepository;
+    private final OpenAIClient openAIClient;
 
     public List<CommentDto> findByPostId(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
@@ -91,6 +101,23 @@ public class CommentService {
         commentRepository.save(c);
 
         return getCommentsWithReplies(post.getPostId());
+    }
+
+    @Async
+    @Transactional
+    public void generateAIComments(Post post, List<Character> characters, RegistPostRequestDto registPostRequestDto, String imageUrl) throws IOException {
+        log.info("AI 댓글 생성 시작 postId :" + post.getPostId());
+        for(Character character : characters) {
+            String commentContent = openAIClient.createCommentByAI(PostRequest.builder()
+                    .message(registPostRequestDto.getContent())
+                    .imageUrl(imageUrl)
+                    .build(), CharacterInfo.builder()
+                    .character(character)
+                    .build());
+            Comment comment = Comment.makeCommentByAI(post, character, commentContent);
+
+            commentRepository.save(comment);
+        }
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환

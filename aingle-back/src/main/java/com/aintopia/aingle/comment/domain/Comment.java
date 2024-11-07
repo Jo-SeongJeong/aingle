@@ -5,10 +5,7 @@ import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,6 +18,8 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@AllArgsConstructor
+@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,6 +57,17 @@ public class Comment {
         this.member = member;
         this.content = registCommentRequestDto.getContent();
         this.isDeleted = false;
+    }
+
+    @Builder(builderMethodName = "commentAIBuilder")
+    public static Comment makeCommentByAI(Post post, Character character, String content) {
+        return Comment.builder()
+                .post(post)
+                .character(character)
+                .content(content)
+                .isDeleted(false)
+                .createTime(LocalDateTime.now())
+                .build();
     }
 
     public void delete() {
