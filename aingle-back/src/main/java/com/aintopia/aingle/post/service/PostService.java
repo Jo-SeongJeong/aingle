@@ -7,6 +7,7 @@ import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.comment.service.CommentService;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.common.service.S3Service;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,7 +55,7 @@ public class PostService {
     private final S3Service s3Service;
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
-    private final OpenAIClient openAIClient;
+    private final CommentService commentService;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
@@ -115,19 +117,10 @@ public class PostService {
                 .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
                 .filter(Objects::nonNull) // null 값 제외
                 .collect(Collectors.toList());
-        for(Character character : characters) {
-            String commentContent = openAIClient.createCommentByAI(PostRequest.builder()
-                    .message(registPostRequestDto.getContent())
-                    .imageUrl(url)
-                    .build(), CharacterInfo.builder()
-                    .character(character)
-                    .build());
-            Comment comment = Comment.makeCommentByAI(post, character, commentContent);
-
-            commentRepository.save(comment);
-        }
+        commentService.generateAIComments(post, characters, registPostRequestDto, url);
 
     }
+
 
     @Transactional
     public void deleteById(Long postId, Long memberId) {

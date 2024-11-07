@@ -108,7 +108,7 @@ public class Character {
         this.member = member;
         this.gender = characterCreateRequest.getGender();
         this.isPublic = false;
-        this.commentDelayTime = 1;
+        this.commentDelayTime = 3;
     }
 
     public void deleteSoftly(Character character){
