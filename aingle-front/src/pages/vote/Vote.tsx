@@ -58,7 +58,7 @@ const Vote = () => {
   };
 
   return (
-    <div className="bg-[#ffe8f1] h-full w-full px-[16px] py-[34px] flex flex-col items-center relative overflow-scroll">
+    <div className="bg-[#ffe8f1] h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-scroll">
       <PinkTextHeader />
       <div className="w-full h-[110px] py-[10px] px-[5px]" onClick={goVoteMain}>
         <button className="bg-white w-full h-full rounded-2xl flex">
@@ -126,7 +126,7 @@ const Vote = () => {
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-[#6a6a6a] border-t-2 w-[300px]" />
       </div>
-      <div className="w-full h-[125px] py-3 mb-[200px]">
+      <div className="w-full h-[125px] py-3 mb-[100px]">
         <div className="px-5 pb-2">
           <h1 className="text-main-color text-[13px] font-semibold">
             캐릭터는 최대 3개까지 생성할 수 있앵
