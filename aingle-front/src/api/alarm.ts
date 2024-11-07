@@ -1,4 +1,4 @@
-import { IgetAlarm , Ialarm } from "../model/alarm";
+import { IgetAlarm } from "../model/alarm";
 import { BASE_URL } from "./APIconfig";
 import axiosInstance from "./axiosInstance";
 
