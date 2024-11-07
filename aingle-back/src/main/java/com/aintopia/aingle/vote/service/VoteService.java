@@ -1,5 +1,7 @@
 package com.aintopia.aingle.vote.service;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
+import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.dto.CharacterImageDto;
@@ -41,6 +43,7 @@ public class VoteService {
     private final CharacterImageRepository characterImageRepository;
     private final MemberRepository memberRepository;
     private final MemberVoteRepository memberVoteRepository;
+    private final AlarmRepository alarmRepository;
     private final ModelMapper mapper;
 
     private Long currentVoteId = 1L;
@@ -52,10 +55,34 @@ public class VoteService {
             Vote currentVote = voteRepository.findById(currentVoteId).orElseThrow();
             if(currentVote.getEndTime().isBefore(LocalDateTime.now())){
                 log.info("투표 종료 : " + currentVote.getVoteId());
+
+                // 1등 캐릭터 저장
+                Optional<Character> voteCharacter = characterRepository.findTopByVoteIdOrderByVoteCountDesc(currentVote.getVoteId());
+                if(voteCharacter.isPresent()){
+                    Character winnerCharacter = voteCharacter.get();
+                    currentVote.updateWinnerCharacter(winnerCharacter);
+                    log.info("winnerCharacter:" + winnerCharacter.getCharacterId());
+
+                    // 1등 캐릭터 알람 저장
+                    // 멤버 모두에게 알람
+                    List<Member> allMember = memberRepository.findByIsResignedIsFalse();
+                    log.info("allMember size:" + allMember.size());
+                    for(Member member : allMember){
+                        log.info("member:" + member.getMemberId());
+                        alarmRepository.save(Alarm.createVoteAlarm(currentVote, member));
+                    }
+                }
+                // 캐릭터들의 vote_count 0으로 초기화
+                List<Character> voteCharacters = characterRepository.findByVoteAndIsDeletedFalse(currentVote);
+                for(Character character : voteCharacters){
+                    character.resetVote();
+
+                }
+                currentVoteId = null;
             }
         }
         // 현재 달에 해당하는 투표가 없을 때 or 투표가 아예 없을 때
-        if(!voteRepository.existsByCreateTimeMonth(LocalDateTime.now().getMonthValue()) || voteRepository.findAll().isEmpty()){
+        if(!voteRepository.existsByCreateTimeMonth(LocalDateTime.now().getMonthValue()) || voteRepository.findAll().isEmpty() || currentVoteId == null){
             Vote newVote = voteRepository.save(Vote.builder()
                     .createTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now().plusMonths(1))

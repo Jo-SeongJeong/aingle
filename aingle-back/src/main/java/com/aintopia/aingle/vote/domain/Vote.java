@@ -1,11 +1,7 @@
 package com.aintopia.aingle.vote.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.aintopia.aingle.character.domain.Character;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -31,9 +27,18 @@ public class Vote {
     @Column(name = "end_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime endTime;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "character_id")
+    private Character character;
+
     @Builder
     public Vote(LocalDateTime createTime, LocalDateTime endTime) {
         this.createTime = createTime;
         this.endTime = endTime;
+    }
+
+
+    public void updateWinnerCharacter(Character winnerCharacter) {
+        this.character = winnerCharacter;
     }
 }
