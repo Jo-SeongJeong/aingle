@@ -16,6 +16,7 @@ export const getPublicCharacter = async () => {
 export const getCharacterDetail = async (id: number) => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters/${id}`);
+    console.log("캐릭터 상세 조회 성공 : ", response.data);
     return response.data;
   } catch (error) {
     console.log("캐릭터 상세 조회 실패: ", error);
