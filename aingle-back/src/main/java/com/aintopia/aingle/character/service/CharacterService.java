@@ -4,6 +4,7 @@ import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.dto.AllCharacterDto;
 import com.aintopia.aingle.character.dto.CharacterImageDto;
+import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.request.CharacterCreateRequest;
 import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.*;
@@ -12,10 +13,10 @@ import com.aintopia.aingle.character.exception.CharacterForbiddenException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class CharacterService {
     private final FollowRepository followRepository;
     private final S3Service s3Service;
     private final PostRepository postRepository;
+    private final OpenAIClient openAIClient;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -179,6 +181,11 @@ public class CharacterService {
             .characterCreateRequest(characterCreateRequest)
             .member(member)
             .build());
+        // summary 생성 요청
+        String summary = openAIClient.createSummary(CharacterInfo.builder()
+                .character(saveCharacter)
+                .build());
+        saveCharacter.updateSummary(summary);
         log.info("캐릭터 저장 : " + saveCharacter.getCharacterId());
         //캐릭터 이미지 저장
         characterImageRepository.save(CharacterImage.builder()
