@@ -5,16 +5,18 @@ import add from "../../assets/icons/options/add.png";
 import sub from "../../assets/icons/options/sub.png";
 import CreateModal from "../../components/modal/CreateModal";
 import ShareModal from "../../components/modal/ShareModal";
+import { createCharacter } from "../../api/voteAPI";
+import { CreateCharacter } from "../../model/character";
 
 const CreateChar = () => {
   const [userName, setUserName] = useState("");
   const [age, setAge] = useState(20);
-  const [profileImg, setProfileImg] = useState(grayImg); // 기본값을 grayImg로 설정
   const [job, setJob] = useState("");
   const [personality, setPersonality] = useState("");
   const [etc, setEtc] = useState<string[]>([""]);
   const [tone, setTone] = useState("반말");
   const [talktype, setTalktype] = useState("투머치토커");
+  const [gender, setGender] = useState(true);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
   const [selectedImage, setSelectedImage] = useState<File | null>(null); // 이미지 파일을 저장할 상태
@@ -22,23 +24,9 @@ const CreateChar = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-
+  const [createdId, setCreatedId] = useState<number>(-1);
   const handleImageClick = () => {
     fileInputRef.current?.click(); // 이미지 디브 클릭 시 파일 입력 클릭
-  };
-
-  const handleAddEtc = () => {
-    setEtc([...etc, ""]); // 새로운 빈 항목 추가
-  };
-
-  const handleRemoveEtc = (index: number) => {
-    setEtc(etc.filter((_, i) => i !== index)); // 해당 항목 삭제
-  };
-
-  const handleEtcChange = (index: number, value: string) => {
-    const updatedEtc = [...etc];
-    updatedEtc[index] = value;
-    setEtc(updatedEtc);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +43,59 @@ const CreateChar = () => {
     }
   };
 
+  const handleAddEtc = () => {
+    if (etc.length > 2) {
+      alert("최대 3개까지 입력 가능합니다!");
+      return;
+    }
+    setEtc([...etc, ""]); // 새로운 빈 항목 추가
+  };
+
+  const handleRemoveEtc = (index: number) => {
+    setEtc(etc.filter((_, i) => i !== index)); // 해당 항목 삭제
+  };
+
+  const handleEtcChange = (index: number, value: string) => {
+    const updatedEtc = [...etc];
+    updatedEtc[index] = value;
+    setEtc(updatedEtc);
+  };
+
+  const create = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 필수 항목 체크
+    if (!userName || !job || !age || !personality || !selectedImage) {
+      alert("모든 필수 항목을 입력해 주세요!");
+      return;
+    }
+
+    const characterInfo: CreateCharacter = {
+      characterCreateRequest: {
+        name: userName,
+        job,
+        age,
+        tone: tone === "반말",
+        personality,
+        talkType: talktype === "투머치토커",
+        description: etc,
+        gender: gender,
+      },
+      file: selectedImage,
+    };
+
+    setIsCreateModalOpen(true);
+    console.log(characterInfo);
+    try {
+      const data = await createCharacter(characterInfo);
+      setCreatedId(data.characterId);
+    } catch (error) {
+      console.log("캐릭터 등록 실패");
+    }
+  };
+
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto">
-      {/* 나중에 이 모달 띄울때 모든 인풋 입력, 사진 선택됐는지 확인 필요 */}
       {isCreateModalOpen && (
         <CreateModal
           name={userName}
@@ -68,22 +106,25 @@ const CreateChar = () => {
           talkType={talktype}
           tone={tone}
           userName={userName}
-          onClose={() => setIsCreateModalOpen(false)}
+          createdId={createdId}
         />
       )}
       {isShareModalOpen && (
         <ShareModal onClose={() => setIsShareModalOpen(false)} />
       )}
-      <TextHeader navTo={"/mypage"} headerText={"프로필 편집"} />
-      <div className="flex flex-col h-full pt-[54px] pb-6 px-[23px] items-center">
-        <form className="mt-[30px] w-full flex flex-col h-full flex-grow">
+      <TextHeader navTo={-1} headerText={"캐릭터 등록"} />
+      <div className="flex flex-col h-full mb-10 pt-[54px] pb-6 px-[23px] items-center">
+        <form
+          className="mt-[30px] w-full flex flex-col h-full flex-grow"
+          onSubmit={create}
+        >
           {/* 이미지 */}
           <div className="flex justify-center">
             <div
-              className="w-[100px] h-[100px]  rounded-full bg-gray-200 flex items-center mb-[30px]"
+              className="w-[100px] h-[100px] rounded-full bg-gray-200 flex items-center mb-[30px] cursor-pointer"
               onClick={handleImageClick}
               style={{
-                backgroundImage: `url(${previewUrl || grayImg})`, // 미리보기 URL 또는 기본 이미지 설정
+                backgroundImage: `url(${previewUrl || grayImg})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -97,7 +138,7 @@ const CreateChar = () => {
               />
             </div>
           </div>
-          {/* 인풋 */}
+          {/* 인풋 필드 */}
           <div>
             <div className="flex items-center gap-4 mb-[15px]">
               <h1 className="text-gray-700 text-[14px] min-w-[30px]">이름</h1>
@@ -193,10 +234,35 @@ const CreateChar = () => {
                 </button>
               </div>
             </div>
-
-            {/* 기타 */}
+            <div className="flex items-center gap-4 mb-[15px]">
+              <h1 className="text-gray-700 text-[14px] min-w-[30px]">성별</h1>
+              <div className="flex gap-4 w-full">
+                <button
+                  type="button"
+                  onClick={() => setGender(true)}
+                  className={`px-4 py-2 rounded-[10px] flex-grow ${
+                    gender === true
+                      ? "bg-pink-100 text-pink-500 border border-pink-500"
+                      : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  남자
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGender(false)}
+                  className={`px-4 py-2 rounded-[10px] flex-grow ${
+                    gender === false
+                      ? "bg-pink-100 text-pink-500 border border-pink-500"
+                      : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  여자
+                </button>
+              </div>
+            </div>
+            {/* 기타 항목 */}
             <div>
-              {/* 기타 입력 필드 */}
               {etc.map((item, index) => (
                 <div className="flex items-center mb-[15px]" key={index}>
                   <h1 className="text-gray-700 text-[14px] min-w-[30px] mr-4">
@@ -205,7 +271,7 @@ const CreateChar = () => {
                   <input
                     className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                     type="text"
-                    placeholder="ex) even이라는 말을 자주 사용한다."
+                    placeholder="ex) even이라는 말을 자주 사용"
                     value={item}
                     onChange={(e) => handleEtcChange(index, e.target.value)}
                   />
@@ -218,7 +284,7 @@ const CreateChar = () => {
                 </div>
               ))}
               <div className="flex mb-2">
-                <span>항목 추가</span>
+                <span>기타 항목 추가 (최대 3개)</span>
                 <img
                   src={add}
                   className="w-6 h-6 ml-1.5 cursor-pointer"
@@ -230,13 +296,9 @@ const CreateChar = () => {
           </div>
           <button
             type="submit"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsCreateModalOpen(true);
-            }}
-            className="mt-auto  bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
+            className="mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white font-semibold"
           >
-            게시하기
+            등록하기
           </button>
         </form>
       </div>

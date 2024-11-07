@@ -24,7 +24,6 @@ export interface CharacterInfo {
 
 export interface ICharInfo {
   name: string;
-  onClose: () => void;
   userName: string;
   age: number;
   profileImg: string;
@@ -32,6 +31,21 @@ export interface ICharInfo {
   personality: string;
   tone: string;
   talkType: string;
+  createdId: number;
+}
+
+export interface CreateCharacter {
+  characterCreateRequest: {
+    name: string;
+    job: string;
+    age: number;
+    tone: boolean;
+    personality: string;
+    talkType: boolean;
+    description: string[];
+    gender: boolean;
+  };
+  file?: File | null;
 }
 
 export interface ICharacter {

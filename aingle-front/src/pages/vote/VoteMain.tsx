@@ -10,21 +10,36 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "../../styles/CustomSwiper.css";
 import { useState, useEffect } from "react";
-import { getVoteCharacter, getVoteCharacterDetail } from "../../api/voteAPI";
+import {
+  doVote,
+  getVoteCharacter,
+  getVoteCharacterDetail,
+} from "../../api/voteAPI";
 
 const VoteMain = () => {
   const navigate = useNavigate();
+
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const [voteCount, setVoteCount] = useState<number>(0);
 
   const [CharacterInfo, setCharacterInfo] =
     useState<VoteCharacterDetail | null>(null);
-  const getsetCharacterInfo = async (id: number) => {
-    try {
-      const data = await getVoteCharacterDetail(id); // API 호출
-      setCharacterInfo(data); // 데이터 상태 업데이트
-    } catch (error) {
-      console.error("캐릭터 데이터 로드 실패: ", error);
-    }
+
+  const [characters, setCharacters] =
+    useState<CharacterGetPublicResponseDto | null>(null);
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const [position, setPosition] = useState(3);
+
+  const [opacity, setOpacity] = useState(0);
+
+  // function
+  const handleClick = () => {
+    setIsVisible(true);
+    setPosition(16);
+    setOpacity(1);
   };
 
   const handleBackClick = () => {
@@ -35,16 +50,43 @@ const VoteMain = () => {
     setSelectedId(id);
   };
 
-  const [characters, setCharacters] =
-    useState<CharacterGetPublicResponseDto | null>(null);
-  const fetchCharacter = async () => {
+  const vote = async (id: number) => {
+    if (id == -1) {
+      return;
+    }
     try {
-      const data = await getVoteCharacter(); // API 호출
-      setCharacters(data); // 데이터 상태 업데이트
-    } catch (error) {
-      console.error("캐릭터 데이터 로드 실패: ", error);
+      const data = await doVote(id);
+      setVoteCount(data.totalVoteCount);
+    } catch (error: any) {
+      if (error.status == 409) {
+        console.error("중복 투표 오류: ", error);
+        handleClick();
+      } else {
+        console.error("투표 실패: ", error);
+      }
     }
   };
+
+  const getsetCharacterInfo = async (id: number) => {
+    try {
+      const data = await getVoteCharacterDetail(id);
+      setCharacterInfo(data);
+      setVoteCount(data.voteCount);
+    } catch (error) {
+      console.error("투표 선택된 캐릭터 상세 조회 실패: ", error);
+    }
+  };
+
+  const fetchCharacter = async () => {
+    try {
+      const data = await getVoteCharacter();
+      setCharacters(data);
+    } catch (error) {
+      console.error("투표 캐릭터 리스트 조회 실패: ", error);
+    }
+  };
+
+  //useEffect
   useEffect(() => {
     if (selectedId != null) {
       getsetCharacterInfo(selectedId);
@@ -54,10 +96,21 @@ const VoteMain = () => {
     fetchCharacter();
   }, []);
 
+  useEffect(() => {
+    if (isVisible) {
+      const timeoutId = setTimeout(() => {
+        setOpacity(0);
+        setPosition(3);
+      }, 1000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isVisible]);
+
   return (
     <div className="bg-[#ffe8f1] h-full w-full flex flex-col">
-      <div className="bg-[#ffe8f1] w-full px-[16px] pt-[34px] pb-[15px] flex flex-col items-center relative">
-        <div className="w-full flex justify-between items-center mt-[24px] mb-[15px]">
+      <div className="bg-[#ffe8f1] w-full px-[16px] pb-[15px] flex flex-col items-center relative">
+        <div className="w-full flex justify-between items-center mt-[30px] mb-[30px]">
           <button className="text-[#fb599a] text-lg" onClick={handleBackClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -138,11 +191,11 @@ const VoteMain = () => {
         {selectedId == null ? (
           <div className="bg-white w-full h-[175px] flex rounded-2xl px-4 justify-center items-center">
             <h1 className="font-hakgyo text-main-color text-[18px]">
-              캐릭터를 눌러서 확인해보세요!
+              캐릭터를 선택해 확인해보세요!
             </h1>
           </div>
         ) : (
-          <div className="bg-white w-full h-[175px] flex rounded-2xl px-4">
+          <div className="bg-white w-full h-[210px] flex rounded-2xl px-4">
             <div className="absolute top-4 right-10 flex items-center space-x-1 text-gray-800">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -156,11 +209,11 @@ const VoteMain = () => {
               </svg>
 
               <span className="text-sm font-medium font-hakgyo">
-                {CharacterInfo?.voteCount} 득표
+                {voteCount} 득표
               </span>
             </div>
-            <div className="w-1/4 flex justify-center pt-[35px]">
-              <div className="border-[1.5px] bg-white border-main-color rounded-full w-[55px] h-[55px] overflow-hidden">
+            <div className="w-1/4 flex justify-center pt-[45px]">
+              <div className="border-[1.5px] bg-white border-main-color rounded-full w-[60px] h-[60px] overflow-hidden">
                 <img
                   src={CharacterInfo?.imageUrl}
                   alt="이미지 설명"
@@ -178,8 +231,8 @@ const VoteMain = () => {
                 <div className=" mr-2">#{CharacterInfo?.personality}</div>
                 <div className=" mr-2">#{CharacterInfo?.talkType}</div>
               </div>
-              <div className="pl-3 h-[60px] font-semibold text-[20px]">
-                {CharacterInfo?.summary}
+              <div className="pl-3 h-[60px] font-semibold text-[20px] flex justify-start items-center">
+                <h1>{CharacterInfo?.summary}</h1>
               </div>
               <div className="flex justify-end items-end">
                 <h1 className="text-[12px] text-slate-400">
@@ -189,10 +242,25 @@ const VoteMain = () => {
             </div>
           </div>
         )}
-
-        <button className="bg-main-color font-semibold text-white rounded-2xl w-[200px] h-[50px]">
+        <button
+          className="bg-main-color font-semibold text-white rounded-2xl w-[200px] h-[50px]"
+          onClick={() => vote(selectedId != null ? selectedId : -1)}
+        >
           투표하기
         </button>
+        {isVisible && (
+          <div
+            className="absolute transition-all duration-500 ease-out"
+            style={{ bottom: `${position}px`, opacity }}
+            onTransitionEnd={() => {
+              if (opacity === 0) setIsVisible(false); // Hide element when fully transparent
+            }}
+          >
+            <h1 className="bg-[#f7b9e8] font-hakgyo text-main-color px-4 py-2 rounded-md">
+              투표는 하루에 한 번 가능합니다!
+            </h1>
+          </div>
+        )}
       </div>
     </div>
   );
