@@ -2,12 +2,18 @@ import PinkTextHeader from "../../components/header/PinkTextHeader";
 import NoticeCard from "../../components/card/NoticeCard";
 import { Ialarm , IgetAlarm } from "../../model/alarm";
 import { useEffect, useState } from "react";
-import { getAlarm } from "../../api/alarm";
+import { getAlarm , readAlarm } from "../../api/alarm";
+import { useNavigate } from "react-router-dom";
 
 const Notice = () => {
 
   const [ alarms , setAlarms ] = useState<Ialarm[]>([]);
-  const [ alarmId , setAlarmId ] = useState(0);
+  const navigate = useNavigate();
+  
+  const handleAlarmClick = (alarm: Ialarm) => {
+   readAlarm(alarm.alarmId);
+   navigate(`/post/${alarm.post.postId}`)
+  };
 
   const numbers : IgetAlarm =  {
     page : 0,
@@ -37,6 +43,7 @@ const Notice = () => {
             <NoticeCard
               key={alarm.alarmId}
               alarm={alarm}
+              onClickAlarm={() => handleAlarmClick(alarm)}
             />
           );
         })}
