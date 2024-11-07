@@ -159,7 +159,11 @@ const PostDetail = () => {
                   key={idx}
                   onClick={() => {
                     setCommentId(comment.commentId);
-                    setCommentWriter(comment.member.name);
+                    setCommentWriter(
+                      comment.member?.name ||
+                        comment.character?.name ||
+                        "Unknown User"
+                    );
                   }}
                 >
                   <Postcomment key={comment.commentId} comment={comment} />
