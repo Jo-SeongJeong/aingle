@@ -45,6 +45,14 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
     }));
   };
 
+  const handleEmojiClick = (emoji: string) => {
+    setInputcomment((prev) => ({
+      ...prev,
+      content: prev.content + emoji, // 기존 내용에 이모티콘 추가
+    }));
+  };
+
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     startY.current = e.clientY;
@@ -127,7 +135,7 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
       if (commentId === 0) {
         // 일반 댓글 작성
         await createComment(inputComment);
-        console.log(inputComment.content);
+        
       } else {
         // 답글 작성
         await createReply(commentId, inputComment.content);
@@ -227,11 +235,36 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
             </div>
           )}
           <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
-            <img src={redHeart} className="w-[24px]" alt="redHeart" />
-            <img src={face} className="w-[24px]" alt="face" />
-            <img src={clap} className="w-[24px]" alt="clap" />
-            <img src={fire} className="w-[24px]" alt="fire" />
-            <img src={thumb} className="w-[24px]" alt="thumb" />
+            <img
+              src={redHeart}
+              className="w-[24px] cursor-pointer"
+              alt="redHeart"
+              onClick={() => handleEmojiClick("❤️")} 
+            />
+            <img
+              src={face}
+              className="w-[24px] cursor-pointer"
+              alt="face"
+              onClick={() => handleEmojiClick("😊")} 
+            />
+            <img
+              src={clap}
+              className="w-[24px] cursor-pointer"
+              alt="clap"
+              onClick={() => handleEmojiClick("👏")} 
+            />
+            <img
+              src={fire}
+              className="w-[24px] cursor-pointer"
+              alt="fire"
+              onClick={() => handleEmojiClick("🔥")} 
+            />
+            <img
+              src={thumb}
+              className="w-[24px] cursor-pointer"
+              alt="thumb"
+              onClick={() => handleEmojiClick("👍")} 
+            />
           </div>
           <div className="w-full h-full flex items-center justify-center space-x-[10px] pb-[57px]">
             <img
