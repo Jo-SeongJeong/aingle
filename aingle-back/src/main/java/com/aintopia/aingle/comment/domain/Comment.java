@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
-@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,17 +56,19 @@ public class Comment {
         this.member = member;
         this.content = registCommentRequestDto.getContent();
         this.isDeleted = false;
+        this.createTime = LocalDateTime.now();
     }
 
-    @Builder(builderMethodName = "commentAIBuilder")
+    public Comment(Post post, Character character, String content ) {
+        this.post = post;
+        this.character = character;
+        this.content = content;
+        this.isDeleted = false;
+        this.createTime = LocalDateTime.now();
+    }
+
     public static Comment makeCommentByAI(Post post, Character character, String content) {
-        return Comment.builder()
-                .post(post)
-                .character(character)
-                .content(content)
-                .isDeleted(false)
-                .createTime(LocalDateTime.now())
-                .build();
+        return new Comment(post, character, content);
     }
 
     public void delete() {
