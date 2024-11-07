@@ -19,6 +19,7 @@ import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberImageRepository;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.post.dto.MyPagePostDto;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,7 +91,15 @@ public class MemberService {
         List<Follow> follows = followRepository.findByMember(member);
         Integer followCount = follows.size();
 
-        return new MemberDetailResponseDto(post, postCount, followCount);
+        List<MyPagePostDto> postDto = post.stream()
+                .sorted(Comparator.comparing(Post::getPostId).reversed()) // postId 내림차순 정렬
+                .map(post1 -> MyPagePostDto.builder()
+                        .postId(post1.getPostId())
+                        .image(post1.getImage())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new MemberDetailResponseDto(postDto, postCount, followCount);
     }
 
     @Transactional
