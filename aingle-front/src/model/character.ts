@@ -33,3 +33,10 @@ export interface ICharInfo {
   tone: string;
   talkType: string;
 }
+
+export interface ICharacter {
+  characterId: number;
+  name: string;
+  characterImage: string;
+  commentDelayTime: number;
+}
