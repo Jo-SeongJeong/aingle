@@ -5,8 +5,10 @@ import com.aintopia.aingle.character.dto.request.CharacterSurveyRequestDto;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.character.dto.response.CharacterCreateResponseDto;
 import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
+import com.aintopia.aingle.character.dto.response.CharacterPostResponse;
 import com.aintopia.aingle.character.service.CharacterService;
 import com.aintopia.aingle.common.util.MemberInfo;
+import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -141,6 +143,21 @@ public class CharacterController {
         Long memberId = MemberInfo.getId();
         characterService.deleteCharacter(memberId, characterId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{characterId}/post-info")
+    @Operation(summary = "캐릭터 정보 조회(캐릭터 게시글 및 팔로워수, 게시글 수 조회, 유저 팔로우 여부)", description = "캐릭터 정보 조회 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "캐릭터 정보 조회 성공",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    public ResponseEntity<?> getCharacterPostInfo(@PathVariable Long characterId) {
+        Long memberId = MemberInfo.getId();
+        CharacterPostResponse characterPostResponse = characterService.getCharacterPostInfo(characterId, memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(characterPostResponse);
     }
 
 }

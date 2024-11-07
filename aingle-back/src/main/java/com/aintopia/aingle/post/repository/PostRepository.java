@@ -17,4 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.member.memberId = :memberId AND p.isDeleted = false")
     List<Post> findByMemberId(@Param("memberId") Long memberId);
+
+    List<Post> findByCharacter(Character character);
 }
