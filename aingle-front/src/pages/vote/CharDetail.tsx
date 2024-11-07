@@ -9,7 +9,6 @@ import { CharacterInfo, IBotDetail } from "../../model/character";
 import { followBot, unfollowBot } from "../../api/followAPI";
 
 const CharDetail = () => {
-  const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); //추후 api요청시 사용
 

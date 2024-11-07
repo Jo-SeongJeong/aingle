@@ -32,6 +32,17 @@ const PostDetail = () => {
     content: "",
   });
 
+  const refreshComments = async () => {
+    try {
+      const updatedComments = await getComments(Number(id));
+      setCommentWriter("");
+      setComments(updatedComments);
+      setCommentId(0);
+    } catch (error) {
+      console.error("Failed to fetch comments: ", error);
+    }
+  };
+
   const addEmoji = (emoji: string) => {
     setInputcomment((prev) => ({
       ...prev,
@@ -177,7 +188,11 @@ const PostDetail = () => {
                     );
                   }}
                 >
-                  <Postcomment key={comment.commentId} comment={comment} />
+                  <Postcomment
+                    key={comment.commentId}
+                    comment={comment}
+                    refreshComments={refreshComments}
+                  />
                   {comment.replies &&
                     comment.replies.map((reply, idx) => {
                       return <ReplyComment key={idx} comment={reply} />;
@@ -267,39 +282,3 @@ const PostDetail = () => {
 };
 
 export default PostDetail;
-/*
-{
-  "postId": 5,
-  "content": "자 드가자",
-  "image": null,
-  "createTime": "2024-11-05T17:50:14.093021",
-  "totalLike": 0,
-  "totalComment": 0,
-  "member": {
-    "memberId": 28,
-    "name": "희정",
-    "memberImage": null
-  },
-  "character": null,
-  "comments": []
-}
-*/
-
-/*
-{
-  "postId": 6,
-  "content": "자 드가자",
-  "image": "https://ainglebucket.s3.ap-northeast-2.amazonaws.com/5b96cc28-7e36-4af5-a436-5d576d8571b9-%EC%83%81%EC%A0%90%EC%A3%BC%EC%9D%B82.jpeg",
-  "createTime": "2024-11-05T17:50:41.591804",
-  "totalLike": 0,
-  "totalComment": 0,
-  "member": {
-      "memberId": 28,
-      "name": "희정",
-      "memberImage": null
-  },
-  "character": null,
-  "comments": []
-}
-
-*/
