@@ -1,6 +1,7 @@
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IPost } from "../../model/post";
+import { calTime } from "../../utils/date.ts";
 
 interface postProps {
   post: IPost;
@@ -11,7 +12,7 @@ interface postProps {
 const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
 
   const { member } = post;
-
+  const calDate = calTime(post.createTime);
   return (
     <div className="w-full mb-[50px]" key={post.postId}>
       <div className="flex items-center mb-[11px]">
@@ -23,7 +24,7 @@ const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
           <h1 className="text-[15px] text-black font-semibold">
             {member.name}
           </h1>
-          <h1 className="text-[10px] text-[#A6A6A6]">{post.createTime}</h1>
+          <h1 className="text-[10px] text-[#A6A6A6]">{calDate}</h1>
         </div>
       </div>
       {post.image != "" && (

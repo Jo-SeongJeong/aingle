@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
-import { IComment, IcreateComment } from "../../model/comment";
+import { IcreateComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
 import { getPostDetail } from "../../api/postAPI";
 import { IPost } from "../../model/post";
