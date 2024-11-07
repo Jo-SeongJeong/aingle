@@ -1,13 +1,17 @@
-import { IComment } from "../../model/comment";
+import { IComment, Ireply } from "../../model/comment";
 
 interface ICommentProps {
-  comment: IComment;
+  comment: Ireply;
 }
 
 const ReplyComment = ({ comment }: ICommentProps) => {
+  if (!comment || !comment.member) {
+    return null; // comment 또는 member가 없으면 렌더링하지 않음
+  }
   const { member } = comment;
+
   return (
-    <div className="w-full bg-white flex items-start ml-5">
+    <div className="w-full bg-white flex items-start ml-5 mb-3">
       <div className="mr-[10px] self-start flex-shrink-0">
         <img
           className="bg-black w-[35px] h-[35px] rounded-full object-cover"

@@ -18,7 +18,7 @@ const Postcomment = ({ comment }: ICommentProps) => {
         <div className="flex space-x-[5px] items-center">
           <h1 className="text-[13px] font-semibold ">{member.name}</h1>
           <h1 className="text-[10px] font-medium text-[#A6A6A6]">
-            {comment.createTime.split("T")[0]}
+            {comment.createTime && comment.createTime.split("T")[0]}
           </h1>
         </div>
         <span>{comment.content}</span>

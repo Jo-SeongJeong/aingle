@@ -35,8 +35,9 @@ const Home = () => {
       )}
 
       <div className="overflow-auto w-full">
-        {posts.map((post: IPost) => (
+        {posts.map((post: IPost, idx: number) => (
           <Post
+            key={idx}
             post={post}
             onCommentClick={() => handleCommentClick(post.postId)}
             onLikeClick={() => handleLikeClick(post.postId)}

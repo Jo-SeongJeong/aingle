@@ -8,8 +8,7 @@ interface postProps {
   onLikeClick: () => void;
 }
 
-const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
-
+const Post = ({ post, onCommentClick, onLikeClick }: postProps) => {
   const { member } = post;
 
   return (
@@ -23,7 +22,9 @@ const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
           <h1 className="text-[15px] text-black font-semibold">
             {member.name}
           </h1>
-          <h1 className="text-[10px] text-[#A6A6A6]">{post.createTime}</h1>
+          <h1 className="text-[10px] text-[#A6A6A6]">
+            {post.createTime.split("T")[0]}
+          </h1>
         </div>
       </div>
       {post.image != "" && (

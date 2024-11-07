@@ -50,10 +50,10 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="bg-white h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative pt-[50px]">
+    <div className="bg-white h-full w-full  pb-[34px] flex flex-col items-center relative pt-[50px]">
       <TextHeader headerText="게시물" navTo="" />
-      <div className="overflow-auto w-full mt-1">
-        <div className="w-full mb-[50px]">
+      <div className="overflow-auto w-full  mt-1">
+        <div className="w-full mb-[50px] px-[16px]">
           <div className="flex items-center mb-[11px]">
             <img
               src={postData.member.memberImage || "/path/to/defaultImage.jpg"}
