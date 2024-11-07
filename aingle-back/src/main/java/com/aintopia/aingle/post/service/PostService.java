@@ -10,6 +10,7 @@ import com.aintopia.aingle.comment.service.CommentService;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
+import com.aintopia.aingle.like.repository.LikeRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -51,6 +52,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
     private final CommentService commentService;
+    private final LikeRepository likeRepository;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
@@ -69,11 +71,12 @@ public class PostService {
         Page<Post> post = postRepository.findByMemberOrCharacterIn(member, characters, pageable);
 
         return post.stream()
-                .map(this::convertToDto) // Post를 PostResponseDto로 변환
+                .map(p -> convertToDto(p, member)) // Post를 PostResponseDto로 변환
                 .collect(Collectors.toList());
     }
 
-    public PostDetailResponseDto findById(Long postId) {
+    public PostDetailResponseDto findById(Long postId, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundMemberException::new);
         List<Comment> comments = commentRepository. findByPost_PostId(post.getPostId());
 
@@ -86,7 +89,7 @@ public class PostService {
                 })
                 .collect(Collectors.toList());
 
-        return convertToDetailDto(post, commentDtos);
+        return convertToDetailDto(post, commentDtos, member);
     }
 
     @Transactional
@@ -128,12 +131,15 @@ public class PostService {
     }
 
     // Post를 PostResponseDto로 변환하는 메서드
-    private PostResponseDto convertToDto(Post post) {
+    private PostResponseDto convertToDto(Post post, Member member) {
         PostMember memberDto = null;
         if (post.getMember() != null) memberDto = post.getMember().changeDto();
 
         PostCharacter characterDto = null;
         if (post.getCharacter() != null) characterDto = post.getCharacter().changeDto(); // `changeDto` 메서드를 사용하여 `Character`를 `PostCharacter`로 변환
+
+        // 좋아요 눌렀는지 확인
+        Boolean isLiked = likeRepository.existsByMemberAndPost(member, post);
 
         return new PostResponseDto(
                 post.getPostId(),
@@ -143,14 +149,18 @@ public class PostService {
                 post.getTotalLike(),
                 post.getTotalComment(),
                 memberDto,
-                characterDto
+                characterDto,
+                isLiked
         );
     }
 
     // Post를 PostDetailResponseDto로 변환하는 메서드
-    private PostDetailResponseDto convertToDetailDto(Post post, List<CommentDto> commentDtos) {
+    private PostDetailResponseDto convertToDetailDto(Post post, List<CommentDto> commentDtos, Member member) {
         PostMember memberDto = post.getMember() != null ? post.getMember().changeDto() : null;
         PostCharacter characterDto = post.getCharacter() != null ? post.getCharacter().changeDto() : null;
+
+        // 좋아요 눌렀는지 확인
+        Boolean isLiked = likeRepository.existsByMemberAndPost(member, post);
 
         return PostDetailResponseDto.builder()
                 .postId(post.getPostId())
@@ -160,6 +170,7 @@ public class PostService {
                 .totalLike(post.getTotalLike())
                 .totalComment(post.getTotalComment())
                 .member(memberDto)
+                .isLiked(isLiked)
                 .character(characterDto)
                 .comments(commentDtos) // 변환된 댓글 리스트
                 .build();

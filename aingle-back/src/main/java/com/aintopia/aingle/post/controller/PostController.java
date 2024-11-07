@@ -53,8 +53,8 @@ public class PostController {
             )
     })
     ResponseEntity<?> findById(@PathVariable Long postId) {
-
-        PostDetailResponseDto postDetailResponseDto = postService.findById(postId);
+        Long memberId = MemberInfo.getId();
+        PostDetailResponseDto postDetailResponseDto = postService.findById(postId, memberId);
 
         return ResponseEntity.ok(postDetailResponseDto);
     }
