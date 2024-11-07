@@ -3,6 +3,7 @@ package com.aintopia.aingle.vote.controller;
 import com.aintopia.aingle.character.dto.response.AllCharacterResponse;
 import com.aintopia.aingle.common.util.MemberInfo;
 import com.aintopia.aingle.vote.dto.VoteCharacterDetailResponse;
+import com.aintopia.aingle.vote.dto.VoteResponse;
 import com.aintopia.aingle.vote.service.VoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -71,10 +72,10 @@ public class VoteController {
                     content = @Content(mediaType = "application/json")
             ),
     })
-    public ResponseEntity<Void> voteCharacter(@PathVariable Long characterId){
+    public ResponseEntity<VoteResponse> voteCharacter(@PathVariable Long characterId){
         Long memberId = MemberInfo.getId();
-        voteService.voteCharacter(characterId, memberId);
-        return ResponseEntity.ok().build();
+        VoteResponse voteResponse = voteService.voteCharacter(characterId, memberId);
+        return ResponseEntity.ok().body(voteResponse);
     }
 
     @PostMapping(value = "/character")

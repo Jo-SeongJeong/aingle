@@ -13,6 +13,7 @@ import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.vote.domain.MemberVote;
 import com.aintopia.aingle.vote.domain.Vote;
 import com.aintopia.aingle.vote.dto.VoteCharacterDetailResponse;
+import com.aintopia.aingle.vote.dto.VoteResponse;
 import com.aintopia.aingle.vote.exception.*;
 import com.aintopia.aingle.vote.repository.MemberVoteRepository;
 import com.aintopia.aingle.vote.repository.VoteRepository;
@@ -97,7 +98,7 @@ public class VoteService {
                 .build();
     }
 
-    public void voteCharacter(Long characterId, Long memberId) {
+    public VoteResponse voteCharacter(Long characterId, Long memberId) {
         //해당 사용자가 이번 투표에서 이미 투표했다면
         // 투표한 시간이 지금보다 24시간 후가 아니라면 투표 불가
         // 투표가 종료되면 해당 컬럼 다 초기화
@@ -113,12 +114,13 @@ public class VoteService {
                             .member(member)
                             .build());
             vote(characterId);
-            return;
+            return new VoteResponse(character.getVoteCount(), "투표에 성공했습니다.");
         }
         MemberVote existingMemberVote = memberVote.get();
         if(canVote(existingMemberVote.getVoteTime())){
             vote(characterId);
             existingMemberVote.updateVoteTime();
+            return new VoteResponse(character.getVoteCount(), "투표에 성공했습니다.");
         }else{
             throw new BadRequestVoteException();
         }
