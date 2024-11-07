@@ -69,6 +69,8 @@ public class Post {
         this.image = url;
         this.totalLike = 0L;
         this.totalComment = 0L;
+        this.isDeleted = false;
+        this.createTime = LocalDateTime.now();
     }
     
     public void delete() {
