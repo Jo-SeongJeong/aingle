@@ -67,6 +67,8 @@ public class Post {
         this.content = registPostRequestDto.getContent();
         this.member = member;
         this.image = url;
+        this.totalLike = 0L;
+        this.totalComment = 0L;
     }
     
     public void delete() {
