@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import com.aintopia.aingle.post.domain.Post;
+import com.aintopia.aingle.post.dto.MyPagePostDto;
 import com.aintopia.aingle.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -226,9 +227,10 @@ public class CharacterService {
     public CharacterPostResponse getCharacterPostInfo(Long characterId, Long memberId) {
         Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
         List<Post> characterPosts = postRepository.findByCharacter(character);
-        List<String> postImageUrls = characterPosts.stream()
-                .map(Post::getImage)
-                .collect(Collectors.toList());
+        List<MyPagePostDto> postImageUrls = new ArrayList<>();
+        for(Post post : characterPosts) {
+            postImageUrls.add(post.changeToMyPagePostDto());
+        }
         // 팔로우 여부
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
         boolean isFollow = followRepository.findByMemberAndCharacter(member, character)
