@@ -25,3 +25,9 @@ export interface VoteCharacterDetail {
   voteCount: number;
   memberName: string;
 }
+
+export interface IvoteWinnerCharacter {
+  characterId : number;
+  name : string;
+  imageUrl : string;
+}
