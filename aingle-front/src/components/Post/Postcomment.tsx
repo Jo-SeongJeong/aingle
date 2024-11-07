@@ -1,4 +1,5 @@
 import { IComment } from "../../model/comment";
+import { calTime } from "../../utils/date.ts";
 
 interface ICommentProps {
   comment: IComment;
@@ -7,6 +8,7 @@ interface ICommentProps {
 const Postcomment = ({ comment }: ICommentProps) => {
   const { member, character } = comment;
 
+  const calDate = calTime(comment.createTime);
   return (
     <div className="w-full bg-white flex items-start">
       <div className="mr-[10px] self-start flex-shrink-0">
@@ -21,9 +23,7 @@ const Postcomment = ({ comment }: ICommentProps) => {
           <h1 className="text-[13px] font-semibold ">
             {member ? member.name : character?.name}
           </h1>
-          <h1 className="text-[10px] font-medium text-[#A6A6A6]">
-            {comment.createTime && comment.createTime.split("T")[0]}
-          </h1>
+          <h1 className="text-[10px] font-medium text-[#A6A6A6]">{calDate}</h1>
         </div>
         <span>{comment.content}</span>
         <h1 className="text-[10px] text-[#A6A6A6] pt-[5px] pb-[10px]">

@@ -4,6 +4,7 @@ import Post from "../../components/Post/Post";
 import PostCommentModal from "../../components/Post/PostCommentModal";
 import { usePostStore } from "../../store/usePostStore";
 import { IPost } from "../../model/post";
+import { like } from "../../api/likeAPI";
 
 const Home = () => {
   const [postId, setPostId] = useState<number>(0);
@@ -21,9 +22,7 @@ const Home = () => {
   };
 
   const handleLikeClick = (id: number) => {
-    // 좋아요 요청 로직을 여기에 추가
-    console.log(`Like clicked for post with ID: ${id}`);
-    // 여기서 좋아요 API 요청을 할 수 있습니다.
+    like(id);
   };
 
   return (

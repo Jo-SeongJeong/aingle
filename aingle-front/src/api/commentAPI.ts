@@ -5,7 +5,7 @@ import axiosInstance from "./axiosInstance";
 // 댓글 등록 api (완료)
 export const createComment = async (comment: IcreateComment) => {
   try {
-    // formData 인수로 담아서 요청
+    
     const response = await axiosInstance.post(`${BASE_URL}/comments`, comment);
 
     return response.data;
