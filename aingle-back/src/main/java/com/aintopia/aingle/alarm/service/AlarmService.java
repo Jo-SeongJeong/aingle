@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,10 @@ public class AlarmService {
                                     .isRead(alarm.getIsRead())
                                     .post(alarmPostDto)
                                     .vote(alarm.getVote())
+                                    .createTime(alarm.getCreateTime())
+                                    .sender(Optional.ofNullable(alarm.getSender())
+                                        .map(Member::changeDto)
+                                        .orElse(null))
                                     .build();
 
                 })

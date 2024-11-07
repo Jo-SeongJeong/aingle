@@ -79,6 +79,7 @@ public class CommentService {
             alarmRepository.save(Alarm.alarmPostBuilder()
                     .member(alarmMember)
                     .post(post)
+                    .sender(member)
                     .build());
         }
 
