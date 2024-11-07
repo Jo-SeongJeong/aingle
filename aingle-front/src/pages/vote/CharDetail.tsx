@@ -6,24 +6,33 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { getCharacterDetail, getCharDetail } from "../../api/voteAPI";
 import { CharacterInfo, IBotDetail } from "../../model/character";
+import { followBot, unfollowBot } from "../../api/followAPI";
 
 const CharDetail = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); //추후 api요청시 사용
 
-  const [botData, setBotData] = useState<CharacterInfo>();
+  const [botData, setBotData] = useState<CharacterInfo>({
+    characterId: 0,
+    name: "",
+    job: "",
+    age: 0,
+    tone: "",
+    talkType: "",
+    personality: "",
+    imageUrl: "",
+    summary: "",
+  });
   const [botDetail, setBotDetail] = useState<IBotDetail>();
+  const fetchData = async () => {
+    const response = await getCharacterDetail(Number(id));
+    setBotData(response);
 
+    const response2 = await getCharDetail(Number(id));
+    setBotDetail(response2);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getCharacterDetail(Number(id));
-      setBotData(response);
-
-      const response2 = await getCharDetail(Number(id));
-      setBotDetail(response2);
-    };
-
     fetchData();
   }, []);
 
@@ -70,12 +79,7 @@ const CharDetail = () => {
               </h1>
               <h1 className="text-[#6A6A6A]">게시물</h1>
             </div>
-            <div
-              className="text-center"
-              onClick={() => {
-                navigate("/mypage/following");
-              }}
-            >
+            <div className="text-center">
               <h1 className="text-lg font-bold text-pink-base">
                 {botDetail?.followerCount}
               </h1>
@@ -84,14 +88,20 @@ const CharDetail = () => {
           </div>
           {!botDetail?.follow ? (
             <button
-              onClick={() => setIsFollowing(true)}
+              onClick={() => {
+                followBot(botData.characterId);
+                fetchData();
+              }}
               className="w-[82px] h-[50px] rounded-[10px] bg-pink-base text-white"
             >
               팔로우
             </button>
           ) : (
             <button
-              onClick={() => setIsFollowing(false)}
+              onClick={() => {
+                unfollowBot(botData.characterId);
+                fetchData();
+              }}
               className="w-[82px] h-[50px] rounded-[10px] bg-[#CFCFCF] text-white"
             >
               언팔로우
@@ -103,8 +113,8 @@ const CharDetail = () => {
       {/* 게시물 리스트 섹션 */}
       <div className="px-[23px] pt-[24px] grid grid-cols-3 gap-4">
         {/* 게시물 데이터 매핑 */}
-        {posts.map((post) => (
-          <PostCard key={post.id} id={post.id} image={post.image} />
+        {botDetail?.postImageUrls.map((post, idx) => (
+          <PostCard key={idx} id={post.postId} image={post.image} />
         ))}
       </div>
     </div>

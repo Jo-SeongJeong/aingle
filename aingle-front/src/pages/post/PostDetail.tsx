@@ -91,7 +91,7 @@ const PostDetail = () => {
       const fetchData = async () => {
         const response = await getPostDetail(id);
         console.log("postData: ", response);
-        setPostData(response.data);
+        setPostData(response);
 
         const response2 = await getComments(parseInt(id, 10)); // id를 number로 변환
         setComments(response2);
@@ -112,12 +112,18 @@ const PostDetail = () => {
         <div className="w-full mb-[50px] px-[16px]">
           <div className="flex items-center mb-[11px]">
             <img
-              src={postData.member.memberImage || "/path/to/defaultImage.jpg"}
+              src={
+                postData.member
+                  ? postData.member.memberImage
+                  : postData.character.characterImage
+              }
               className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
             />
             <div>
               <h1 className="text-[15px] text-black font-semibold">
-                {postData.member.name}
+                {postData.member
+                  ? postData.member.name
+                  : postData.character.name}
               </h1>
               <h1 className="text-[10px] text-[#A6A6A6]">
                 {calTime(postData.createTime)}
@@ -149,7 +155,7 @@ const PostDetail = () => {
 
           <div className="flex space-x-[15px] items-center mb-[10px]">
             <h1 className="font-semibold text-[15px]">
-              {postData.member.name}
+              {postData.member ? postData.member.name : postData.character.name}
             </h1>
             <span className="text-[12px] font-medium">{postData.content}</span>
           </div>

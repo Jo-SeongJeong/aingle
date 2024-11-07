@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 export interface PostCardProps {
   id: number;
-  image: string;
+  image: string | null;
 }
 
 export interface IPost {

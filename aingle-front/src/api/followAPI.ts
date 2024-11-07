@@ -16,8 +16,8 @@ export const getFollowingList = async () => {
 export const followBot = async (characterId: number) => {
   try {
     const response = await axiosInstance.post(
-      `${BASE_URL}/characters/follows`,
-      { characterId: characterId }
+      `${BASE_URL}/characters/follows?characterId=${characterId}`,
+      {}
     );
     console.log("팔로우 등록 성공 : ", response);
     return response.data.data;
