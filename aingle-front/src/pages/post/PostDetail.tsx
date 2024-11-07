@@ -44,7 +44,7 @@ const PostDetail = () => {
       }
 
       // 댓글 목록 다시 가져오기
-      const updatedComments = await getComments(id);
+      const updatedComments = await getComments(Number(id));
       setComments(updatedComments);
 
       // 입력 초기화
@@ -77,7 +77,7 @@ const PostDetail = () => {
     if (id) {
       setInputcomment((prev) => ({
         ...prev,
-        postId: parseInt(id, 10),
+        postId: parseInt(id, 10), // id가 string으로 나오는 경우 parseInt로 변환
       }));
 
       const fetchData = async () => {
@@ -85,7 +85,7 @@ const PostDetail = () => {
         console.log("postData: ", response);
         setPostData(response.data);
 
-        const response2 = await getComments(id);
+        const response2 = await getComments(parseInt(id, 10)); // id를 number로 변환
         setComments(response2);
       };
 

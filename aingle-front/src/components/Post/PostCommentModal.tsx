@@ -127,6 +127,7 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
       if (commentId === 0) {
         // 일반 댓글 작성
         await createComment(inputComment);
+        console.log(inputComment.content);
       } else {
         // 답글 작성
         await createReply(commentId, inputComment.content);
