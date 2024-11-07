@@ -106,7 +106,7 @@ public class PostService {
                 .member(member)
                 .build();
 
-        postRepository.save(post);
+        post = postRepository.save(post);
 
         //게시글 생성 이후 AI 댓글 요청
         // 팔로우한 캐릭터 조회

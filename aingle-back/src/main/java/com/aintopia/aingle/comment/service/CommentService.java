@@ -119,8 +119,8 @@ public class CommentService {
             commentRepository.save(comment);
 
             post.increaseComment();
-            postRepository.save(post);
         }
+        postRepository.save(post);
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
