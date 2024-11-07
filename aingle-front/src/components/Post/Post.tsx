@@ -7,9 +7,10 @@ interface postProps {
   post: IPost;
   onCommentClick: () => void;
   onLikeClick: () => void;
+  onNameClick: () => void;
 }
 
-const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
+const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) => {
 
   const { member } = post;
   const calDate = calTime(post.createTime);
@@ -21,7 +22,7 @@ const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
           className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
         />
         <div>
-          <h1 className="text-[15px] text-black font-semibold">
+          <h1 className="text-[15px] text-black font-semibold" onClick={onNameClick}>
             {member.name}
           </h1>
           <h1 className="text-[10px] text-[#A6A6A6]">{calDate}</h1>
@@ -46,7 +47,7 @@ const Post = ({ post , onCommentClick , onLikeClick}: postProps) => {
       </div>
 
       <div className="flex space-x-[15px] items-center mb-[10px]">
-        <h1 className="font-semibold text-[15px]">{member.name}</h1>
+        <h1 className="font-semibold text-[15px]" onClick={onNameClick}>{member.name}</h1>
         <span className="text-[12px] font-medium">{post.content}</span>
       </div>
       <div onClick={onCommentClick}>
