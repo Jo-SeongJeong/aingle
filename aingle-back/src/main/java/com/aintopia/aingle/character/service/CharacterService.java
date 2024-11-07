@@ -17,7 +17,6 @@ import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import java.io.IOException;
