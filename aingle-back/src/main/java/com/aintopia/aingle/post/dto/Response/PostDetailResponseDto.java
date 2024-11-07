@@ -24,6 +24,6 @@ public class PostDetailResponseDto {
     private Long totalComment;
     private PostMember member;
     private PostCharacter character;
-
+    private Boolean isLiked;
     private List<CommentDto> comments;
 }
