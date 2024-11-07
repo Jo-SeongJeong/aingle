@@ -32,6 +32,13 @@ const PostDetail = () => {
     content: "",
   });
 
+  const addEmoji = (emoji: string) => {
+    setInputcomment((prev) => ({
+      ...prev,
+      content: prev.content + emoji,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -196,11 +203,36 @@ const PostDetail = () => {
             </div>
           )}
           <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
-            <img src={redHeart} className="w-[24px]" alt="redHeart" />
-            <img src={face} className="w-[24px]" alt="face" />
-            <img src={clap} className="w-[24px]" alt="clap" />
-            <img src={fire} className="w-[24px]" alt="fire" />
-            <img src={thumb} className="w-[24px]" alt="thumb" />
+            <img
+              src={redHeart}
+              className="w-[24px]"
+              alt="❤️"
+              onClick={() => addEmoji("❤️")}
+            />
+            <img
+              src={face}
+              className="w-[24px]"
+              alt="😊"
+              onClick={() => addEmoji("😊")}
+            />
+            <img
+              src={clap}
+              className="w-[24px]"
+              alt="👏"
+              onClick={() => addEmoji("👏")}
+            />
+            <img
+              src={fire}
+              className="w-[24px]"
+              alt="🔥"
+              onClick={() => addEmoji("🔥")}
+            />
+            <img
+              src={thumb}
+              className="w-[24px]"
+              alt="👍"
+              onClick={() => addEmoji("👍")}
+            />
           </div>
           <div className="w-full h-full flex items-center justify-center space-x-[10px] pb-[57px]">
             <img

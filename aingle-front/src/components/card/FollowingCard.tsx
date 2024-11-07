@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { unfollowBot } from "../../api/followAPI";
+import { useNavigate } from "react-router-dom";
 
 export interface IFollowCard {
   characterId: number;
@@ -22,6 +23,7 @@ export const FollowingCard = ({
   personality,
   imageUrl,
 }: IFollowCard) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -40,6 +42,9 @@ export const FollowingCard = ({
         className="bg-black w-[60px] h-[60px] rounded-full bg-cover bg-center  flex-shrink-0"
         style={{
           backgroundImage: `url(${imageUrl})`,
+        }}
+        onClick={() => {
+          navigate(`/vote/charDetail/${characterId}`);
         }}
       />
       <div>

@@ -1,14 +1,27 @@
 import bgbg from "../../assets/images/bgbg.png";
 import PostCard from "../../components/card/PostCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCharacterDetail } from "../../api/voteAPI";
+import { CharacterInfo } from "../../model/character";
 
 const CharDetail = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
-  //   const { id: string } = useParams(); //추후 api요청시 사용
+  const { id } = useParams(); //추후 api요청시 사용
+
+  const [botData, setBotData] = useState<CharacterInfo>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getCharacterDetail(Number(id));
+      setBotData(response);
+    };
+
+    fetchData();
+  }, []);
 
   // 더미 데이터 생성
   const posts = [
@@ -40,11 +53,11 @@ const CharDetail = () => {
       {/* 프로필 섹션 */}
       <div className="relative flex items-center justify-center z-50 mt-[95px] flex-col">
         <img
-          src="/path/to/profile-image.jpg" // 실제 이미지 URL로 변경하세요
-          className="bg-black w-[100px] h-[100px] rounded-full border-[3px] border-[#FB599A] mb-[10px]"
+          src={botData?.imageUrl} // 실제 이미지 URL로 변경하세요
+          className="bg-white w-[100px] h-[100px] rounded-full border-[3px] border-[#FB599A] mb-[10px]"
           alt="프로필 이미지"
         />
-        <h1 className="text-[20px] font-semibold mb-3">정채린</h1>
+        <h1 className="text-[20px] font-semibold mb-3">{botData?.name}</h1>
         <div className="flex gap-[15px] items-center">
           <div className="bg-[#FFE8F1] py-[15px] px-[40px] flex gap-[70px] rounded-[10px]">
             <div className="text-center">
