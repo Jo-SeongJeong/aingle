@@ -29,7 +29,7 @@ const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) =
     <div className="w-full mb-[50px]" key={post.postId}>
       <div className="flex items-center mb-[11px]">
         <img
-          src={member.memberImage} // props에서 받은 값을 사용합니다
+          src={profile} // props에서 받은 값을 사용합니다
           className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
         />
         <div>
