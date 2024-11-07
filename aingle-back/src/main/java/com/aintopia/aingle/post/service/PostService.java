@@ -1,15 +1,12 @@
 package com.aintopia.aingle.post.service;
 
 import com.aintopia.aingle.character.domain.Character;
-import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.comment.service.CommentService;
-import com.aintopia.aingle.common.openai.OpenAIClient;
-import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
@@ -34,13 +31,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

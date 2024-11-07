@@ -1,6 +1,5 @@
 package com.aintopia.aingle.alarm.domain;
 
-import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.vote.domain.Vote;
@@ -38,6 +37,10 @@ public class Alarm {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "sender_id")
+    private Member sender;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -47,9 +50,10 @@ public class Alarm {
     private Vote vote;
 
     @Builder(builderMethodName = "alarmPostBuilder")
-    public Alarm(Post post, Member member) {
+    public Alarm(Post post, Member member, Member sender) {
         this.post = post;
         this.member = member;
+        this.sender = sender;
     }
 
 

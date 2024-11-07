@@ -57,6 +57,7 @@ public class ReplyService {
             alarmRepository.save(Alarm.alarmPostBuilder()
                     .member(alarmMember)
                     .post(post)
+                    .sender(member)
                     .build());
         }
 
