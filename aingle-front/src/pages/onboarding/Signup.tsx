@@ -6,6 +6,7 @@ import { ImemberSignUpRequestDto } from "../../model/user";
 import { useLocation, useNavigate } from "react-router-dom";
 import { registUserInfo } from "../../api/userAPI";
 import { userDataState } from "../../store/atoms";
+import defaultImg from "../../assets/defaultImg.png";
 
 const Signup = () => {
   const location = useLocation();
@@ -57,9 +58,13 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 파일이 없을 경우 기본 이미지로 설정
     if (!inputInfo.file) {
-      alert("프로필 이미지를 선택해주세요.");
-      return;
+      const response = await fetch(defaultImg);
+      const blob = await response.blob();
+      const file = new File([blob], "defaultImg.png", { type: blob.type });
+      handleChange("file", file); // 기본 이미지를 파일로 설정
     }
 
     try {
@@ -87,7 +92,6 @@ const Signup = () => {
       console.error("회원 가입 실패 :", error);
     }
   };
-
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto">
       <TextHeader navTo={"/mypage"} headerText={"회원가입"} />
