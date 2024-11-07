@@ -19,6 +19,7 @@ export const createComment = async (comment: IcreateComment) => {
 export const getComments = async (postId: number) => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/comments/${postId}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("게시글 댓글 조회에 실패 : ", error);
