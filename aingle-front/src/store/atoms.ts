@@ -20,3 +20,11 @@ export const userDataState = atom({
   },
   effects_UNSTABLE: [persistAtom],
 });
+
+export const characterIdState = atom({
+  key: "recommendId",
+  default: {
+    id: 6,
+  },
+  effects_UNSTABLE: [persistAtom],
+});

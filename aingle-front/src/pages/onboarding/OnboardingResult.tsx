@@ -8,13 +8,17 @@ import talk03 from "../../assets/images/talk03.png";
 import talk04 from "../../assets/images/talk04.png";
 import talk05 from "../../assets/images/talk05.png";
 import talk06 from "../../assets/images/talk06.png";
+import { useRecoilState } from "recoil";
+import { characterIdState } from "../../store/atoms";
 
 const OnboardingResult = () => {
   const location = useLocation();
   const surveyResult = location.state as CharacterInfoShort; // 전달받은 데이터
   const navigate = useNavigate();
+  const [recommendID, setRecommendId] = useRecoilState(characterIdState);
   const start = async () => {
     try {
+      setRecommendId(surveyResult.characterId);
       navigate("/login");
     } catch (error) {
       console.error("오류 발생:", error);
