@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { getCharacterDetail } from "../../api/voteAPI";
-import { CharacterInfo } from "../../model/character";
+import { getCharacterDetail, getCharDetail } from "../../api/voteAPI";
+import { CharacterInfo, IBotDetail } from "../../model/character";
 
 const CharDetail = () => {
   const [isFollowing, setIsFollowing] = useState(false);
@@ -13,11 +13,15 @@ const CharDetail = () => {
   const { id } = useParams(); //추후 api요청시 사용
 
   const [botData, setBotData] = useState<CharacterInfo>();
+  const [botDetail, setBotDetail] = useState<IBotDetail>();
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await getCharacterDetail(Number(id));
       setBotData(response);
+
+      const response2 = await getCharDetail(Number(id));
+      setBotDetail(response2);
     };
 
     fetchData();
@@ -61,7 +65,9 @@ const CharDetail = () => {
         <div className="flex gap-[15px] items-center">
           <div className="bg-[#FFE8F1] py-[15px] px-[40px] flex gap-[70px] rounded-[10px]">
             <div className="text-center">
-              <h1 className="text-lg font-bold text-pink-base">4</h1>
+              <h1 className="text-lg font-bold text-pink-base">
+                {botDetail?.postCount}
+              </h1>
               <h1 className="text-[#6A6A6A]">게시물</h1>
             </div>
             <div
@@ -70,11 +76,13 @@ const CharDetail = () => {
                 navigate("/mypage/following");
               }}
             >
-              <h1 className="text-lg font-bold text-pink-base">4</h1>
+              <h1 className="text-lg font-bold text-pink-base">
+                {botDetail?.followerCount}
+              </h1>
               <h1 className="text-[#6A6A6A]">팔로워</h1>
             </div>
           </div>
-          {!isFollowing ? (
+          {!botDetail?.follow ? (
             <button
               onClick={() => setIsFollowing(true)}
               className="w-[82px] h-[50px] rounded-[10px] bg-pink-base text-white"

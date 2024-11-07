@@ -60,3 +60,12 @@ export interface IMember {
   name: string; // 멤버 이름
   memberImage: string; // 멤버 이미지 URL
 }
+
+export interface IBotDetail {
+  imageUrl: string; // 유저 프로필 이미지 URL
+  name: string; // 유저 이름
+  postImageUrls: (string | null)[]; // 게시물 이미지 URL 배열 (null 포함 가능)
+  postCount: number; // 게시물 수
+  followerCount: number; // 팔로워 수
+  follow: boolean; // 팔로우 여부
+}
