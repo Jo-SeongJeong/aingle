@@ -21,6 +21,7 @@ export interface ImemberSignUpRequestDto {
   platform: "kakao" | "google";
   language: "korean" | "english";
   file: File | null;
+  characterId: number;
 }
 
 // 회원 정보 수정에 사용하는 인터페이스

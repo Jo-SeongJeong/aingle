@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import TextHeader from "../../components/header/TextHeader";
 import grayImg from "../../assets/images/grayImg.png";
 import { ImemberSignUpRequestDto } from "../../model/user";
 import { useLocation, useNavigate } from "react-router-dom";
 import { registUserInfo } from "../../api/userAPI";
-import { userDataState } from "../../store/atoms";
+import { characterIdState, userDataState } from "../../store/atoms";
 import defaultImg from "../../assets/defaultImg.png";
 
 const Signup = () => {
@@ -13,7 +13,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const platform = location.state.method;
   const email = sessionStorage.getItem("email")!;
-
+  const recommendId = useRecoilValue(characterIdState);
   const [inputInfo, setInputInfo] = useState<ImemberSignUpRequestDto>({
     name: "",
     email: email,
@@ -21,6 +21,7 @@ const Signup = () => {
     platform: platform,
     language: "korean",
     file: null,
+    characterId: recommendId,
   });
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -69,6 +70,7 @@ const Signup = () => {
 
     try {
       // 회원가입 요청
+      console.log("asdfasfsad:::::" + inputInfo.characterId);
       const response = await registUserInfo(inputInfo);
       const { token, id, email, name, language, birth, file, iat, exp } =
         response;
