@@ -57,23 +57,26 @@ public class VoteService {
                 log.info("투표 종료 : " + currentVote.getVoteId());
 
                 // 1등 캐릭터 저장
-                Character winnerCharacter = characterRepository.findTopByVoteIdOrderByVoteCountDesc(currentVote.getVoteId()).orElseThrow(NoVoteCharacterException::new);
-                currentVote.updateWinnerCharacter(winnerCharacter);
-                log.info("winnerCharacter:" + winnerCharacter.getCharacterId());
+                Optional<Character> voteCharacter = characterRepository.findTopByVoteIdOrderByVoteCountDesc(currentVote.getVoteId());
+                if(voteCharacter.isPresent()){
+                    Character winnerCharacter = voteCharacter.get();
+                    currentVote.updateWinnerCharacter(winnerCharacter);
+                    log.info("winnerCharacter:" + winnerCharacter.getCharacterId());
 
-                // 1등 캐릭터 알람 저장
-                // 멤버 모두에게 알람
-                List<Member> allMember = memberRepository.findByIsResignedIsFalse();
-                log.info("allMember size:" + allMember.size());
-                for(Member member : allMember){
-                    log.info("member:" + member.getMemberId());
-                    alarmRepository.save(Alarm.createVoteAlarm(currentVote, member));
+                    // 1등 캐릭터 알람 저장
+                    // 멤버 모두에게 알람
+                    List<Member> allMember = memberRepository.findByIsResignedIsFalse();
+                    log.info("allMember size:" + allMember.size());
+                    for(Member member : allMember){
+                        log.info("member:" + member.getMemberId());
+                        alarmRepository.save(Alarm.createVoteAlarm(currentVote, member));
+                    }
                 }
-
                 // 캐릭터들의 vote_count 0으로 초기화
                 List<Character> voteCharacters = characterRepository.findByVoteAndIsDeletedFalse(currentVote);
                 for(Character character : voteCharacters){
                     character.resetVote();
+
                 }
                 currentVoteId = null;
             }
