@@ -37,7 +37,7 @@ public class Alarm {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender_id")
     private Member sender;
 
