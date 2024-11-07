@@ -13,17 +13,55 @@ import left from "../../assets/icons/comment/left.png";
 import redHeart from "../../assets/icons/comment/redHeart.png";
 import send from "../../assets/icons/comment/send.png";
 import thumb from "../../assets/icons/comment/thumb.png";
+import { createComment, createReply, getComments } from "../../api/commentAPI";
+import Postcomment from "../../components/Post/Postcomment";
+import ReplyComment from "../../components/Post/ReplyComment";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PostDetail = () => {
   const { id } = useParams();
   const [postData, setPostData] = useState<IPost | null>(null);
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [commentId, setCommentId] = useState(0);
+  const [commentWriter, setCommentWriter] = useState("");
 
   const [inputComment, setInputcomment] = useState<IcreateComment>({
     postId: Number(id),
     content: "",
   });
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (commentId === 0) {
+        // 일반 댓글 작성
+        await createComment(inputComment);
+      } else {
+        // 답글 작성
+        await createReply(commentId, inputComment.content);
+      }
+
+      // 댓글 목록 다시 가져오기
+      const updatedComments = await getComments(id);
+      setComments(updatedComments);
+
+      // 입력 초기화
+      setInputcomment((prev) => ({
+        ...prev,
+        content: "",
+      }));
+      setCommentId(0); // 답글 작성 후 commentId 초기화
+      setCommentWriter("");
+    } catch (error) {
+      console.error("댓글 등록 실패 : ", error);
+    }
+  };
+
+  if (comments === null) {
+    return null; // comments가 null인 동안 아무것도 렌더링하지 않음
+  }
 
   const handleChange = (
     field: keyof IcreateComment,
@@ -36,13 +74,23 @@ const PostDetail = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getPostDetail(id as string);
-      console.log("postData: ", response);
-      setPostData(response.data);
-    };
+    if (id) {
+      setInputcomment((prev) => ({
+        ...prev,
+        postId: parseInt(id, 10),
+      }));
 
-    fetchData();
+      const fetchData = async () => {
+        const response = await getPostDetail(id);
+        console.log("postData: ", response);
+        setPostData(response.data);
+
+        const response2 = await getComments(id);
+        setComments(response2);
+      };
+
+      fetchData();
+    }
   }, [id]);
 
   if (!postData) {
@@ -102,10 +150,46 @@ const PostDetail = () => {
             style={{ maxHeight: "60vh" }} // Adjust maxHeight as needed
           >
             {/* Render comments if necessary */}
+            <div
+              className=" overflow-y-auto mb-[130px]"
+              style={{ maxHeight: "60vh" }}
+            >
+              {comments.map((comment, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    setCommentId(comment.commentId);
+                    setCommentWriter(comment.member.name);
+                  }}
+                >
+                  <Postcomment key={comment.commentId} comment={comment} />
+                  {comment.replies &&
+                    comment.replies.map((reply, idx) => {
+                      return <ReplyComment key={idx} comment={reply} />;
+                    })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px]">
+        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px] ">
+          {commentWriter != "" && (
+            <div
+              className="px-5 py-2 mb-3 text-white flex justify-between items-center"
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+            >
+              <h1>{commentWriter}에 답글 작성</h1>
+
+              <FontAwesomeIcon
+                icon={faXmark}
+                onClick={() => {
+                  setCommentId(0);
+                  setCommentWriter("");
+                }}
+              />
+            </div>
+          )}
           <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
             <img src={redHeart} className="w-[24px]" alt="redHeart" />
             <img src={face} className="w-[24px]" alt="face" />
@@ -123,6 +207,7 @@ const PostDetail = () => {
               <input
                 onChange={(e) => handleChange("content", e.target.value)}
                 value={inputComment.content}
+                required
                 type="text"
                 placeholder="댓글 달기"
                 className="border-[#CFCFCF] border-[1px] h-[34px] px-[15px] rounded-full"
@@ -177,4 +262,4 @@ export default PostDetail;
   "comments": []
 }
 
- */
+*/
