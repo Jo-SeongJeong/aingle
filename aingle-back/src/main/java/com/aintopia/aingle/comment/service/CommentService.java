@@ -125,12 +125,13 @@ public class CommentService {
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
     private List<CommentDto> getCommentsWithReplies(Long postId) {
-        List<Comment> comments = commentRepository.findByPost_PostId(postId);
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+        List<Comment> comments = commentRepository.findByPost(post);
 
         return comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .map(comment -> {
-                    List<Reply> replies = replyRepository.findByComment_CommentId(comment.getCommentId());
+                    List<Reply> replies = replyRepository.findByComment(comment);
                     return convertToCommentDto(comment, replies);
                 })
                 .collect(Collectors.toList());
