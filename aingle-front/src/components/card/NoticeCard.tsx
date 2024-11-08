@@ -16,7 +16,7 @@ const NoticeCard: React.FC<AlarmProps> = ({ alarm, onClickAlarm }) => {
 
   // 알림 텍스트 설정
   const alarmText = voteWinnerCharacter
-    ? `이번 달 1등은 ${voteWinnerCharacter.name} 입니다!`
+    ? `이번 달 투표 1등은 ${voteWinnerCharacter.name} 입니다!`
     : "회원님의 글에 반응을 남겼습니다";
 
   return (
