@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import bird from "../../assets/icons/Bird.png";
 import { useNavigate } from "react-router-dom";
 import SurveyElementButton from "../../components/button/SurveyElementButton";
+import { useRecoilState } from "recoil";
+import { characterIdState } from "../../store/atoms";
 
 const Onboarding = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -12,7 +14,7 @@ const Onboarding = () => {
     4: -1,
   });
   const navigate = useNavigate();
-
+  const [recommendID, setRecommendId] = useRecoilState(characterIdState);
   // 선택된 버튼을 업데이트하는 함수
   const handleSelect = (questionNumber: number, buttonNumber: number) => {
     setSelected((prev) => ({
@@ -68,6 +70,11 @@ const Onboarding = () => {
         />
       </div>
     );
+  };
+
+  const skip = () => {
+    setRecommendId(6);
+    navigate("/login");
   };
 
   // 페이지별 컨텐츠 렌더링
@@ -228,6 +235,16 @@ const Onboarding = () => {
         {pageNumber > 1 && <ProgressBar />}
         {renderContent()}
       </div>
+      {pageNumber === 1 && (
+        <div className="flex w-full px-2 justify-end items-end">
+          <h1
+            className="text-3 text-[#91919C] underline cursor-pointer"
+            onClick={skip}
+          >
+            건너뛰기
+          </h1>
+        </div>
+      )}
       <button
         className={`py-[20px] w-full text-white bg-pink-base rounded-[10px] font-hakgyo ${
           pageNumber === 1 ? "mt-[10px]" : "mt-[80px]"
