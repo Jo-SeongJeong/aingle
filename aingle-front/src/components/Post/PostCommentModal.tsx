@@ -204,37 +204,43 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
           className="px-[18px] pt-[25px] overflow-y-auto"
           style={{ maxHeight: "60vh" }}
         >
-          {comments.map((comment, idx) => (
-            <div
-              key={idx}
-              onClick={() => {
-                setCommentId(comment.commentId);
-                setCommentWriter(
-                  comment.member?.name ||
-                    comment.character?.name ||
-                    "Unknown User"
-                );
-              }}
-            >
-              <Postcomment
-                key={comment.commentId}
-                comment={comment}
-                refreshComments={refreshComments}
-              />
-              {comment.replies &&
-                comment.replies.map((reply, idx) => {
-                  return (
-                    <ReplyComment
-                      key={idx}
-                      comment={reply}
-                      refreshComments={refreshComments}
-                    />
-                  );
-                })}
+          {comments.length === 0 ? (
+            <div className="text-center text-gray-darkest py-5">
+              <p className="font-bold text-lg">아직 댓글이 없습니다</p>
+              <p className="mt-1 text-sm text-gray-400">댓글을 남겨보세요.</p>
             </div>
-          ))}
+          ) : (
+            comments.map((comment, idx) => (
+              <div
+                key={idx}
+                onClick={() => {
+                  setCommentId(comment.commentId);
+                  setCommentWriter(
+                    comment.member?.name ||
+                      comment.character?.name ||
+                      "Unknown User"
+                  );
+                }}
+              >
+                <Postcomment
+                  key={comment.commentId}
+                  comment={comment}
+                  refreshComments={refreshComments}
+                />
+                {comment.replies &&
+                  comment.replies.map((reply, idx) => {
+                    return (
+                      <ReplyComment
+                        key={idx}
+                        comment={reply}
+                        refreshComments={refreshComments}
+                      />
+                    );
+                  })}
+              </div>
+            ))
+          )}
         </div>
-
         {/* Icons and comment input */}
         <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px] ">
           {commentWriter != "" && (
