@@ -38,7 +38,7 @@ const CharDetail = () => {
           icon={faChevronLeft}
           className=" text-white absolute top-[16px] left-[18px] cursor-pointer"
           onClick={() => {
-            navigate("/mypage");
+            navigate("/mypage" , {replace : true});
           }}
         />
       </div>
