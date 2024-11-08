@@ -78,13 +78,13 @@ public class PostService {
     public PostDetailResponseDto findByPostId(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundMemberException::new);
-        List<Comment> comments = commentRepository.findByPost_PostId(post.getPostId());
+        List<Comment> comments = commentRepository.findByPost(post);
 
         // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
         List<CommentDto> commentDtos = comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .map(comment -> {
-                    List<Reply> replies = replyRepository.findByComment_CommentId(comment.getCommentId());
+                    List<Reply> replies = replyRepository.findByComment(comment);
                     return convertToCommentDto(comment, replies);
                 })
                 .collect(Collectors.toList());
