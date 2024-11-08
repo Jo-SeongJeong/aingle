@@ -19,28 +19,24 @@ const Vote = () => {
     useState<CharacterGetPublicResponseDto | null>(null);
   const [makedCharacters, setmakedCharacters] =
     useState<CharacterGetPublicResponseDto | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<number>(0);
 
-  const fetchCharacter = async () => {
+  // 캐릭터 데이터를 다시 가져오는 함수
+  const refreshCharacters = async () => {
     try {
-      const data = await getPublicCharacter();
-      setCharacters(data);
-    } catch (error) {
-      console.error("공용 캐릭터 데이터 로드 실패: ", error);
-    }
-  };
+      const publicData = await getPublicCharacter();
+      setCharacters(publicData);
 
-  const fetchMakeCharacter = async () => {
-    try {
-      const data = await getPrivateCharacter();
-      setmakedCharacters(data);
+      const privateData = await getPrivateCharacter();
+      setmakedCharacters(privateData);
     } catch (error) {
-      console.error("나만의 작은 캐릭터 데이터 로드 실패: ", error);
+      console.error("캐릭터 데이터 로드 실패: ", error);
     }
   };
 
   useEffect(() => {
-    fetchCharacter();
-    fetchMakeCharacter();
+    refreshCharacters(); // 컴포넌트가 마운트될 때 데이터 가져오기
   }, []);
 
   // follow가 true인 캐릭터 수를 계산하고 GA 이벤트 전송
@@ -67,9 +63,6 @@ const Vote = () => {
     0
   );
   const placeholders2 = Array(placeholdersNeeded2).fill(null);
-
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<number>(0);
 
   const openModal = (characterId: number) => {
     setSelectedCharacter(characterId);
@@ -143,7 +136,10 @@ const Vote = () => {
       </div>
       <ChDetailModal
         isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          refreshCharacters(); // 모달이 닫힐 때 데이터 다시 가져오기
+        }}
         CharacterId={selectedCharacter}
       />
       <div className="w-full h-[30px] flex justify-center items-center">
@@ -180,9 +176,3 @@ const Vote = () => {
 };
 
 export default Vote;
-
-// "썅@너메거", "씨@봉방거", "조@끄튼거", "마 뜨@겁나", "스@근하게", "글ㅇ치로", "힙@하하", "힙끼얏호우", "쌈@뽕", "뭔말알?", "색@기 창@자 빠졌네", "뽕@알","깔@롱 좃@되네" 라는 표현을 말 중간중간 사용함
-
-// 웃기거나 놀랄 경우 "ㅋㅋㅋ씹", "히애액", "메ㅇ우;;;", "맛@탱도리" 라는 표현 사용
-
-// 상대를 "딸@랑구", "해@변" 라고 지칭 ex)해@변아 밥 먹었냐?.
