@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.MyPagePostDto;
+import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
@@ -232,20 +233,22 @@ public class CharacterService {
         List<Post> pList = postRepository.findByCharacter(character);
         for(Post p : pList){
             p.delete();
-            postRepository.save(p);
         }
 
         List<Comment> cList = commentRepository.findByCharacter(character);
         for(Comment c : cList) {
             c.delete();
-            commentRepository.save(c);
+            c.getPost().decreaseComment();
         }
 
         List<Reply> rList = replyRepository.findByCharacter(character);
         for(Reply r : rList) {
             r.delete();
-            replyRepository.save(r);
         }
+
+        postRepository.saveAll(pList);
+        commentRepository.saveAll(cList);
+        replyRepository.saveAll(rList);
     }
 
     @Transactional(readOnly = true)
