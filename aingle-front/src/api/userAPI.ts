@@ -16,6 +16,7 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
       birth: userInfo.birth,
       platform: userInfo.platform,
       language: userInfo.language,
+      characterId: userInfo.characterId,
     };
 
     // `memberSignUpRequestDto`라는 키로 전체 데이터를 묶기

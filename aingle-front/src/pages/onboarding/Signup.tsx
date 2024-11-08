@@ -20,8 +20,8 @@ const Signup = () => {
     birth: "",
     platform: platform,
     language: "korean",
-    file: null,
     characterId: recommendId,
+    file: null,
   });
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

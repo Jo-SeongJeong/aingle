@@ -1,7 +1,7 @@
 import bgbg from "../../assets/images/bgbg.png";
 import PostCard from "../../components/card/PostCard";
 import cog from "../../assets/icons/settings.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
 import { getUserInfo } from "../../api/userAPI";
@@ -10,6 +10,7 @@ import { ImyData } from "../../model/user";
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // useLocation 훅 사용
   const userData = useRecoilValue(userDataState);
   const [myData, setMyData] = useState<ImyData>({
     followCount: 0,
@@ -23,8 +24,13 @@ const MyPage = () => {
       setMyData(response);
     };
 
-    fetchData();
-  }, []);
+    // location.state가 존재하고 refresh가 true일 경우 데이터를 다시 가져옴
+    if (location.state && location.state.refresh) {
+      fetchData();
+    } else {
+      fetchData();
+    }
+  }, [location.state]); // location.state 변경될 때마다 실행
 
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto pb-[90px]">
