@@ -3,9 +3,11 @@ import { IcreatePost, IPost } from "../model/post";
 import axiosInstance from "./axiosInstance";
 
 // 게시글 전체 조회 api
-export const getPost = async (): Promise<IPost[]> => {
+export const getPost = async (page: number, size: number): Promise<IPost[]> => {
   try {
-    const response = await axiosInstance.get<IPost[]>(`${BASE_URL}/posts`);
+    const response = await axiosInstance.get<IPost[]>(
+      `${BASE_URL}/posts?page=${page}&size=${size}`
+    );
     console.log(response.data);
     return response.data;
   } catch (error) {
