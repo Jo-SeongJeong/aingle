@@ -41,7 +41,7 @@ public class MemberController {
     })
     public ResponseEntity<?> signUp(@RequestPart("memberSignUpRequestDto") MemberSignUpRequestDto memberSignUpRequestDto,
                                     @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-
+        System.out.println("Controller: " + memberSignUpRequestDto);
         String accessToken = memberService.signUp(memberSignUpRequestDto, file);
         return ResponseEntity.status(HttpStatus.OK).body(accessToken);
     }
