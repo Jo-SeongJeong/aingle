@@ -7,13 +7,19 @@ import ChDetailModal from "../../components/modal/ChDetailModal";
 import { useNavigate } from "react-router-dom";
 import { CharacterGetPublicResponseDto } from "../../model/vote";
 import { getPrivateCharacter, getPublicCharacter } from "../../api/voteAPI";
+import ReactGA from "react-ga4";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
 
 const Vote = () => {
   const navigate = useNavigate();
+  const userData = useRecoilValue(userDataState);
+
   const [characters, setCharacters] =
     useState<CharacterGetPublicResponseDto | null>(null);
   const [makedCharacters, setmakedCharacters] =
     useState<CharacterGetPublicResponseDto | null>(null);
+
   const fetchCharacter = async () => {
     try {
       const data = await getPublicCharacter();
@@ -22,6 +28,7 @@ const Vote = () => {
       console.error("공용 캐릭터 데이터 로드 실패: ", error);
     }
   };
+
   const fetchMakeCharacter = async () => {
     try {
       const data = await getPrivateCharacter();
@@ -30,10 +37,26 @@ const Vote = () => {
       console.error("나만의 작은 캐릭터 데이터 로드 실패: ", error);
     }
   };
+
   useEffect(() => {
     fetchCharacter();
     fetchMakeCharacter();
   }, []);
+
+  // follow가 true인 캐릭터 수를 계산하고 GA 이벤트 전송
+  useEffect(() => {
+    if (characters?.allCharacterDtos) {
+      const followedCount = characters.allCharacterDtos.filter(
+        (char) => char.follow
+      ).length;
+
+      // GA 이벤트 전송
+      ReactGA.gtag("event", "selected_character_count", {
+        user_id: userData.id, // 사용자 ID
+        selected_count: followedCount, // follow가 true인 캐릭터 수
+      });
+    }
+  }, [characters, userData]);
 
   const placeholdersNeeded =
     (3 - ((characters?.allCharacterDtos?.length ?? 0) % 3)) % 3;
@@ -157,3 +180,9 @@ const Vote = () => {
 };
 
 export default Vote;
+
+// "썅@너메거", "씨@봉방거", "조@끄튼거", "마 뜨@겁나", "스@근하게", "글ㅇ치로", "힙@하하", "힙끼얏호우", "쌈@뽕", "뭔말알?", "색@기 창@자 빠졌네", "뽕@알","깔@롱 좃@되네" 라는 표현을 말 중간중간 사용함
+
+// 웃기거나 놀랄 경우 "ㅋㅋㅋ씹", "히애액", "메ㅇ우;;;", "맛@탱도리" 라는 표현 사용
+
+// 상대를 "딸@랑구", "해@변" 라고 지칭 ex)해@변아 밥 먹었냐?.
