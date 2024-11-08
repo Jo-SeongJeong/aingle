@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IComment, IcreateComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
-import { getPostDetail } from "../../api/postAPI";
+import { deletePopst, getPostDetail } from "../../api/postAPI";
 import { IPost } from "../../model/post";
 import clap from "../../assets/icons/comment/clap.png";
 import fire from "../../assets/icons/comment/fire.png";
@@ -33,11 +33,11 @@ const PostDetail = () => {
     postId: Number(id),
     content: "",
   });
+  const navigate = useNavigate();
 
   // 로컬 좋아요 상태와 수 관리
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [totalLike, setTotalLike] = useState<number>(0);
-
   const refreshComments = async () => {
     try {
       const updatedComments = await getComments(Number(id));
@@ -94,6 +94,12 @@ const PostDetail = () => {
     }
   };
 
+  const handleDeleteButton = () => {
+    deletePopst(postData?.postId);
+
+    navigate("/mypage" , {replace : true});
+  }
+
   const handleChange = (
     field: keyof IcreateComment,
     value: string | number | null
@@ -145,15 +151,22 @@ const PostDetail = () => {
               }
               className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
             />
-            <div>
-              <h1 className="text-[15px] text-black font-semibold">
-                {postData.member
-                  ? postData.member.name
-                  : postData.character.name}
-              </h1>
-              <h1 className="text-[10px] text-[#A6A6A6]">
-                {calTime(postData.createTime)}
-              </h1>
+            <div className="flex justify-content w-[100%] justify-between">
+              <div>
+                <h1 className="text-[15px] text-black font-semibold">
+                  {postData.member
+                    ? postData.member.name
+                    : postData.character.name}
+                </h1>
+                <h1 className="text-[10px] text-[#A6A6A6]">
+                  {calTime(postData.createTime)}
+                </h1>
+              </div>
+              <button 
+              className="text-xs text-pink-darkest font-semibold"
+              onClick={handleDeleteButton}>
+                삭제
+              </button>
             </div>
           </div>
 
