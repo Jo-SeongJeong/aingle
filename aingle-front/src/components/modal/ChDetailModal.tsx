@@ -87,7 +87,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
               </div>
             </div>
             <div className="w-full h-3/6 bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium">
-              {CharacterInfo?.summary}
+              {CharacterInfo?.summary ? `${CharacterInfo.summary}` : "난 할 말 없어"}
             </div>
           </div>
           <button
