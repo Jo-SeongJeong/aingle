@@ -71,6 +71,8 @@ public class MemberService {
             MemberImage mI = memberImageRepository.save(memberImage);
             savedMember.saveImage(mI);
         }
+
+        System.out.println("현재 클라에서 받은 Id " + signUpMemberDto.getCharacterId());
         Character character = characterRepository.findById(signUpMemberDto.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
 
         if(followRepository.findByMemberAndCharacter(savedMember, character).isPresent()) throw new FollowDuplicateException();
