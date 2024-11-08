@@ -55,7 +55,7 @@ public class FollowService {
     @Transactional(readOnly = true)
     public FollowListResponse getFollowList(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-        List<Follow> followsByMember = followRepository.findByMember(member);
+        List<Follow> followsByMember = followRepository.findByMemberAndCharacterIsDeletedFalse(member);
 
         List<FollowInfo> followInfos = new ArrayList<>();
         for(Follow follow : followsByMember){
@@ -67,6 +67,5 @@ public class FollowService {
             followInfos.add(followInfo);
         }
         return new FollowListResponse(followInfos);
-
     }
 }

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
     Optional<Follow> findByMemberAndCharacter(Member member, Character character);
-    List<Follow> findByMember(Member member);
+    List<Follow> findByMemberAndCharacterIsDeletedFalse(Member member);
     @Query("SELECT COUNT(f) FROM Follow f WHERE f.character.characterId = :characterId")
     int countByCharacterId(@Param("characterId") Long characterId);
 

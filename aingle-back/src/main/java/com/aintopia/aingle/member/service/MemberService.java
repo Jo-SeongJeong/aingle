@@ -88,7 +88,7 @@ public class MemberService {
         List<Post> post = postRepository.findByMemberId(memberId);
         Integer postCount = post.size();
 
-        List<Follow> follows = followRepository.findByMember(member);
+        List<Follow> follows = followRepository.findByMemberAndCharacterIsDeletedFalse(member);
         Integer followCount = follows.size();
 
         List<MyPagePostDto> postDto = post.stream()
