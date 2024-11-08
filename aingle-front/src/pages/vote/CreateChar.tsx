@@ -90,7 +90,6 @@ const CreateChar = () => {
     try {
       const data = await createCharacter(characterInfo);
       setCreatedId(data.characterId);
-      followBot(data.characterId);
     } catch (error) {
       console.log("캐릭터 등록 실패");
     }

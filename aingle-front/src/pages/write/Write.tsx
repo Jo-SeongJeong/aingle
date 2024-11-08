@@ -101,7 +101,7 @@ const Write: React.FC = () => {
         <div></div>
       </div>
       {/* wrapper */}
-      <div className="py-6 px-[23px] flex flex-col h-full">
+      <form className="py-6 px-[23px] flex flex-col h-full">
         {/* 이미지 */}
         <div
           className="mb-[23px] w-[80px] h-[80px] bg-[#FFE8F1] rounded-[10px] flex flex-col items-center justify-center cursor-pointer relative"
@@ -133,6 +133,7 @@ const Write: React.FC = () => {
         {/* 텍스트 영역과 글자 수 표시 */}
         <div className="relative w-full mb-6">
           <textarea
+            required
             placeholder="내용을 입력하세요..."
             value={post.content}
             onChange={(e) => {
@@ -151,7 +152,7 @@ const Write: React.FC = () => {
         >
           게시하기
         </button>
-      </div>
+      </form>
     </div>
   );
 };
