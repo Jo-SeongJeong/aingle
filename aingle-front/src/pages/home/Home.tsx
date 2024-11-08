@@ -13,12 +13,13 @@ const Home = () => {
   const [postId, setPostId] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { posts, fetchPosts } = usePostStore();
+  const [page, setPage] = useState(0);
 
   const userData = useRecoilValue(userDataState);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(page, 3);
   }, []);
 
   const handleCommentClick = (id: number) => {
@@ -60,11 +61,11 @@ const Home = () => {
             onCommentClick={() => handleCommentClick(post.postId)}
             onLikeClick={() => {
               handleLikeClick(post.postId);
-              fetchPosts();
+              fetchPosts(page, 3);
             }}
             onDislikeClick={() => {
               handleDislikeClick(post.postId);
-              fetchPosts();
+              fetchPosts(page, 3);
             }}
             onNameClick={() => handleNameClick(post)}
           />
