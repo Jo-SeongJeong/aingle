@@ -167,8 +167,8 @@ public class CharacterService {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(NotFoundMemberException::new);
 
-        // 한 사람 당 3개만 생성 가능
-        int characterCnt = characterRepository.countByMember(member);
+        // 한 사람 당 3개만 생성 가능 (삭제된 캐릭터 제외)
+        int characterCnt = characterRepository.countByMemberAndIsDeletedFalse(member);
         if (characterCnt == 3) {
             throw new CharacterCreateLimitException();
         }
