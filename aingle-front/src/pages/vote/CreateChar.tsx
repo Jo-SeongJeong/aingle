@@ -7,6 +7,7 @@ import CreateModal from "../../components/modal/CreateModal";
 import ShareModal from "../../components/modal/ShareModal";
 import { createCharacter } from "../../api/voteAPI";
 import { CreateCharacter } from "../../model/character";
+import { followBot } from "../../api/followAPI";
 
 const CreateChar = () => {
   const [userName, setUserName] = useState("");
@@ -75,9 +76,9 @@ const CreateChar = () => {
         name: userName,
         job,
         age,
-        tone: tone === "반말",
+        tone: tone === "존댓말",
         personality,
-        talkType: talktype === "투머치토커",
+        talkType: talktype === "간결하게",
         description: etc,
         gender: gender,
       },
@@ -89,6 +90,7 @@ const CreateChar = () => {
     try {
       const data = await createCharacter(characterInfo);
       setCreatedId(data.characterId);
+      followBot(data.characterId);
     } catch (error) {
       console.log("캐릭터 등록 실패");
     }
