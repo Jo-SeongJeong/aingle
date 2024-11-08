@@ -166,20 +166,20 @@ const VoteMain = () => {
                     className={`relative w-[65px] p-2 bg-white rounded-xl flex items-center justify-center shadow-md cursor-pointer ${
                       selectedId === character.characterId
                         ? "border-2 border-red-500" // 선택된 항목에 빨간색 테두리
-                        : index === 0 && selectedId !== character.characterId
-                          ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
-                          : ""
+                        : index === 0
+                        ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
+                        : ""
                     }`}
                   >
-                    {index === 0 && selectedId !== character.characterId && (
-                      <span className="absolute bottom-0 font-bold text-[12px] text-transparent bg-gradient-to-r from-[#5de7d3] to-[#f3b15e] bg-clip-text px-1 py-0.5 rounded-md">
+                    {index === 0 && (
+                      <span className="absolute bottom-[-25px] font-bold text-[12px] text-transparent bg-gradient-to-r from-[#5de7d3] to-[#f3b15e] bg-clip-text px-1 py-0.5 rounded-md">
                         현재 1위
                       </span>
                     )}
                     <img
                       src={character.imageUrl}
                       alt={`Character ${character.characterId}`}
-                      className="w-full rounded-xl"
+                      className="w-[60px] h-[60px] rounded-xl object-cover"
                     />
                   </div>
                 </SwiperSlide>
