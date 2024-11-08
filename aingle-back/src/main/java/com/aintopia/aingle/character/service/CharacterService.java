@@ -15,6 +15,8 @@ import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
+import com.aintopia.aingle.follow.domain.Follow;
+import com.aintopia.aingle.follow.exception.FollowDuplicateException;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -159,6 +161,7 @@ public class CharacterService {
             .build();
     }
 
+    @Transactional
     public CharacterCreateResponseDto createCharacter(Long memberId,
         CharacterCreateRequest characterCreateRequest, MultipartFile file) throws IOException {
         Member member = memberRepository.findById(memberId)
@@ -192,6 +195,16 @@ public class CharacterService {
             .character(saveCharacter)
             .url(imageUrl)
             .build());
+
+        //이미 팔로우한 캐릭터인 경우
+        if(followRepository.findByMemberAndCharacter(member, saveCharacter).isPresent()){
+            throw new FollowDuplicateException();
+        }
+
+        followRepository.save(Follow.builder()
+                .member(member)
+                .character(saveCharacter)
+                .build());
 
         return CharacterCreateResponseDto.builder().characterId(saveCharacter.getCharacterId())
             .build();
