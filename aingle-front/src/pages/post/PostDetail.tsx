@@ -160,7 +160,7 @@ const PostDetail = () => {
           {postData.image && (
             <img
               src={postData.image}
-              className="bg-gray-500 rounded-[5px] w-full h-[340px] mb-[20px]"
+              className="bg-gray-500 rounded-[5px] w-full h-[340px] mb-[20px] object-cover"
             />
           )}
 

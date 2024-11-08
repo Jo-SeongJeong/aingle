@@ -4,6 +4,9 @@ import { IPost } from "../../model/post";
 import { calTime } from "../../utils/date.ts";
 import { useState, useEffect } from "react";
 import fillHeart from "../../assets/icons/fillHeart.png";
+import ReactGA from "react-ga4";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
 
 interface postProps {
   post: IPost;
@@ -25,6 +28,8 @@ const Post = ({
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [totalLike, setTotalLike] = useState<number>(Number(post.totalLike));
   const calDate = calTime(post.createTime);
+  const userData = useRecoilValue(userDataState);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     if (member?.memberImage) {
@@ -39,10 +44,29 @@ const Post = ({
       onDislikeClick();
       setIsLiked(false);
       setTotalLike((prev) => prev - 1);
+
+      // Dislike 이벤트 전송
+      ReactGA.gtag("event", "post_like_count", {
+        action: "Dislike",
+        user_id: userData.id,
+        post_id: post.postId,
+        current_like_count: totalLike - 1,
+        total_likes_by_user: likeCount, // 누적 좋아요 횟수
+      });
     } else {
       onLikeClick();
       setIsLiked(true);
       setTotalLike((prev) => prev + 1);
+      setLikeCount((prev) => prev + 1); // 좋아요 누른 횟수 증가
+
+      // Like 이벤트 전송
+      ReactGA.gtag("event", "post_like_count", {
+        action: "Like",
+        user_id: userData.id,
+        post_id: post.postId,
+        current_like_count: totalLike + 1,
+        total_likes_by_user: likeCount + 1, // 누적 좋아요 횟수
+      });
     }
   };
 

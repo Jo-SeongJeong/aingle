@@ -6,6 +6,7 @@ import axiosInstance from "./axiosInstance";
 export const getPublicCharacter = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters`);
+    console.log("퍼블릭 캐릭터 조회 : ", response.data);
     return response.data;
   } catch (error) {
     console.log("퍼블릭 캐릭터 전체 조회 실패: ", error);
@@ -30,6 +31,7 @@ export const getPrivateCharacter = async () => {
     const response = await axiosInstance.get(
       `${BASE_URL}/characters/my-character`
     );
+    console.log("내 캐릭터 조회 : ", response.data);
     return response.data;
   } catch (error) {
     console.error("나만의 작은 캐릭터 조회 실패 : ", error);
@@ -125,6 +127,19 @@ export const getCharDetail = async (characterId: number) => {
     return response.data;
   } catch (error) {
     console.error(`캐릭터 ${characterId} 정보 조회 실패 : `, error);
+    throw error;
+  }
+};
+
+//캐릭터 삭제
+export const deleteCharacter = async (characterId: number) => {
+  try {
+    const response = await axiosInstance.delete(
+      `${BASE_URL}/characters/${characterId}`
+    );
+    console.log(`캐릭터 ${characterId} 삭제 성공 : `, response.data);
+  } catch (error) {
+    console.error(`캐릭터 ${characterId} 삭제 실패 : `, error);
     throw error;
   }
 };

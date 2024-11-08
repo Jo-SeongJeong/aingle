@@ -6,10 +6,13 @@ import { IcreatePost } from "../../model/post";
 import { createPost } from "../../api/postAPI";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactGA from "react-ga4";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
 
 const Write: React.FC = () => {
-
   const navigate = useNavigate();
+  const userData = useRecoilValue(userDataState);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
@@ -21,19 +24,25 @@ const Write: React.FC = () => {
   });
 
   // post 내용 입력 할 때마다 호출하는 함수
-const handleChange = (field: keyof IcreatePost, value: string | File | null) => {
-  
-  // content 필드에 문자 길이 제한 적용
-  if (field === "content" && typeof value === "string" && value.length > 200) {
-    // 문자 제한을 초과하면 업데이트 안 함
-    return;
-  }
+  const handleChange = (
+    field: keyof IcreatePost,
+    value: string | File | null
+  ) => {
+    // content 필드에 문자 길이 제한 적용
+    if (
+      field === "content" &&
+      typeof value === "string" &&
+      value.length > 200
+    ) {
+      // 문자 제한을 초과하면 업데이트 안 함
+      return;
+    }
 
-  setPost((prev) => ({
-    ...prev,
-    [field]: value,
-  }));
-};
+    setPost((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const handleImageClick = () => {
     fileInputRef.current?.click(); // 이미지 디브 클릭 시 파일 입력 클릭
@@ -58,6 +67,17 @@ const handleChange = (field: keyof IcreatePost, value: string | File | null) => 
 
     try {
       await createPost(post);
+
+      // 사용자 ID 가져오기
+      const userId = userData.id;
+
+      // GA 이벤트 전송 (gtag를 활용하여 커스텀 데이터 포함)
+      ReactGA.gtag("event", "post_creation", {
+        category: "Form",
+        action: "Submit",
+        label: "게시글 작성",
+        user_id: userId, // 사용자 ID 포함
+      });
 
       navigate("/home");
     } catch (error) {
