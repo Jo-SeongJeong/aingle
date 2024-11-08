@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {
-    int countByMember(Member member);
+    int countByMemberAndIsDeletedFalse(Member member);
     List<Character> findByIsPublicTrueAndIsDeletedFalse();
     List<Character> findByMemberAndIsDeletedFalse(Member member);
     List<Character> findByVoteAndIsDeletedFalse(Vote vote);
