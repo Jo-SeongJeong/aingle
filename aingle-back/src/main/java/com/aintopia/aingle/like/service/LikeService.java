@@ -28,12 +28,12 @@ public class LikeService {
 
     @Transactional
     public void registLike(RegistLikeRequestDto registLikeRequestDto, Long memberId) {
-        Optional<Like> like = likeRepository.findByPost_PostIdAndMember_MemberId(registLikeRequestDto.getPostId(), memberId);
-
-        if(like.isPresent()) throw new AlreadyLikedException();
-
         Post post = postRepository.findById(registLikeRequestDto.getPostId()).orElseThrow(NotFoundPostException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        Optional<Like> like = likeRepository.findByPostAndMember(post, member);
+
+        if(like.isPresent()) throw new AlreadyLikedException();
 
         if(post.getIsDeleted()) throw new ForbiddenLikeException();
 
@@ -48,12 +48,12 @@ public class LikeService {
 
     @Transactional
     public void deleteLike(DeleteLikeRequestDto deleteLikeRequestDto, Long memberId) {
-        Optional<Like> like = likeRepository.findByPost_PostIdAndMember_MemberId(deleteLikeRequestDto.getPostId(), memberId);
+        Post post = postRepository.findById(deleteLikeRequestDto.getPostId()).orElseThrow(NotFoundPostException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        Optional<Like> like = likeRepository.findByPostAndMember(post, member);
 
         if(like.isEmpty()) throw new NotLikedException();
-
-        Post post = postRepository.findById(deleteLikeRequestDto.getPostId()).orElseThrow(NotFoundPostException::new);
-        memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
         if(post.getIsDeleted()) throw new ForbiddenLikeException();
 

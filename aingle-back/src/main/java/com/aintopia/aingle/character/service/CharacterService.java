@@ -13,6 +13,8 @@ import com.aintopia.aingle.character.exception.CharacterForbiddenException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+import com.aintopia.aingle.comment.domain.Comment;
+import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.domain.Follow;
@@ -25,11 +27,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.MyPagePostDto;
 import com.aintopia.aingle.post.repository.PostRepository;
+import com.aintopia.aingle.reply.domain.Reply;
+import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -51,6 +54,8 @@ public class CharacterService {
     private final S3Service s3Service;
     private final PostRepository postRepository;
     private final OpenAIClient openAIClient;
+    private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -210,6 +215,7 @@ public class CharacterService {
             .build();
     }
 
+    @Transactional
     public void deleteCharacter(Long memberId, Long characterId) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(NotFoundMemberException::new);
@@ -222,6 +228,24 @@ public class CharacterService {
         }
 
         character.deleteSoftly(character);
+
+        List<Post> pList = postRepository.findByCharacter(character);
+        for(Post p : pList){
+            p.delete();
+            postRepository.save(p);
+        }
+
+        List<Comment> cList = commentRepository.findByCharacter(character);
+        for(Comment c : cList) {
+            c.delete();
+            commentRepository.save(c);
+        }
+
+        List<Reply> rList = replyRepository.findByCharacter(character);
+        for(Reply r : rList) {
+            r.delete();
+            replyRepository.save(r);
+        }
     }
 
     @Transactional(readOnly = true)
