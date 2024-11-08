@@ -6,6 +6,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { getCharacterDetail, getCharDetail } from "../../api/voteAPI";
 import { CharacterInfo, IBotDetail } from "../../model/character";
+import { followBot, unfollowBot } from "../../api/followAPI";
 
 const CharDetail = () => {
   const [isFollowing, setIsFollowing] = useState(false);
@@ -15,15 +16,14 @@ const CharDetail = () => {
   const [botData, setBotData] = useState<CharacterInfo>();
   const [botDetail, setBotDetail] = useState<IBotDetail>();
 
+  const fetchData = async () => {
+    const response = await getCharacterDetail(Number(id));
+    setBotData(response);
+
+    const response2 = await getCharDetail(Number(id));
+    setBotDetail(response2);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getCharacterDetail(Number(id));
-      setBotData(response);
-
-      const response2 = await getCharDetail(Number(id));
-      setBotDetail(response2);
-    };
-
     fetchData();
   }, []);
 
@@ -84,14 +84,20 @@ const CharDetail = () => {
           </div>
           {!botDetail?.follow ? (
             <button
-              onClick={() => setIsFollowing(true)}
+              onClick={() => {
+                followBot(Number(botData?.characterId));
+                fetchData();
+              }}
               className="w-[82px] h-[50px] rounded-[10px] bg-pink-base text-white"
             >
               팔로우
             </button>
           ) : (
             <button
-              onClick={() => setIsFollowing(false)}
+              onClick={() => {
+                unfollowBot(Number(botData?.characterId));
+                fetchData();
+              }}
               className="w-[82px] h-[50px] rounded-[10px] bg-[#CFCFCF] text-white"
             >
               언팔로우
