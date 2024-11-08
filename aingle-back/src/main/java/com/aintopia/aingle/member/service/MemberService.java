@@ -62,7 +62,9 @@ public class MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(signUpMember);
+
         memberRepository.flush(); // DB와 동기화하여 자동 증가 ID와 기본값 반영
+        System.out.println("현재 memberId: " + savedMember.getMemberId());
 
         if (url != null) {
             MemberImage memberImage = MemberImage.createImage(savedMember, url);
