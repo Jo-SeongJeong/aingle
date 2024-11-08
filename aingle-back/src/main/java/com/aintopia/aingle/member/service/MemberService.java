@@ -63,21 +63,14 @@ public class MemberService {
 
         Member savedMember = memberRepository.save(signUpMember);
 
-        memberRepository.flush(); // DB와 동기화하여 자동 증가 ID와 기본값 반영
-        System.out.println("현재 memberId: " + savedMember.getMemberId());
-
         if (url != null) {
             MemberImage memberImage = MemberImage.createImage(savedMember, url);
             MemberImage mI = memberImageRepository.save(memberImage);
             savedMember.saveImage(mI);
         }
-
-        System.out.println("현재 클라에서 받은 Id " + signUpMemberDto.getCharacterId());
         Character character = characterRepository.findById(signUpMemberDto.getCharacterId()).orElseThrow(NotFoundCharacterException::new);
 
         if(followRepository.findByMemberAndCharacter(savedMember, character).isPresent()) throw new FollowDuplicateException();
-
-        System.out.println("현재 characterId: " + character.getCharacterId());
 
         followRepository.save(Follow.builder()
                 .member(savedMember)
