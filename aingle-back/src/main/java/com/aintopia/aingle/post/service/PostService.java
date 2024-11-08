@@ -68,7 +68,7 @@ public class PostService {
                 .collect(Collectors.toList());
 
         // 페이지네이션과 최신순 정렬 적용
-        Page<Post> post = postRepository.findByMemberOrCharacterIn(member, characters, pageable);
+        Page<Post> post = postRepository.findByMemberOrCharacterInAndIsDeletedFalse(member, characters, pageable);
 
         return post.stream()
                 .map(p -> convertToDto(p, member)) // Post를 PostResponseDto로 변환

@@ -13,7 +13,12 @@ import java.util.List;
 
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Page<Post> findByMemberOrCharacterIn(Member member, List<Character> characters, Pageable pageable);
+@Query("SELECT p FROM Post p WHERE (p.member = :member OR p.character IN :characters) AND p.isDeleted = false")
+    Page<Post> findByMemberOrCharacterInAndIsDeletedFalse(
+            @Param("member") Member member,
+            @Param("characters") List<Character> characters,
+            Pageable pageable
+    );
 
     @Query("SELECT p FROM Post p WHERE p.member.memberId = :memberId AND p.isDeleted = false")
     List<Post> findByMemberId(@Param("memberId") Long memberId);
