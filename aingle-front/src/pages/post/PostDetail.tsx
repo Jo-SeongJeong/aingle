@@ -4,7 +4,7 @@ import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IComment, IcreateComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
-import { deletePopst, getPostDetail } from "../../api/postAPI";
+import { deletePopst, getPost, getPostDetail } from "../../api/postAPI";
 import { IPost } from "../../model/post";
 import clap from "../../assets/icons/comment/clap.png";
 import fire from "../../assets/icons/comment/fire.png";
@@ -95,10 +95,9 @@ const PostDetail = () => {
   };
 
   const handleDeleteButton = () => {
-    deletePopst(postData?.postId);
-
-    navigate("/mypage" , {replace : true});
-  }
+    deletePopst(postData?.postId); // 게시글 삭제 API 호출
+    navigate("/mypage", { replace: true, state: { refresh: true } }); // 상태 전달
+  };
 
   const handleChange = (
     field: keyof IcreateComment,

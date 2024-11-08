@@ -19,7 +19,7 @@ export interface Ialarm {
   // vote 타입의 알림인 경우 post가 없기 때문에 null 처리
   post: Ipost | null;
   // 투표 알림이 아닐 경우 null이 반환되기 때문에 null 처리
-  votewinnerCharacter: IvoteWinnerCharacter | null;
+  voteWinnerCharacter: IvoteWinnerCharacter | null;
   createTime: string;
   // vote 타입의 알림인 경우 sender가 없기 때문에 null 처리
   sender: Isender | null;
