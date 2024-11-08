@@ -72,7 +72,7 @@ const Write: React.FC = () => {
       const userId = userData.id;
 
       // GA 이벤트 전송 (gtag를 활용하여 커스텀 데이터 포함)
-      ReactGA.gtag("event", "submit_post", {
+      ReactGA.gtag("event", "post_creation", {
         category: "Form",
         action: "Submit",
         label: "게시글 작성",

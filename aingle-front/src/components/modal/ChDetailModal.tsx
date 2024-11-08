@@ -1,7 +1,7 @@
 import { CharacterInfo } from "../../model/character";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getCharacterDetail } from "../../api/voteAPI";
+import { deleteCharacter, getCharacterDetail } from "../../api/voteAPI";
 
 interface ChDetailModalProps {
   isOpen: boolean;
@@ -97,6 +97,15 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
             피드 보러 가기 &gt;
           </button>
         </div>
+        <h1
+          onClick={() => {
+            deleteCharacter(CharacterId);
+            onClose();
+          }}
+          className="text-2 text-[#91919C] underline text-right absolute right-6 bottom-4"
+        >
+          삭제
+        </h1>
       </div>
     </div>
   );
