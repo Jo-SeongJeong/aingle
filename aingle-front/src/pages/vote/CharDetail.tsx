@@ -9,7 +9,7 @@ import { CharacterInfo, IBotDetail } from "../../model/character";
 import { followBot, unfollowBot } from "../../api/followAPI";
 
 const CharDetail = () => {
-  const [isFollowing, setIsFollowing] = useState(false);
+  
   const navigate = useNavigate();
   const { id } = useParams(); //추후 api요청시 사용
 
@@ -27,17 +27,6 @@ const CharDetail = () => {
     fetchData();
   }, []);
 
-  // 더미 데이터 생성
-  const posts = [
-    { id: 1, image: "https://via.placeholder.com/100" },
-    { id: 2, image: "https://via.placeholder.com/100" },
-    { id: 3, image: "https://via.placeholder.com/100" },
-    { id: 4, image: "https://via.placeholder.com/100" },
-    { id: 5, image: "https://via.placeholder.com/100" },
-    { id: 6, image: "https://via.placeholder.com/100" },
-    // 필요한 만큼 추가
-  ];
-
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto ">
       {/* 배경색 */}
@@ -49,7 +38,7 @@ const CharDetail = () => {
           icon={faChevronLeft}
           className=" text-white absolute top-[16px] left-[18px] cursor-pointer"
           onClick={() => {
-            navigate(-1);
+            navigate("/mypage");
           }}
         />
       </div>
@@ -70,12 +59,7 @@ const CharDetail = () => {
               </h1>
               <h1 className="text-[#6A6A6A]">게시물</h1>
             </div>
-            <div
-              className="text-center"
-              onClick={() => {
-                navigate("/mypage/following");
-              }}
-            >
+            <div className="text-center">
               <h1 className="text-lg font-bold text-pink-base">
                 {botDetail?.followerCount}
               </h1>
