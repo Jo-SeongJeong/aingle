@@ -21,7 +21,7 @@ export const getPostDetail = async (postId: string) => {
       `${BASE_URL}/posts/details/${postId}`
     );
 
-    return response;
+    return response.data;
   } catch (error) {
     console.error(`${postId}번 게시글 상세 조회 실패 : `, error);
     throw error;

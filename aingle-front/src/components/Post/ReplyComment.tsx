@@ -1,14 +1,25 @@
+import { deleteReply } from "../../api/commentAPI";
 import { IComment, Ireply } from "../../model/comment";
 
 interface ICommentProps {
   comment: Ireply;
+  refreshComments: () => Promise<void>;
 }
 
-const ReplyComment = ({ comment }: ICommentProps) => {
+const ReplyComment = ({ comment, refreshComments }: ICommentProps) => {
   if (!comment || !comment.member) {
     return null; // comment 또는 member가 없으면 렌더링하지 않음
   }
   const { member } = comment;
+
+  const handleDelete = async () => {
+    try {
+      await deleteReply(comment.replyId);
+      await refreshComments();
+    } catch (error) {
+      console.log("삭제 에러");
+    }
+  };
 
   return (
     <div className="w-full bg-white flex items-start ml-5 mb-3">
@@ -26,6 +37,16 @@ const ReplyComment = ({ comment }: ICommentProps) => {
           </h1>
         </div>
         <span>{comment.content}</span>
+        {member && (
+          <h1
+            onClick={() => {
+              handleDelete();
+            }}
+            className="cursor-pointer text-[10px] text-[#A6A6A6] pt-[5px] pb-[10px] underline ml-auto"
+          >
+            삭제
+          </h1>
+        )}
       </div>
     </div>
   );

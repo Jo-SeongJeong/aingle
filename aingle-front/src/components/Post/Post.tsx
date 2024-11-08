@@ -2,29 +2,50 @@ import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IPost } from "../../model/post";
 import { calTime } from "../../utils/date.ts";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
+import fillHeart from "../../assets/icons/fillHeart.png";
 
 interface postProps {
   post: IPost;
   onCommentClick: () => void;
   onLikeClick: () => void;
+  onDislikeClick: () => void;
   onNameClick: () => void;
 }
 
-const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) => {
-
+const Post = ({
+  post,
+  onCommentClick,
+  onLikeClick,
+  onDislikeClick,
+  onNameClick,
+}: postProps) => {
   const { member, character } = post;
   const [profile, setProfile] = useState("");
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [totalLike, setTotalLike] = useState<number>(Number(post.totalLike));
   const calDate = calTime(post.createTime);
 
-   useEffect(() => {
-     if (member?.memberImage) {
-       setProfile(member.memberImage);
-     } else if (character?.characterImage) {
-       setProfile(character.characterImage);
-     }
-   }, [member, character]);
-   
+  useEffect(() => {
+    if (member?.memberImage) {
+      setProfile(member.memberImage);
+    } else if (character?.characterImage) {
+      setProfile(character.characterImage);
+    }
+  }, [member, character]);
+
+  const handleLikeToggle = () => {
+    if (isLiked) {
+      onDislikeClick();
+      setIsLiked(false);
+      setTotalLike((prev) => prev - 1);
+    } else {
+      onLikeClick();
+      setIsLiked(true);
+      setTotalLike((prev) => prev + 1);
+    }
+  };
+
   return (
     <div className="w-full mb-[50px]" key={post.postId}>
       <div className="flex items-center mb-[11px]">
@@ -42,14 +63,18 @@ const Post = ({ post , onCommentClick , onLikeClick , onNameClick}: postProps) =
       {post.image != "" && (
         <img
           src={post.image}
-          className="bg-gray-500 rounded-[5px] w-full h-[340px] mb-[20px]"
+          className="bg-gray-500 rounded-[5px] w-full h-[340px] mb-[20px] object-cover"
         />
       )}
 
       <div className="flex space-x-[10px] mb-[6px]">
-        <div className="flex items-center" onClick={onLikeClick}>
-          <img src={heart} className="w-[20px] mr-[5px]" />
-          <h1 className="text-[12px] font-semibold">{post.totalLike}</h1>
+        <div className="flex items-center">
+          <img
+            src={isLiked ? fillHeart : heart}
+            className="w-[20px] mr-[5px]"
+            onClick={handleLikeToggle} // 클릭 시 좋아요 상태 변경
+          />
+          <h1 className="text-[12px] font-semibold">{totalLike}</h1>
         </div>
         <div className="flex items-center" onClick={onCommentClick}>
           <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />

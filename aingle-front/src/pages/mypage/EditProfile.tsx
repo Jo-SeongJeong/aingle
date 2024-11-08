@@ -49,6 +49,26 @@ const EditProfile = () => {
     }));
   };
 
+  const logout = () => {
+    setUserData({
+      id: 0,
+      email: "",
+      name: "",
+      iat: 0,
+      exp: 0,
+      birth: "",
+      language: "",
+      memberImage: "",
+    });
+
+    // localStorage 및 sessionStorage 정리
+    localStorage.removeItem("recoil-persist"); // persistAtom으로 저장된 데이터 삭제
+    sessionStorage.clear();
+
+    // 로그아웃 후 메인 페이지로 이동
+    navigate("/");
+  };
+
   const handleImageClick = () => {
     fileInputRef.current?.click(); // 이미지 디브 클릭 시 파일 입력 클릭
   };
@@ -161,15 +181,25 @@ const EditProfile = () => {
             </div>
           </div>
           <div className="mt-auto">
-            <h1
-              onClick={() => {
-                deleteUser();
-                navigate("/");
-              }}
-              className="text-3 text-[#91919C] mb-[15px] ml-auto underline text-right"
-            >
-              회원탈퇴
-            </h1>
+            <div className="flex">
+              <h1
+                onClick={() => {
+                  logout();
+                }}
+                className="text-3 text-[#91919C] mb-[15px] mr-auto underline text-right"
+              >
+                로그아웃
+              </h1>
+              <h1
+                onClick={() => {
+                  deleteUser();
+                  navigate("/");
+                }}
+                className="text-3 text-[#91919C] mb-[15px] ml-auto underline text-right"
+              >
+                회원탈퇴
+              </h1>
+            </div>
             <button
               type="submit"
               onClick={handleSubmit}

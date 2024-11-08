@@ -114,3 +114,17 @@ export const registVote = async (id: number) => {
     throw error;
   }
 };
+
+//캐릭터 정보 조회(캐릭터 게시글 및 ~~)
+export const getCharDetail = async (characterId: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `${BASE_URL}/characters/${characterId}/post-info`
+    );
+    console.log(`캐릭터 ${characterId} 정보 조회 성공 : `, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`캐릭터 ${characterId} 정보 조회 실패 : `, error);
+    throw error;
+  }
+};

@@ -52,6 +52,16 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
     }));
   };
 
+  const refreshComments = async () => {
+    try {
+      const updatedComments = await getComments(Number(id));
+      setCommentWriter("");
+      setComments(updatedComments);
+      setCommentId(0);
+    } catch (error) {
+      console.error("Failed to fetch comments: ", error);
+    }
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -135,7 +145,6 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
       if (commentId === 0) {
         // 일반 댓글 작성
         await createComment(inputComment);
-        
       } else {
         // 답글 작성
         await createReply(commentId, inputComment.content);
@@ -207,10 +216,20 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
                 );
               }}
             >
-              <Postcomment key={comment.commentId} comment={comment} />
+              <Postcomment
+                key={comment.commentId}
+                comment={comment}
+                refreshComments={refreshComments}
+              />
               {comment.replies &&
                 comment.replies.map((reply, idx) => {
-                  return <ReplyComment key={idx} comment={reply} />;
+                  return (
+                    <ReplyComment
+                      key={idx}
+                      comment={reply}
+                      refreshComments={refreshComments}
+                    />
+                  );
                 })}
             </div>
           ))}
@@ -239,31 +258,31 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
               src={redHeart}
               className="w-[24px] cursor-pointer"
               alt="redHeart"
-              onClick={() => handleEmojiClick("❤️")} 
+              onClick={() => handleEmojiClick("❤️")}
             />
             <img
               src={face}
               className="w-[24px] cursor-pointer"
               alt="face"
-              onClick={() => handleEmojiClick("😊")} 
+              onClick={() => handleEmojiClick("😊")}
             />
             <img
               src={clap}
               className="w-[24px] cursor-pointer"
               alt="clap"
-              onClick={() => handleEmojiClick("👏")} 
+              onClick={() => handleEmojiClick("👏")}
             />
             <img
               src={fire}
               className="w-[24px] cursor-pointer"
               alt="fire"
-              onClick={() => handleEmojiClick("🔥")} 
+              onClick={() => handleEmojiClick("🔥")}
             />
             <img
               src={thumb}
               className="w-[24px] cursor-pointer"
               alt="thumb"
-              onClick={() => handleEmojiClick("👍")} 
+              onClick={() => handleEmojiClick("👍")}
             />
           </div>
           <div className="w-full h-full flex items-center justify-center space-x-[10px] pb-[57px]">
