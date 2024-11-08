@@ -40,9 +40,9 @@ const Post = ({
   }, [member, character]);
 
   const handleLikeToggle = () => {
-    if (isLiked) {
+    if (post.isLiked) {
       onDislikeClick();
-      setIsLiked(false);
+      // setIsLiked(false);
       setTotalLike((prev) => prev - 1);
 
       // Dislike 이벤트 전송
@@ -55,7 +55,7 @@ const Post = ({
       });
     } else {
       onLikeClick();
-      setIsLiked(true);
+      // setIsLiked(true);
       setTotalLike((prev) => prev + 1);
       setLikeCount((prev) => prev + 1); // 좋아요 누른 횟수 증가
 
@@ -94,11 +94,11 @@ const Post = ({
       <div className="flex space-x-[10px] mb-[6px]">
         <div className="flex items-center">
           <img
-            src={isLiked ? fillHeart : heart}
+            src={post.isLiked ? fillHeart : heart}
             className="w-[20px] mr-[5px]"
             onClick={handleLikeToggle} // 클릭 시 좋아요 상태 변경
           />
-          <h1 className="text-[12px] font-semibold">{totalLike}</h1>
+          <h1 className="text-[12px] font-semibold">{post.totalLike}</h1>
         </div>
         <div className="flex items-center" onClick={onCommentClick}>
           <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />

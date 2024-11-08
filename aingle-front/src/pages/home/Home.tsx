@@ -58,8 +58,14 @@ const Home = () => {
             key={idx}
             post={post}
             onCommentClick={() => handleCommentClick(post.postId)}
-            onLikeClick={() => handleLikeClick(post.postId)}
-            onDislikeClick={() => handleDislikeClick(post.postId)}
+            onLikeClick={() => {
+              handleLikeClick(post.postId);
+              fetchPosts();
+            }}
+            onDislikeClick={() => {
+              handleDislikeClick(post.postId);
+              fetchPosts();
+            }}
             onNameClick={() => handleNameClick(post)}
           />
         ))}
