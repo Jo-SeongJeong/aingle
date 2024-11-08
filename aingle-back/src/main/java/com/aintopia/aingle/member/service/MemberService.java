@@ -75,6 +75,8 @@ public class MemberService {
 
         if(followRepository.findByMemberAndCharacter(savedMember, character).isPresent()) throw new FollowDuplicateException();
 
+        System.out.println("현재 characterId: " + character.getCharacterId());
+
         followRepository.save(Follow.builder()
                 .member(savedMember)
                 .character(character)
