@@ -74,7 +74,7 @@ const Vote = () => {
   };
 
   return (
-    <div className="bg-[#ffe8f1] h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-scroll">
+    <div className="bg-[#ffe8f1] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-scroll">
       <PinkTextHeader />
       <div className="w-full h-[110px] py-[10px] px-[5px]" onClick={goVoteMain}>
         <button className="bg-white w-full h-full rounded-2xl flex">

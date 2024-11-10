@@ -32,7 +32,7 @@ const MyPage = () => {
   }, []); // location.key를 감지
 
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto pb-[90px]">
+    <div className="h-full  relative bg-white overflow-auto pb-[90px]">
       {/* 배경색 */}
       <div
         className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"
@@ -78,7 +78,7 @@ const MyPage = () => {
       </div>
 
       {/* 게시물 리스트 섹션 */}
-      <div className="px-[23px] pt-[24px] grid grid-cols-3 gap-4">
+      <div className="px-4 pt-[24px] grid grid-cols-3 gap-4">
         {/* 게시물 데이터 매핑 */}
         {myData.post &&
           myData.post.map((post) => (

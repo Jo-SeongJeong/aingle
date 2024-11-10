@@ -108,7 +108,7 @@ const VoteMain = () => {
   }, [isVisible]);
 
   return (
-    <div className="bg-[#ffe8f1] h-full w-full flex flex-col">
+    <div className="bg-[#ffe8f1] min-h-screen w-full flex flex-col">
       <div className="bg-[#ffe8f1] w-full px-[16px] pb-[15px] flex flex-col items-center relative">
         <div className="w-full flex justify-between items-center mt-[30px] mb-[30px]">
           <button className="text-[#fb599a] text-lg" onClick={handleBackClick}>
@@ -167,8 +167,8 @@ const VoteMain = () => {
                       selectedId === character.characterId
                         ? "border-2 border-red-500" // 선택된 항목에 빨간색 테두리
                         : index === 0
-                        ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
-                        : ""
+                          ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
+                          : ""
                     }`}
                   >
                     {index === 0 && (

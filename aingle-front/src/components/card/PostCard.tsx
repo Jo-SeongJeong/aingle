@@ -9,7 +9,6 @@ export interface IPost {
   postId: number;
   image: string; // image가 null일 수도 있으므로 null을 허용
 }
-
 const PostCard: React.FC<PostCardProps> = ({ id, image }) => {
   const navigate = useNavigate();
 
@@ -19,7 +18,7 @@ const PostCard: React.FC<PostCardProps> = ({ id, image }) => {
 
   return (
     <div
-      className="w-[100px] h-[100px] rounded-[10px] bg-gray-400 bg-cover bg-center cursor-pointer"
+      className="flex-grow aspect-square rounded-[10px] bg-gray-400 bg-cover bg-center cursor-pointer"
       style={{ backgroundImage: `url(${image})` }}
       onClick={handleClick}
     ></div>

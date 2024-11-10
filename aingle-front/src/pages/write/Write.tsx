@@ -86,7 +86,7 @@ const Write: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-[375px] relative bg-white pt-[32px]">
+    <div className="min-h-screen relative bg-white pt-[32px]">
       {/* header */}
       <div className="absolute top-0 bg-white w-full py-[15px] px-[18px] flex justify-between items-center">
         <div

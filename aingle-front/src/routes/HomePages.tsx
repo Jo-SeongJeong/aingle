@@ -5,7 +5,7 @@ const HomePages = () => {
   const location = useLocation();
 
   return (
-    <div className="h-full w-[375px] relative bg-white">
+    <div className="h-full relative bg-white">
       <Routes>
         <Route path="/" element={<Home key={location.pathname} />} />
       </Routes>
