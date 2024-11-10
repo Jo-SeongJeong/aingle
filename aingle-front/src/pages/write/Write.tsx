@@ -79,7 +79,7 @@ const Write: React.FC = () => {
         user_id: userId, // 사용자 ID 포함
       });
 
-      navigate("/home");
+      navigate("/home", { replace: true });
     } catch (error) {
       console.error("게시글 등록 실패 :", error);
     }

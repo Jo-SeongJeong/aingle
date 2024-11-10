@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PinkTextHeader from "../../components/header/PinkTextHeader";
 import Post from "../../components/Post/Post";
 import PostCommentModal from "../../components/Post/PostCommentModal";
 import { usePostStore } from "../../store/usePostStore";
 import { IPost } from "../../model/post";
 import { disLike, like } from "../../api/likeAPI";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
 
@@ -13,13 +13,39 @@ const Home = () => {
   const [postId, setPostId] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { posts, fetchPosts } = usePostStore();
-
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true); // 더 가져올 데이터가 있는지 여부
   const userData = useRecoilValue(userDataState);
   const navigate = useNavigate();
 
+  const lastPostRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    console.log("페이지 재실행");
+    if (hasMore) {
+      fetchPosts(page, 3).then((newPosts) => {
+        if (newPosts.length === 0) {
+          setHasMore(false); // 더 이상 데이터가 없으면 가져오지 않음
+        }
+      });
+    }
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage((prev) => prev + 1); // 페이지 증가
+      }
+    });
+
+    if (lastPostRef.current) {
+      observer.observe(lastPostRef.current);
+    }
+
+    return () => {
+      observer.disconnect(); // 이전 관찰 해제
+    };
+  }, [posts, hasMore]); // hasMore를 의존성에 추가
 
   const handleCommentClick = (id: number) => {
     setPostId(id);
@@ -54,14 +80,15 @@ const Home = () => {
 
       <div className="overflow-auto w-full">
         {posts.map((post: IPost, idx: number) => (
-          <Post
-            key={idx}
-            post={post}
-            onCommentClick={() => handleCommentClick(post.postId)}
-            onLikeClick={() => handleLikeClick(post.postId)}
-            onDislikeClick={() => handleDislikeClick(post.postId)}
-            onNameClick={() => handleNameClick(post)}
-          />
+          <div ref={idx === posts.length - 1 ? lastPostRef : null} key={idx}>
+            <Post
+              post={post}
+              onCommentClick={() => handleCommentClick(post.postId)}
+              onLikeClick={() => handleLikeClick(post.postId)}
+              onDislikeClick={() => handleDislikeClick(post.postId)}
+              onNameClick={() => handleNameClick(post)}
+            />
+          </div>
         ))}
       </div>
     </div>
