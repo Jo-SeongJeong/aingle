@@ -251,7 +251,7 @@ const PostDetail = () => {
               />
             </div>
           )}
-          <div className="flex w-full justify-between px-[40px] box-border mb-[15px] pt-3">
+          <div className="flex w-full justify-between px-[40px] box-border mb-[15px] pt-3 shadow-[0_-2px_4px_rgba(0,0,0,0.1)]">
             <img
               src={redHeart}
               className="w-[24px]"

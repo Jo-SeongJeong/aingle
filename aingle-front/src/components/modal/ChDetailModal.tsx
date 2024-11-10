@@ -1,7 +1,11 @@
 import { CharacterInfo } from "../../model/character";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { deleteCharacter, getCharacterDetail } from "../../api/voteAPI";
+import {
+  deleteCharacter,
+  getCharacterDetail,
+  registVote,
+} from "../../api/voteAPI";
 
 interface ChDetailModalProps {
   isOpen: boolean;
@@ -14,6 +18,20 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
   onClose,
   CharacterId,
 }) => {
+  const goVote = async () => {
+    try {
+      await registVote(CharacterId);
+    } catch (error: any) {
+      if (error.status === 409) {
+        alert("투표는 한 캐릭터만 등록 가능! 이미 등록한 캐릭터가 있음");
+        navigate("/vote");
+      } else if (error.status === 500) {
+        alert("이미 공유한 캐릭터야! 캐릭터는 한 개만 공유 가능해!");
+        navigate("/vote/main");
+      }
+    }
+  };
+
   if (!isOpen || !CharacterId) return null;
   const navigate = useNavigate();
   const goFeed = (id: number) => {
@@ -87,7 +105,9 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
               </div>
             </div>
             <div className="w-full h-3/6 bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium">
-              {CharacterInfo?.summary ? `${CharacterInfo.summary}` : "난 할 말 없어"}
+              {CharacterInfo?.summary
+                ? `${CharacterInfo.summary}`
+                : "난 할 말 없어"}
             </div>
           </div>
           <button
@@ -97,6 +117,14 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
             피드 보러 가기 &gt;
           </button>
         </div>
+        <h1
+          onClick={() => {
+            goVote();
+          }}
+          className="text-2 text-[#91919C] underline text-right absolute left-6 bottom-4"
+        >
+          공유
+        </h1>
         <h1
           onClick={() => {
             deleteCharacter(CharacterId);
