@@ -94,9 +94,11 @@ const PostDetail = () => {
     }
   };
 
-  const handleDeleteButton = () => {
-    deletePopst(postData?.postId); // 게시글 삭제 API 호출
-    navigate("/mypage", { replace: true, state: { refresh: true } }); // 상태 전달
+  const handleDeleteButton = async () => {
+    const response = await deletePopst(postData!.postId); // 게시글 삭제 API 호출
+    if (response.status == 200) {
+      navigate("/mypage"); // 상태 전달
+    }
   };
 
   const handleChange = (
@@ -161,9 +163,10 @@ const PostDetail = () => {
                   {calTime(postData.createTime)}
                 </h1>
               </div>
-              <button 
-              className="text-xs text-pink-darkest font-semibold"
-              onClick={handleDeleteButton}>
+              <button
+                className="text-xs text-pink-darkest font-semibold"
+                onClick={handleDeleteButton}
+              >
                 삭제
               </button>
             </div>

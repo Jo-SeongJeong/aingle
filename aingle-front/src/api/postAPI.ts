@@ -34,6 +34,7 @@ export const getPostDetail = async (postId: string) => {
 export const deletePopst = async (postId: number) => {
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/posts/${postId}`);
+    console.log("게시글 삭제 성공 : ", response);
     return response;
   } catch (error) {
     console.error("게시글 삭제 실패 : ", error);

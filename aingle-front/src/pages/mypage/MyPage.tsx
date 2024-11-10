@@ -24,13 +24,12 @@ const MyPage = () => {
       setMyData(response);
     };
 
-    // location.state가 존재하고 refresh가 true일 경우 데이터를 다시 가져옴
-    if (location.state && location.state.refresh) {
+    if (location.state?.refresh) {
       fetchData();
     } else {
       fetchData();
     }
-  }, [location.state]); // location.state 변경될 때마다 실행
+  }, []); // location.key를 감지
 
   return (
     <div className="h-full w-[375px] relative bg-white overflow-auto pb-[90px]">

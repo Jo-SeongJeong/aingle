@@ -5,7 +5,7 @@ import PostCommentModal from "../../components/Post/PostCommentModal";
 import { usePostStore } from "../../store/usePostStore";
 import { IPost } from "../../model/post";
 import { disLike, like } from "../../api/likeAPI";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
 
@@ -15,13 +15,13 @@ const Home = () => {
   const { posts, fetchPosts } = usePostStore();
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true); // 더 가져올 데이터가 있는지 여부
+
   const userData = useRecoilValue(userDataState);
   const navigate = useNavigate();
 
   const lastPostRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    console.log("페이지 재실행");
     if (hasMore) {
       fetchPosts(page, 3).then((newPosts) => {
         if (newPosts.length === 0) {
