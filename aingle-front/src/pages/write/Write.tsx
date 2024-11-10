@@ -79,14 +79,14 @@ const Write: React.FC = () => {
         user_id: userId, // 사용자 ID 포함
       });
 
-      navigate("/home");
+      navigate("/home", { replace: true });
     } catch (error) {
       console.error("게시글 등록 실패 :", error);
     }
   };
 
   return (
-    <div className="h-full w-[375px] relative bg-white pt-[32px]">
+    <div className="min-h-screen relative bg-white pt-[32px]">
       {/* header */}
       <div className="absolute top-0 bg-white w-full py-[15px] px-[18px] flex justify-between items-center">
         <div

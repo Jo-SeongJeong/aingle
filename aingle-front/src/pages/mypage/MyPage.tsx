@@ -24,16 +24,15 @@ const MyPage = () => {
       setMyData(response);
     };
 
-    // location.state가 존재하고 refresh가 true일 경우 데이터를 다시 가져옴
-    if (location.state && location.state.refresh) {
+    if (location.state?.refresh) {
       fetchData();
     } else {
       fetchData();
     }
-  }, [location.state]); // location.state 변경될 때마다 실행
+  }, []); // location.key를 감지
 
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto pb-[90px]">
+    <div className="h-full  relative bg-white overflow-auto pb-[90px]">
       {/* 배경색 */}
       <div
         className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"
@@ -79,7 +78,7 @@ const MyPage = () => {
       </div>
 
       {/* 게시물 리스트 섹션 */}
-      <div className="px-[23px] pt-[24px] grid grid-cols-3 gap-4">
+      <div className="px-4 pt-[24px] grid grid-cols-3 gap-4">
         {/* 게시물 데이터 매핑 */}
         {myData.post &&
           myData.post.map((post) => (

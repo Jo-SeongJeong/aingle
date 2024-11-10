@@ -87,7 +87,7 @@ const Post = ({
       {post.image != "" && (
         <img
           src={post.image}
-          className="bg-gray-500 rounded-[5px] w-full h-[340px] mb-[20px] object-cover"
+          className="bg-gray-500 rounded-[5px] w-full aspect-square mb-[20px] object-cover"
         />
       )}
 

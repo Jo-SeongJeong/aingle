@@ -32,7 +32,7 @@ const OnboardingResult = () => {
   }, []);
 
   return (
-    <div className="bg-white h-full w-full px-[16px] py-[34px] flex flex-col  items-center">
+    <div className="bg-white min-h-screen w-full px-[16px] py-[34px] flex flex-col  items-center">
       <div className="flex flex-col items-center flex-1 justify-center">
         <div className="flex items-center justify-center flex-col h-full">
           <img src={bird} className="w-[60px] h-[60px] mb-6" />
@@ -41,7 +41,7 @@ const OnboardingResult = () => {
               너에게 딱 맞는 친구는
             </span>
           </div>
-          <div className="bg-[#ffe8f1] w-[300px] h-[105px] flex rounded-2xl px-4">
+          <div className="bg-[#ffe8f1] w-[full] h-[105px] flex rounded-2xl px-4">
             <div className="w-1/4 flex justify-center pt-[19px]">
               <div className="border-[1.5px] bg-white border-main-color rounded-full w-[55px] h-[55px] overflow-hidden">
                 <img

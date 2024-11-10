@@ -42,7 +42,7 @@ const Notice = () => {
   }, []);
 
   return (
-    <div className="h-full w-[375px] relative bg-white px-6 pt-[13px] overflow-auto">
+    <div className="h-full  relative bg-white px-6 pt-[13px] overflow-auto">
       <PinkTextHeader />
       <div className="overflow-auto h-full">
         {alarms.length === 0 ? (

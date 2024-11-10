@@ -45,7 +45,7 @@ const OnboardingLoading = () => {
   }, []);
 
   return (
-    <div className="bg-[#ff4fa3] h-full w-full flex flex-col justify-center items-center rainbow-animation">
+    <div className="bg-[#ff4fa3] min-h-screen w-full flex flex-col justify-center items-center rainbow-animation">
       {/* 중앙의 이미지 */}
       <img
         src={birdBlur}

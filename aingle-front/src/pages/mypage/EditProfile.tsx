@@ -105,10 +105,10 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto">
+    <div className="min-h-screen relative bg-white overflow-auto flex-grow">
       <TextHeader navTo={"/mypage"} headerText={"프로필 편집"} />
-      <div className="flex flex-col h-full pt-[54px] pb-6 px-[23px] items-center">
-        <form className="mt-[30px] w-full flex flex-col h-full flex-grow">
+      <div className="flex flex-col h-full pt-[54px] pb-6 px-[23px] items-center flex-grow">
+        <form className="mt-[30px]  w-full flex flex-col h-full flex-grow">
           {/* 이미지 */}
           <div className="flex justify-center">
             <div

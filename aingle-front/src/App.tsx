@@ -8,23 +8,30 @@ import Write from "./pages/write/Write";
 import NoticePages from "./routes/NoticePages";
 import SocialRedirection from "./pages/onboarding/SocialRedirection";
 import PostDetail from "./pages/post/PostDetail";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const location = useLocation();
   const matchPostDetail = useMatch("/post/:id"); // "/post/:id" 경로와 일치 여부 확인
 
   return (
-    <div className="h-[780px] w-[375px] relative">
+    <div className="h-full relative">
       <Routes>
-        <Route path="/home/*" element={<HomePages />} />
-        <Route path="/vote/*" element={<VotePages />} />
-        <Route path="/mypage/*" element={<MyPages />} />
-        <Route path="/write" element={<Write />} />
-        <Route path="/notice/*" element={<NoticePages />} />
+        {/* 온보딩 페이지는 보호되지 않음 */}
         <Route path="/*" element={<OnboardingPages />} />
         <Route path="/social-redirection" element={<SocialRedirection />} />
-        <Route path="/post/:id" element={<PostDetail />} />
+
+        {/* 보호된 라우트 */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home/*" element={<HomePages />} />
+          <Route path="/vote/*" element={<VotePages />} />
+          <Route path="/mypage/*" element={<MyPages />} />
+          <Route path="/write" element={<Write />} />
+          <Route path="/notice/*" element={<NoticePages />} />
+          <Route path="/post/:id" element={<PostDetail />} />
+        </Route>
       </Routes>
+
       {!matchPostDetail &&
         location.pathname !== "/result" &&
         location.pathname !== "/write" &&
@@ -32,7 +39,8 @@ const App = () => {
         location.pathname !== "/" &&
         location.pathname !== "/mypage/edit" &&
         location.pathname !== "/login" &&
-        location.pathname !== "/signup" && <Footer />}
+        location.pathname !== "/signup" &&
+        location.pathname !== "/loading" && <Footer />}
     </div>
   );
 };

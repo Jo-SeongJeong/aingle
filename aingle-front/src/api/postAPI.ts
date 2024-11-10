@@ -3,9 +3,11 @@ import { IcreatePost, IPost } from "../model/post";
 import axiosInstance from "./axiosInstance";
 
 // 게시글 전체 조회 api
-export const getPost = async (): Promise<IPost[]> => {
+export const getPost = async (page: number, size: number): Promise<IPost[]> => {
   try {
-    const response = await axiosInstance.get<IPost[]>(`${BASE_URL}/posts`);
+    const response = await axiosInstance.get<IPost[]>(
+      `${BASE_URL}/posts?page=${page}&size=${size}`
+    );
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -32,6 +34,7 @@ export const getPostDetail = async (postId: string) => {
 export const deletePopst = async (postId: number) => {
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/posts/${postId}`);
+    console.log("게시글 삭제 성공 : ", response);
     return response;
   } catch (error) {
     console.error("게시글 삭제 실패 : ", error);

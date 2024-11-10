@@ -15,9 +15,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  max-width: 375px;
-  max-height: 812px;
+  width: 100%;
+  max-width: 480px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -28,6 +27,7 @@
   src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2")
     format("woff2");
   font-weight: 700;
+
   font-style: normal;
 }
 
@@ -38,4 +38,8 @@
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.min-h-screen {
+  min-height: 100vh; /* 푸터를 포함한 최소 높이 설정 */
 }
