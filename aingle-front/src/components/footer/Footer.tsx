@@ -129,7 +129,7 @@ const Footer = () => {
 
   return (
     <div
-      className="w-full h-[75px] flex justify-evenly items-center absolute bottom-0 z-3 bg-white shadow-lg"
+      className="w-full h-[75px] max-w-[480px] flex justify-evenly items-center fixed bottom-0 z-3 bg-white shadow-lg"
       style={{ boxShadow: "0 -4px 10px rgba(0, 0, 0, 0.1)" }}
     >
       <img

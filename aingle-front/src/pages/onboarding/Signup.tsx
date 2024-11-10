@@ -95,7 +95,7 @@ const Signup = () => {
     }
   };
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto">
+    <div className="min-h-screen  relative bg-white overflow-auto">
       <TextHeader navTo={"/mypage"} headerText={"회원가입"} />
       <div className="flex flex-col h-full pt-[54px] pb-6 px-[23px] items-center">
         <form

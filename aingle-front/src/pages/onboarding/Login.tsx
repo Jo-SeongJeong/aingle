@@ -31,7 +31,7 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-[#fb599a] h-full w-full flex flex-col justify-center items-center rainbow-animation">
+    <div className="bg-[#fb599a] min-h-screen w-full flex flex-col justify-center items-center rainbow-animation">
       <h1 className="text-white text-[18px] text-pretty font-normal">
         나를 위한 SNS 공간
       </h1>

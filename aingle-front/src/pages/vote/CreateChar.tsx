@@ -97,7 +97,7 @@ const CreateChar = () => {
   };
 
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto">
+    <div className="min-h-screen relative bg-white overflow-auto">
       {isCreateModalOpen && (
         <CreateModal
           name={userName}

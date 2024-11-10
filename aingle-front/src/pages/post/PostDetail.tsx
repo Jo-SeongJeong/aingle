@@ -94,9 +94,11 @@ const PostDetail = () => {
     }
   };
 
-  const handleDeleteButton = () => {
-    deletePopst(postData?.postId); // 게시글 삭제 API 호출
-    navigate("/mypage", { replace: true, state: { refresh: true } }); // 상태 전달
+  const handleDeleteButton = async () => {
+    const response = await deletePopst(postData!.postId); // 게시글 삭제 API 호출
+    if (response.status == 200) {
+      navigate("/mypage"); // 상태 전달
+    }
   };
 
   const handleChange = (
@@ -140,7 +142,7 @@ const PostDetail = () => {
     <div className="bg-white h-full w-full flex flex-col items-center relative pt-[50px] pb-[150px]">
       <TextHeader headerText="게시물" navTo="" />
       <div className="overflow-auto w-full mt-1">
-        <div className="w-full mb-[50px] px-[16px]">
+        <div className="w-full mb-[160px] px-[16px] ">
           <div className="flex items-center mb-[11px]">
             <img
               src={
@@ -161,9 +163,10 @@ const PostDetail = () => {
                   {calTime(postData.createTime)}
                 </h1>
               </div>
-              <button 
-              className="text-xs text-pink-darkest font-semibold"
-              onClick={handleDeleteButton}>
+              <button
+                className="text-xs text-pink-darkest font-semibold"
+                onClick={handleDeleteButton}
+              >
                 삭제
               </button>
             </div>
@@ -172,7 +175,7 @@ const PostDetail = () => {
           {postData.image && (
             <img
               src={postData.image}
-              className="bg-gray-500 rounded-[5px] w-full h-[340px] mb-[20px] object-cover"
+              className="bg-gray-500 rounded-[10px] w-full aspect-square mb-[20px] object-cover"
             />
           )}
 
@@ -194,10 +197,10 @@ const PostDetail = () => {
           </div>
 
           <div className="flex space-x-[15px] items-center mb-[10px]">
-            <h1 className="font-semibold text-[15px]">
+            <h1 className="font-semibold text-[16px]">
               {postData.member ? postData.member.name : postData.character.name}
             </h1>
-            <span className="text-[12px] font-medium">{postData.content}</span>
+            <span className="text-[16px] font-medium">{postData.content}</span>
           </div>
           <div style={{ maxHeight: "60vh" }}>
             <div className="mb-[130px]" style={{ maxHeight: "60vh" }}>
@@ -232,10 +235,10 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px]">
+        <div className="w-full max-w-[480px] fixed bottom-0 bg-white z-40 ">
           {commentWriter != "" && (
             <div
-              className="px-5 py-2 mb-3 text-white flex justify-between items-center"
+              className="px-5 py-2  text-white flex justify-between items-center"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             >
               <h1>{commentWriter}에 답글 작성</h1>
@@ -248,7 +251,7 @@ const PostDetail = () => {
               />
             </div>
           )}
-          <div className="flex w-full justify-between px-[45px] box-border mb-[15px]">
+          <div className="flex w-full justify-between px-[40px] box-border mb-[15px] pt-3 shadow-[0_-2px_4px_rgba(0,0,0,0.1)]">
             <img
               src={redHeart}
               className="w-[24px]"
@@ -280,26 +283,26 @@ const PostDetail = () => {
               onClick={() => addEmoji("👍")}
             />
           </div>
-          <div className="w-full h-full flex items-center justify-center space-x-[10px] pb-[57px]">
+          <div className="w-full h-full flex items-center justify-evenly px-[30px]  pb-[30px]">
             <img
               src={left}
               className="w-[35px] h-[35px] rounded-full"
               alt="left"
             />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className=" px-4">
               <input
                 onChange={(e) => handleChange("content", e.target.value)}
                 value={inputComment.content}
                 required
                 type="text"
                 placeholder="댓글 달기"
-                className="border-[#CFCFCF] border-[1px] h-[34px] px-[15px] rounded-full"
+                className="border-[#CFCFCF] w-full border-[1px] h-[34px] px-[15px] rounded-full"
               />
             </form>
             <img
               onClick={handleSubmit}
               src={send}
-              className="w-[30px] h-[30px] rounded-full cursor-pointer"
+              className="w-[35px] h-[35px] rounded-full cursor-pointer"
               alt="send"
             />
           </div>

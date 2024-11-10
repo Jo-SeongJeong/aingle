@@ -5,7 +5,7 @@ import Following from "../pages/mypage/Following";
 
 const MyPages = () => {
   return (
-    <div className="h-full w-[375px] relative bg-white">
+    <div className="h-full relative bg-white">
       <Routes>
         <Route path="/" element={<MyPage />} />
         <Route path="/edit" element={<EditProfile />} />
