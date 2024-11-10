@@ -179,7 +179,7 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
       ></div>
       <div
         ref={modalRef}
-        className="z-30 bg-white rounded-t-lg absolute bottom-0 w-full overflow-auto transition-all duration-300 ease"
+        className="z-30 bg-white rounded-t-lg fixed bottom-0 w-full overflow-auto transition-all duration-300 ease"
         style={{ height: `90%` }}
       >
         {/* Drag bar */}

@@ -238,7 +238,7 @@ const PostDetail = () => {
         <div className="w-full max-w-[480px] fixed bottom-0 bg-white z-40 ">
           {commentWriter != "" && (
             <div
-              className="px-5 py-2 mb-3 text-white flex justify-between items-center"
+              className="px-5 py-2  text-white flex justify-between items-center"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             >
               <h1>{commentWriter}에 답글 작성</h1>
@@ -251,7 +251,7 @@ const PostDetail = () => {
               />
             </div>
           )}
-          <div className="flex w-full justify-between px-[40px] box-border mb-[15px]">
+          <div className="flex w-full justify-between px-[40px] box-border mb-[15px] pt-3">
             <img
               src={redHeart}
               className="w-[24px]"
