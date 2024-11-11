@@ -3,17 +3,16 @@ package com.aintopia.aingle.post.service;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.character.repository.CharacterRepository;
-import com.aintopia.aingle.character.service.CharacterService;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.comment.service.CommentService;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.service.S3Service;
-import com.aintopia.aingle.common.util.MemberInfo;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
 import com.aintopia.aingle.like.repository.LikeRepository;
+import com.aintopia.aingle.like.service.LikeService;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -31,6 +30,7 @@ import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,10 +43,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -58,6 +60,7 @@ public class PostService {
     private final CharacterRepository characterRepository;
     private final CommentService commentService;
     private final LikeRepository likeRepository;
+    private final LikeService likeService;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
@@ -128,6 +131,8 @@ public class PostService {
             .collect(Collectors.toList());
         commentService.generateAIComments(post, characters, registPostRequestDto, url);
 
+        // 게시글 생성 이후 좋아요 자동 증가
+        likeService.scheduleLikeIncrease(post);
     }
 
     @Async
@@ -153,6 +158,8 @@ public class PostService {
         // AI 게시글에 모든 공용 캐릭터가 댓글을 달아줌
         commentService.generateAIComments(post,
             characterRepository.findByIsPublicTrueAndIsDeletedFalse(), registPostRequestDto, url);
+        //좋아요
+        likeService.scheduleLikeIncrease(post);
     }
 
     @Transactional
