@@ -46,19 +46,18 @@ public class OpenAIClient {
     private final OpenAiImageModel imageModel;
     private final List<Pair<String, String>> chatHistory = new ArrayList<>();
 
-
     //댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo) throws IOException {
-        Prompt prompt = getPrompt(postRequest, characterInfo);
+        Prompt prompt = getPromptKeyword(postRequest, characterInfo);
         ChatResponse chatResponse = chatModel.call(prompt);
         log.info("chat response : " + chatResponse);
         logTokensCount(chatResponse.getMetadata().getUsage());
-
-        String response = chatResponse.getResult().getOutput().getContent();
-
+        Prompt prompt2 = getPromptAns(chatResponse.getResult().getOutput().getContent(), characterInfo);
+        ChatResponse chatResponse2 = chatModel.call(prompt2);
+        log.info("chat response2 : " + chatResponse2);
 //        chatHistory.add(Pair.of(postRequest.getMessage(), response));
-        log.info(chatHistory.toString());
-        return response;
+//        log.info(chatHistory.toString());
+        return chatResponse2.getResult().getOutput().getContent();
     }
 
     // 게시글 생성 함수
@@ -157,6 +156,43 @@ public class OpenAIClient {
         URL imageUrl = URI.create(postRequest.getImageUrl()).toURL();
         String postText = OpenAIPrompt.AI_CHARACTER_COMMENT_REQUEST_PROMPT + postRequest.getMessage();
         userMessage = new UserMessage(postText, new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
+        promptMessages.add(userMessage);
+        log.info("promptMessages : " + promptMessages);
+        return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
+    }
+
+    private Prompt getPromptAns(String response, CharacterInfo characterInfo) throws IOException {
+        List<Message> promptMessages = new ArrayList<>();
+
+        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
+        promptMessages.add(systemMessage);
+
+//        chatHistory.forEach(pair -> {
+//            promptMessages.add(new UserMessage(pair.getLeft()));
+//            promptMessages.add(new AssistantMessage(pair.getRight()));
+//        });
+
+        Message userMessage;
+        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_ANS_PROMPT + response);
+        promptMessages.add(userMessage);
+        log.info("promptMessages : " + promptMessages);
+        return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
+    }
+
+    private Prompt getPromptKeyword(PostRequest postRequest, CharacterInfo characterInfo) throws IOException {
+        List<Message> promptMessages = new ArrayList<>();
+
+        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
+        promptMessages.add(systemMessage);
+
+//        chatHistory.forEach(pair -> {
+//            promptMessages.add(new UserMessage(pair.getLeft()));
+//            promptMessages.add(new AssistantMessage(pair.getRight()));
+//        });
+
+        Message userMessage;
+        URL imageUrl = URI.create(postRequest.getImageUrl()).toURL();
+        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_KEYWORD_PROMPT.getPromptTemplate(), new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
         promptMessages.add(userMessage);
         log.info("promptMessages : " + promptMessages);
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
