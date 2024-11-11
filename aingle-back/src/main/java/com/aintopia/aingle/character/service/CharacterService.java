@@ -62,6 +62,7 @@ public class CharacterService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final PostService postService;
+    private static final int MAX_RETRIES = 3;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -195,16 +196,9 @@ public class CharacterService {
             .characterCreateRequest(characterCreateRequest)
             .member(member)
             .build());
-        // summary 생성 요청
-        String summary = openAIClient.createSummary(CharacterInfo.builder()
-                .character(saveCharacter)
-                .build());
-        saveCharacter.updateSummary(summary);
 
-        // 캐릭터 게시글 올려야 함
-        postService.registCharaterPost(openAIClient.createImageUrl(CharacterInfo.builder()
-            .character(saveCharacter)
-            .build()), saveCharacter.getCharacterId());
+        generateSummary(saveCharacter);
+        generatePost(saveCharacter);
 
         log.info("캐릭터 저장 : " + saveCharacter.getCharacterId());
         //캐릭터 이미지 저장
@@ -214,19 +208,48 @@ public class CharacterService {
             .build());
 
         //이미 팔로우한 캐릭터인 경우
-        if(followRepository.findByMemberAndCharacter(member, saveCharacter).isPresent()){
+        if (followRepository.findByMemberAndCharacter(member, saveCharacter).isPresent()) {
             throw new FollowDuplicateException();
         }
 
         followRepository.save(Follow.builder()
-                .member(member)
-                .character(saveCharacter)
-                .build());
+            .member(member)
+            .character(saveCharacter)
+            .build());
 
         return CharacterCreateResponseDto.builder().characterId(saveCharacter.getCharacterId())
             .build();
     }
 
+    private void generateSummary(Character saveCharacter) {
+        for (int i = 0; i < MAX_RETRIES; i++) {
+            try {
+                String summary = openAIClient.createSummary(
+                    CharacterInfo.builder().character(saveCharacter).build()
+                );
+                saveCharacter.updateSummary(summary);
+                return; // 성공 시 메서드 종료
+            } catch (Exception e) {
+                log.error("Summary 생성 실패 - 시도 횟수: {}", i + 1, e);
+            }
+        }
+        throw new RuntimeException("Summary 생성 실패");
+    }
+
+    private void generatePost(Character saveCharacter) {
+        for (int i = 0; i < MAX_RETRIES; i++) {
+            try {
+                CreateAIPostResponseDto postResponse = openAIClient.createImageUrl(
+                    CharacterInfo.builder().character(saveCharacter).build()
+                );
+                postService.registCharaterPost(postResponse, saveCharacter.getCharacterId());
+                return; // 성공 시 메서드 종료
+            } catch (Exception e) {
+                log.error("Post 등록 실패 - 시도 횟수: {}", i + 1, e);
+            }
+        }
+        throw new RuntimeException("Post 등록 실패");
+    }
 
     @Transactional
     public void deleteCharacter(Long memberId, Long characterId) {
@@ -243,18 +266,18 @@ public class CharacterService {
         character.deleteSoftly(character);
 
         List<Post> pList = postRepository.findByCharacter(character);
-        for(Post p : pList){
+        for (Post p : pList) {
             p.delete();
         }
 
         List<Comment> cList = commentRepository.findByCharacter(character);
-        for(Comment c : cList) {
+        for (Comment c : cList) {
             c.delete();
             c.getPost().decreaseComment();
         }
 
         List<Reply> rList = replyRepository.findByCharacter(character);
-        for(Reply r : rList) {
+        for (Reply r : rList) {
             r.delete();
         }
 
@@ -284,23 +307,25 @@ public class CharacterService {
 
     @Transactional(readOnly = true)
     public CharacterPostResponse getCharacterPostInfo(Long characterId, Long memberId) {
-        Character character = characterRepository.findById(characterId).orElseThrow(NotFoundCharacterException::new);
+        Character character = characterRepository.findById(characterId)
+            .orElseThrow(NotFoundCharacterException::new);
         List<Post> characterPosts = postRepository.findByCharacter(character);
         List<MyPagePostDto> postImageUrls = new ArrayList<>();
-        for(Post post : characterPosts) {
+        for (Post post : characterPosts) {
             postImageUrls.add(post.changeToMyPagePostDto());
         }
         // 팔로우 여부
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(NotFoundMemberException::new);
         boolean isFollow = followRepository.findByMemberAndCharacter(member, character)
-                .isPresent();
-        int followerCount =  followRepository.countByCharacterId(characterId);
+            .isPresent();
+        int followerCount = followRepository.countByCharacterId(characterId);
 
         return CharacterPostResponse.builder()
-                .postImageUrls(postImageUrls)
-                .character(character)
-                .isFollow(isFollow)
-                .followerCount(followerCount)
-                .build();
+            .postImageUrls(postImageUrls)
+            .character(character)
+            .isFollow(isFollow)
+            .followerCount(followerCount)
+            .build();
     }
 }
