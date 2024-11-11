@@ -1,5 +1,6 @@
 package com.aintopia.aingle.post.controller;
 
+import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.util.MemberInfo;
 import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;
@@ -73,6 +74,24 @@ public class PostController {
         Long memberId = MemberInfo.getId();
 
         postService.registPost(registPostRequestDto, file, memberId);
+
+        return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
+    }
+
+    @PostMapping("/character")
+    @Operation(summary = "캐릭터 게시글 등록", description = "게시글 등록시 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시글 등록 성공",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
+    ResponseEntity<?> registcharacterPost(@RequestPart("registPostRequestDto") CreateAIPostResponseDto createAIPostResponseDto,
+                                 @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+        Long memberId = MemberInfo.getId();
+
+        postService.registCharaterPostTest(createAIPostResponseDto, 1L, file);
 
         return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
     }
