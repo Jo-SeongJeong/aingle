@@ -173,11 +173,13 @@ public class CommentService {
             return true;
         }else if (comment.contains("도움 줄 수 없어")) {
             return true;
-        }else if (comment.contains("이미지")) {
+        }else if (comment.contains("I")) {
+            return true;
+        }else if (comment.contains("다른 이야기")) {
             return true;
         }else if (comment.contains("이미지")) {
             return true;
-        }else if (comment.contains("이미지")) {
+        }else if (comment.contains("알 수 없")) {
             return true;
         }else {
             return comment.contains("도와줄 수 없어");
