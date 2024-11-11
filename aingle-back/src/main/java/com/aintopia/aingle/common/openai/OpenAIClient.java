@@ -94,10 +94,18 @@ public class OpenAIClient {
 
     // 캐릭터 생성시 게시글 생성 함수
     public CreateAIPostResponseDto createImageUrl(CharacterInfo characterInfo) throws IOException {
-        String prompt = createCharacterSystemPrompt(characterInfo) + creatAIPostPrompt(characterInfo);
 
+        // 게시글 글 생성
+        Prompt getTextPrompt = getPromptPost(characterInfo);
+        ChatResponse chatResponse = chatModel.call(getTextPrompt);
+        String content = chatResponse.getResult().getOutput().getContent();
+        log.info("게시글 글: {}", content);
+
+        
+        // 글 기반 이미지 생성
+        String getImageUrlPrompt = createCharacterSystemPrompt(characterInfo) + creatAIPostPrompt(characterInfo, content);
         ImageResponse imageResponse = imageModel.call(
-            new ImagePrompt(prompt,
+            new ImagePrompt(getImageUrlPrompt,
                 OpenAiImageOptions.builder()
                     .withQuality("hd")
                     .withStyle("vivid")
@@ -105,13 +113,10 @@ public class OpenAIClient {
                     .withWidth(1024).build())
         );
         String url = imageResponse.getResult().getOutput().getUrl();
-        log.info("image URL: {}", url);
-        Prompt prompt2 = getPromptPost(url, characterInfo);
-        ChatResponse chatResponse = chatModel.call(prompt2);
-        log.info("chat response : " + chatResponse.getResult().getOutput().getContent());
+        log.info("생성 이미지 URL: {}", url);
         return CreateAIPostResponseDto.builder()
             .file(convertUrlToMultipartFile(url))
-            .content(chatResponse.getResult().getOutput().getContent())
+            .content(content)
             .build();
     }
 
@@ -157,22 +162,21 @@ public class OpenAIClient {
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
-    private Prompt getPromptPost(String url, CharacterInfo characterInfo) throws IOException {
+    private Prompt getPromptPost(CharacterInfo characterInfo) {
         List<Message> promptMessages = new ArrayList<>();
 
         Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
         promptMessages.add(systemMessage);
 
         Message userMessage;
-        URL imageUrl = URI.create(url).toURL();
-        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_POST_TEXT_PROMPT.getPromptTemplate(), new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
+        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_POST_TEXT_PROMPT.getPromptTemplate());
         promptMessages.add(userMessage);
         log.info("promptMessages : " + promptMessages);
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
-    private String creatAIPostPrompt(CharacterInfo characterInfo) throws IOException {
-        return OpenAIPrompt.AI_CHARACTER_CREATE_POST_PROMPT.generateSystemPromptAddSeed(characterInfo);
+    private String creatAIPostPrompt(CharacterInfo characterInfo, String content) {
+        return OpenAIPrompt.AI_CHARACTER_CREATE_POST_PROMPT.generateSystemPromptAddSeed(characterInfo, content);
     }
 
     private String createCharacterSystemPrompt(CharacterInfo characterInfo){
