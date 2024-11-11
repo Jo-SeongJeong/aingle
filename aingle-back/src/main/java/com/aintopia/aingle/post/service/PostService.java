@@ -79,6 +79,7 @@ public class PostService {
         // 페이지네이션과 최신순 정렬 적용
         Page<Post> post = postRepository.findByMemberOrCharacterInAndIsDeletedFalse(member,
             characters, pageable);
+
         return post.stream()
             .map(p -> convertToDto(p, member)) // Post를 PostResponseDto로 변환
             .collect(Collectors.toList());
@@ -162,6 +163,33 @@ public class PostService {
         likeService.scheduleLikeIncrease(post);
     }
 
+    @Async
+    public void registCharaterPostTest(CreateAIPostResponseDto createAIPostResponseDto,
+                                   Long characterId, MultipartFile file)
+            throws IOException {
+        // 이미지가 있는 경우 S3에 업로드 후 URL 저장
+        if (file == null || file
+                .isEmpty()) {
+            throw new BadReqeustPostException();
+        }
+        String url = s3Service.uploadFile(file);
+
+        Character character = characterRepository.findById(characterId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        RegistPostRequestDto registPostRequestDto = new RegistPostRequestDto();
+        registPostRequestDto.setContent(createAIPostResponseDto.getContent());
+        Post post = Post.createPostForAI(registPostRequestDto, url, character);
+
+        postRepository.save(post);
+
+        // AI 게시글에 모든 공용 캐릭터가 댓글을 달아줌
+        commentService.generateAIComments(post,
+                characterRepository.findByIsPublicTrueAndIsDeletedFalse(), registPostRequestDto, url);
+        //좋아요
+        likeService.scheduleLikeIncrease(post);
+    }
+
     @Transactional
     public void deleteById(Long postId, Long memberId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
@@ -191,6 +219,7 @@ public class PostService {
         Boolean isLiked = likeRepository.existsByMemberAndPost(member, post);
         List<Comment> comments = commentRepository.findByPost(post);
 
+
         // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
         List<CommentDto> commentDtos = comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
@@ -200,17 +229,18 @@ public class PostService {
                 })
                 .collect(Collectors.toList());
         return new PostResponseDto(
-            post.getPostId(),
-            post.getContent(),
-            post.getImage(),
-            post.getCreateTime(),
-            post.getTotalLike(),
-            post.getTotalComment(),
-            memberDto,
-            characterDto,
-            isLiked,
-            commentDtos
+                post.getPostId(),
+                post.getContent(),
+                post.getImage(),
+                post.getCreateTime(),
+                post.getTotalLike(),
+                post.getTotalComment(),
+                memberDto,
+                characterDto,
+                isLiked,
+                commentDtos
         );
+
     }
 
     // Post를 PostDetailResponseDto로 변환하는 메서드
