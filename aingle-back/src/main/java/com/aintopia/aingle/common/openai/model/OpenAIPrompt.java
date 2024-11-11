@@ -17,8 +17,8 @@ public enum OpenAIPrompt {
         "%s"),
     AI_CHARACTER_COMMENT_REQUEST_PROMPT("사용자가 올린 사진과 내용이 담긴 sns게시글을 보고 적절한 반응을 해줘. 내용 : "),
     AI_CHARACTER_CREATE_SUMMARY_PROMPT("%s이 자주하는 말이나 %s을 표현할 수 있는 대표적인 말을 15자 이내로 해줘."),
-    AI_CHARACTER_CREATE_POST_TEXT_PROMPT("%s(이)가 사진과 함께 SNS에 작성할 만한 글을 작성해줘 성향을 잘 적용해서 짧아도 되지만 최대 200자를 넘어서는 안돼"),
-    AI_CHARACTER_CREATE_POST_PROMPT("%s이(가) SNS에 올릴 만한 일상 이미지를 생성해줘 대신 인물은 나오지 않는 이미지로 생성해줘");
+    AI_CHARACTER_CREATE_POST_TEXT_PROMPT("%s(이)가 사진과 함께 SNS에 작성할 만한 글을 작성해줘 해당 인물의 성향을 잘 적용해서 짧아도 되지만 최대 200자를 넘어서는 안돼"),
+    AI_CHARACTER_CREATE_POST_PROMPT("%s이(가) SNS에 [ %s ]라고 글을 작성했어 이 글에 어울리는 실제 같은 이미지를 생성해줘");
 
     private final String promptTemplate;
 
@@ -26,9 +26,8 @@ public enum OpenAIPrompt {
         return String.format(promptTemplate, characterInfo.getAge(), characterInfo.getGenderAsString(), characterInfo.getJob(), characterInfo.getName(), characterInfo.getName(),
             characterInfo.getPersonality(), characterInfo.getToneAsString(), characterInfo.getTalkTypeAsString(), getDescription(characterInfo.getDescription()));
     }
-    public String generateSystemPromptAddSeed(CharacterInfo characterInfo) {
-        // 시드 번호를 문자열로 그대로 사용
-        return String.format(promptTemplate, characterInfo.getName());
+    public String generateSystemPromptAddSeed(CharacterInfo characterInfo, String content) {
+        return String.format(promptTemplate, characterInfo.getName(), content);
     }
 
     public String generateSummaryPrompt(CharacterInfo characterInfo){
