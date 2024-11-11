@@ -171,15 +171,18 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
   }
 
   return (
-    <div ref={containerRef} className="absolute top-0 left-0 w-full h-full">
+    <div
+      ref={containerRef}
+      className="absolute top-0 left-0 w-full max-w-[480px] h-full"
+    >
       {/* Background overlay */}
       <div
-        className="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-20 px-[16px] transition-opacity duration-300"
+        className="absolute top-0 left-0 w-full max-w-[480px] h-full bg-black opacity-50 z-20 px-[16px] transition-opacity duration-300"
         onClick={closeFn}
       ></div>
       <div
         ref={modalRef}
-        className="z-30 bg-white rounded-t-lg absolute bottom-0 w-full overflow-auto transition-all duration-300 ease"
+        className="z-30 bg-white rounded-t-lg max-w-[480px] fixed bottom-0 w-full overflow-auto transition-all duration-300 ease"
         style={{ height: `90%` }}
       >
         {/* Drag bar */}

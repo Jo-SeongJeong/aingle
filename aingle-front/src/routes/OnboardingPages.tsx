@@ -7,7 +7,7 @@ import Signup from "../pages/onboarding/Signup";
 
 const OnboardingPages = () => {
   return (
-    <div className="h-full w-[375px] relative bg-white">
+    <div className="min-h-screen  relative bg-white">
       <Routes>
         <Route path="/" element={<Onboarding />} />
         <Route path="/loading" element={<OnboardingLoading />} />

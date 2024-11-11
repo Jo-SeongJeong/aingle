@@ -74,7 +74,7 @@ const Vote = () => {
   };
 
   return (
-    <div className="bg-[#ffe8f1] h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-scroll">
+    <div className="bg-[#ffe8f1] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-scroll">
       <PinkTextHeader />
       <div className="w-full h-[110px] py-[10px] px-[5px]" onClick={goVoteMain}>
         <button className="bg-white w-full h-full rounded-2xl flex">
@@ -143,8 +143,18 @@ const Vote = () => {
         CharacterId={selectedCharacter}
       />
       <div className="w-full h-[30px] flex justify-center items-center">
-        <hr className="border-[#6a6a6a] border-t-2 w-[300px]" />
+        <hr className="border-pink-lighter border-t-2 w-[360px]" />
       </div>
+      <div className="w-full h-[60px] flex justify-center items-center">
+        <div className="bg-gradient-to-r w-[154px] h-[42px] text-[18px] text-[#ffffff] font-semibold from-[#66e3cb] to-[#eabc6b] flex justify-center items-center rounded-full">
+          사용자 공유 캐릭터
+        </div>
+      </div>
+
+      <div className="w-full h-[30px] flex justify-center items-center">
+        <hr className="border-pink-lighter border-t-2 w-[360px]" />
+      </div>
+      {/* 내가 만든 캐릭터 */}
       <div className="w-full h-[125px] py-3 mb-[100px]">
         <div className="px-5 pb-2">
           <h1 className="text-main-color text-[13px] font-semibold">

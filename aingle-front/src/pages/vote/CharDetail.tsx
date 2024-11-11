@@ -9,7 +9,6 @@ import { CharacterInfo, IBotDetail } from "../../model/character";
 import { followBot, unfollowBot } from "../../api/followAPI";
 
 const CharDetail = () => {
-  
   const navigate = useNavigate();
   const { id } = useParams(); //추후 api요청시 사용
 
@@ -28,7 +27,7 @@ const CharDetail = () => {
   }, []);
 
   return (
-    <div className="h-full w-[375px] relative bg-white overflow-auto ">
+    <div className="h-full min-h-screen relative bg-white overflow-auto ">
       {/* 배경색 */}
       <div
         className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"
@@ -38,7 +37,7 @@ const CharDetail = () => {
           icon={faChevronLeft}
           className=" text-white absolute top-[16px] left-[18px] cursor-pointer"
           onClick={() => {
-            navigate("/mypage" , {replace : true});
+            navigate("/mypage", { replace: true });
           }}
         />
       </div>
