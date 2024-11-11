@@ -53,12 +53,18 @@ const Home = () => {
   };
 
   const handleNameClick = (post: IPost) => {
-    const { member } = post;
+    const { member , character } = post;
 
-    if (userData.id === member.memberId) {
-      navigate(`/mypage`);
+    // member의 게시글인 경우
+    if (member) {
+      // 아이디 누르면 마이페이지로 이동
+      if (userData.id === member.memberId) {
+        navigate(`/mypage`);
+      }
+      // 봇의 게시글인 경우
     } else {
-      navigate(`/vote/chardetail/${member.memberId}`);
+      // 봇의 상세 페이지로 이동
+      navigate(`/vote/chardetail/${character.characterId}`);
     }
   };
 
