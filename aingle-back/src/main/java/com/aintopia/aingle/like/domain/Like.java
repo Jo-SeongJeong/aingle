@@ -1,10 +1,8 @@
 package com.aintopia.aingle.like.domain;
 
 import com.aintopia.aingle.character.domain.Character;
-import com.aintopia.aingle.like.dto.Request.RegistLikeRequestDto;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.post.domain.Post;
-import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,5 +39,10 @@ public class Like {
     public Like(Post post, Member member) {
         this.post = post;
         this.member = member;
+    }
+
+    public Like(Post post, Character character){
+        this.post = post;
+        this.character = character;
     }
 }
