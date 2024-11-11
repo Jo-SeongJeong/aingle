@@ -107,7 +107,7 @@ const Onboarding = () => {
         );
       case 2:
         return (
-          <div className="flex items-center justify-center flex-col">
+          <div className="flex items-center mt-20 flex-col h-full">
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q1
             </h1>
@@ -126,7 +126,7 @@ const Onboarding = () => {
         );
       case 3:
         return (
-          <div className="flex items-center justify-center flex-col">
+          <div className="flex items-center mt-20 flex-col h-full">
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q2
             </h1>
@@ -145,7 +145,7 @@ const Onboarding = () => {
         );
       case 4:
         return (
-          <div className="flex items-center justify-center flex-col">
+          <div className="flex items-center mt-20 flex-col h-full">
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q3
             </h1>
@@ -167,7 +167,7 @@ const Onboarding = () => {
         );
       case 5:
         return (
-          <div className="flex items-center justify-center flex-col">
+          <div className="flex items-center mt-20 flex-col h-full">
             <h1 className="mb-[16px] font-hakgyo text-[#fb599a] text-[32px]">
               Q4
             </h1>
@@ -208,7 +208,7 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="bg-[#FFFAFC] h-full w-full px-[16px] py-[34px] flex flex-col justify-between items-center">
+    <div className="bg-[#FFFAFC] h-[100vh] w-full px-[16px] py-[34px] flex flex-col justify-between items-center">
       {/* 첫 화면이 아닐 경우에만 뒤로가기 버튼을 표시 */}
       {pageNumber > 1 && (
         <div className="w-full flex justify-between items-center mb-[12px]">
