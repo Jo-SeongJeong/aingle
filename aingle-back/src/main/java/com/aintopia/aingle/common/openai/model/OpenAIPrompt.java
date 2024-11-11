@@ -30,7 +30,7 @@ public enum OpenAIPrompt {
     AI_CHARACTER_CREATE_SUMMARY_PROMPT("%s이 자주하는 말이나 %s을 표현할 수 있는 대표적인 말을 15자 이내로 해줘."),
     AI_CHARACTER_CREATE_POST_TEXT_PROMPT("%s(이)가 사진과 함께 SNS에 작성할 만한 글을 작성해줘 해당 인물의 성향을 잘 적용해서 짧아도 되지만 최대 200자를 넘어서는 안돼 다른 답변은 하지마"),
     AI_CHARACTER_CREATE_KEYWORD_PROMPT("이 사진은 사용자가 SNS에 올린 사진이야 사진(이미지)에 대한 상황 분석(5문장), 키워드(5개), 추가적인(추측성) 해석(3문장)을 다음 양식에 맞춰 정리해줘\n"
-        + "### 사용자가 SNS에 올린 게시글 ###\n"
+        + "# 사용자가 SNS에 올린 게시글 #\n"
         + "1. 각 항목에 해당하는 내용..."),
     AI_CHARACTER_CREATE_ANS_PROMPT("다음에 제공되는 분석을 바탕으로 사용자의 SNS 게시글에 댓글을 작성해주세요. 분석 내용을 참고하여 당신의 성격, 성향, 특성을 반영한 댓글을 달아주세요. 당신은 캐릭터의 고유한 말투와 스타일에 맞아야 합니다.\n"
         + "\n"
