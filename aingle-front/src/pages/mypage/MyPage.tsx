@@ -35,7 +35,7 @@ const MyPage = () => {
     <div className="h-full  relative bg-white overflow-auto pb-[90px]">
       {/* 배경색 */}
       <div
-        className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"
+        className="w-full h-[190px] bg-cover bg-center absolute top-0 left-0 z-100"
         style={{ backgroundImage: `url(${bgbg})` }}
       >
         <img

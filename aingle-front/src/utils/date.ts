@@ -1,5 +1,4 @@
-// 시간 경과 계산하는 함수
-export function calTime(dateString : string) : string {
+export function calTime(dateString: string): string {
   const now = new Date();
   const date = new Date(dateString);
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);

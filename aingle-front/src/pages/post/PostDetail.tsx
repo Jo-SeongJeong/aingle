@@ -28,6 +28,7 @@ const PostDetail = () => {
   const { id } = useParams();
   const [postData, setPostData] = useState<IPost | null>(null);
   const [comments, setComments] = useState<IComment[]>([]);
+  const [validCommentCount, setValidCommentCount] = useState<number>(0); // 유효한 댓글 개수
   const [commentId, setCommentId] = useState(0);
   const [commentWriter, setCommentWriter] = useState("");
   const userData = useRecoilValue(userDataState);
@@ -40,12 +41,28 @@ const PostDetail = () => {
   // 로컬 좋아요 상태와 수 관리
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [totalLike, setTotalLike] = useState<number>(0);
-  const refreshComments = async () => {
+
+  // 댓글 필터링 함수
+  const fetchAndFilterComments = async () => {
     try {
-      const updatedComments = await getComments(Number(id));
-      setCommentWriter("");
-      setComments(updatedComments);
-      setCommentId(0);
+      const allComments = await getComments(Number(id));
+      const now = new Date();
+
+      const filteredComments = allComments.filter((comment: IComment) => {
+        if (comment.member) {
+          return true; // member인 경우 시간 조건 무시
+        } else if (comment.character) {
+          const commentTime = new Date(comment.createTime);
+          commentTime.setMinutes(
+            commentTime.getMinutes() + comment.character.commentDelayTime
+          );
+          return commentTime <= now;
+        }
+        return false;
+      });
+
+      setComments(filteredComments);
+      setValidCommentCount(filteredComments.length); // 유효한 댓글 개수 설정
     } catch (error) {
       console.error("Failed to fetch comments: ", error);
     }
@@ -70,8 +87,7 @@ const PostDetail = () => {
         await createReply(commentId, inputComment.content);
       }
 
-      const updatedComments = await getComments(Number(id));
-      setComments(updatedComments);
+      await fetchAndFilterComments();
 
       setInputcomment((prev) => ({
         ...prev,
@@ -128,8 +144,7 @@ const PostDetail = () => {
         setIsLiked(response.isLiked);
         setTotalLike(response.totalLike);
 
-        const response2 = await getComments(parseInt(id, 10));
-        setComments(response2);
+        await fetchAndFilterComments();
       };
 
       fetchData();
@@ -195,7 +210,7 @@ const PostDetail = () => {
             <div className="flex items-center">
               <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
               <h1 className="text-[12px] font-semibold">
-                {postData.totalComment}
+                {validCommentCount} {/* 유효한 댓글 개수 */}
               </h1>
             </div>
           </div>
@@ -206,6 +221,7 @@ const PostDetail = () => {
             </h1>
             <span className="text-[12px] font-medium">{postData.content}</span>
           </div>
+
           <div style={{ maxHeight: "60vh" }}>
             <div className="mb-[130px]" style={{ maxHeight: "60vh" }}>
               {comments.map((comment, idx) => (
@@ -223,14 +239,14 @@ const PostDetail = () => {
                   <Postcomment
                     key={comment.commentId}
                     comment={comment}
-                    refreshComments={refreshComments}
+                    refreshComments={fetchAndFilterComments}
                   />
                   {comment.replies &&
                     comment.replies.map((reply, idx) => (
                       <ReplyComment
                         key={idx}
                         comment={reply}
-                        refreshComments={refreshComments}
+                        refreshComments={fetchAndFilterComments}
                       />
                     ))}
                 </div>
@@ -239,10 +255,10 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <div className="w-full max-w-[480px] fixed bottom-0 bg-white z-40 ">
+        <div className="w-full max-w-[480px] fixed bottom-0 bg-white z-40">
           {commentWriter != "" && (
             <div
-              className="px-5 py-2  text-white flex justify-between items-center"
+              className="px-5 py-2 text-white flex justify-between items-center"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             >
               <h1>{commentWriter}에 답글 작성</h1>
@@ -287,13 +303,13 @@ const PostDetail = () => {
               onClick={() => addEmoji("👍")}
             />
           </div>
-          <div className="w-full h-full flex items-center justify-evenly px-[30px]  pb-[30px]">
+          <div className="w-full h-full flex items-center justify-evenly px-[30px] pb-[30px]">
             <img
               src={left}
               className="w-[35px] h-[35px] rounded-full"
               alt="left"
             />
-            <form onSubmit={handleSubmit} className=" px-4">
+            <form onSubmit={handleSubmit} className="px-4">
               <input
                 onChange={(e) => handleChange("content", e.target.value)}
                 value={inputComment.content}
