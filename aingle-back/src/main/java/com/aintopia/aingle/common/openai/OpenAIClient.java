@@ -52,7 +52,7 @@ public class OpenAIClient {
         ChatResponse chatResponse = chatModel.call(prompt);
         log.info("chat response : " + chatResponse);
         logTokensCount(chatResponse.getMetadata().getUsage());
-        Prompt prompt2 = getPromptAns(chatResponse.getResult().getOutput().getContent(), characterInfo);
+        Prompt prompt2 = getPromptAns(postRequest.getMessage(), chatResponse.getResult().getOutput().getContent(), characterInfo);
         ChatResponse chatResponse2 = chatModel.call(prompt2);
         log.info("chat response2 : " + chatResponse2);
 //        chatHistory.add(Pair.of(postRequest.getMessage(), response));
@@ -132,7 +132,7 @@ public class OpenAIClient {
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
-    private Prompt getPromptAns(String response, CharacterInfo characterInfo) throws IOException {
+    private Prompt getPromptAns(String content, String response, CharacterInfo characterInfo) throws IOException {
         List<Message> promptMessages = new ArrayList<>();
 
         Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
@@ -144,7 +144,7 @@ public class OpenAIClient {
 //        });
 
         Message userMessage;
-        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_ANS_PROMPT + response);
+        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_ANS_PROMPT.generateANS(content, response));
         promptMessages.add(userMessage);
         log.info("promptMessages : " + promptMessages);
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
