@@ -1,8 +1,13 @@
 package com.aintopia.aingle.common.openai;
 
 import com.aintopia.aingle.character.dto.CharacterInfo;
+import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,6 +25,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 
@@ -29,6 +35,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -57,23 +64,23 @@ public class OpenAIClient {
     // 게시글 생성 함수
     public String createImage() throws MalformedURLException {
         String prompt = "당신은 25세 여자 대학생 유보은입니다. 유보은이 되어서 사용자와 대화를 진행합니다. 아래의 대화 패턴을 참고해서 질문에 대해 답변해주세요. \n" +
-                "\n" +
-                "###대화 패턴###\n" +
-                "- 답변은 반말로 한다.\n" +
-                "- 답변은 간결하게 한 문장으로 한다.\n" +
-                "- 감정표현이 풍부하다.\n" +
-                "- 이모티콘을 사용한다. 예시) \uD83D\uDE06\uD83D\uDE2D\n" +
-                "- 성격은 단순활발하다.\n" +
-                "- 맛집에 관심이 많다.\n" +
-                "- “ㅋㅋㅋ”와 같은 웃음 표현을 자주 사용한다. 유보은이 sns에 작성할 이미지를 생성해줘.";
+            "\n" +
+            "###대화 패턴###\n" +
+            "- 답변은 반말로 한다.\n" +
+            "- 답변은 간결하게 한 문장으로 한다.\n" +
+            "- 감정표현이 풍부하다.\n" +
+            "- 이모티콘을 사용한다. 예시) \uD83D\uDE06\uD83D\uDE2D\n" +
+            "- 성격은 단순활발하다.\n" +
+            "- 맛집에 관심이 많다.\n" +
+            "- “ㅋㅋㅋ”와 같은 웃음 표현을 자주 사용한다. 유보은이 sns에 작성할 이미지를 생성해줘.";
 
         ImageResponse imageResponse =  imageModel.call(
-                new ImagePrompt(prompt,
-                        OpenAiImageOptions.builder()
-                                .withQuality("hd")
-                                .withStyle("vivid")
-                                .withHeight(1024)
-                                .withWidth(1024).build())
+            new ImagePrompt(prompt,
+                OpenAiImageOptions.builder()
+                    .withQuality("hd")
+                    .withStyle("vivid")
+                    .withHeight(1024)
+                    .withWidth(1024).build())
 
         );
         String url = imageResponse.getResult().getOutput().getUrl();
@@ -83,6 +90,29 @@ public class OpenAIClient {
         Message userMessage = new UserMessage("이 사진의 시드 넘버를 알려줘.", new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
         ChatResponse chatResponse = chatModel.call(new Prompt(userMessage, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build()));
         return chatResponse.getResult().getOutput().getContent();
+    }
+
+    // 캐릭터 생성시 게시글 생성 함수
+    public CreateAIPostResponseDto createImageUrl(CharacterInfo characterInfo) throws IOException {
+        String prompt = createCharacterSystemPrompt(characterInfo) + creatAIPostPrompt(characterInfo);
+
+        ImageResponse imageResponse = imageModel.call(
+            new ImagePrompt(prompt,
+                OpenAiImageOptions.builder()
+                    .withQuality("hd")
+                    .withStyle("vivid")
+                    .withHeight(1024)
+                    .withWidth(1024).build())
+        );
+        String url = imageResponse.getResult().getOutput().getUrl();
+        log.info("image URL: {}", url);
+        Prompt prompt2 = getPromptPost(url, characterInfo);
+        ChatResponse chatResponse = chatModel.call(prompt2);
+        log.info("chat response : " + chatResponse.getResult().getOutput().getContent());
+        return CreateAIPostResponseDto.builder()
+            .file(convertUrlToMultipartFile(url))
+            .content(chatResponse.getResult().getOutput().getContent())
+            .build();
     }
 
     public String createSummary(CharacterInfo characterInfo){
@@ -127,12 +157,51 @@ public class OpenAIClient {
         return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
+    private Prompt getPromptPost(String url, CharacterInfo characterInfo) throws IOException {
+        List<Message> promptMessages = new ArrayList<>();
+
+        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
+        promptMessages.add(systemMessage);
+
+        Message userMessage;
+        URL imageUrl = URI.create(url).toURL();
+        userMessage = new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_POST_TEXT_PROMPT.getPromptTemplate(), new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
+        promptMessages.add(userMessage);
+        log.info("promptMessages : " + promptMessages);
+        return new Prompt(promptMessages, OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
+    }
+
+    private String creatAIPostPrompt(CharacterInfo characterInfo) throws IOException {
+        return OpenAIPrompt.AI_CHARACTER_CREATE_POST_PROMPT.generateSystemPromptAddSeed(characterInfo);
+    }
+
     private String createCharacterSystemPrompt(CharacterInfo characterInfo){
         return OpenAIPrompt.AI_CHARACTER_SYSTEM_PROMPT.generateSystemPrompt(characterInfo);
     }
 
     private void logTokensCount(Usage usage) {
         log.debug("Tokens count Request {} Response {} Total {}", usage.getPromptTokens(),
-                usage.getGenerationTokens(), usage.getTotalTokens());
+            usage.getGenerationTokens(), usage.getTotalTokens());
+    }
+
+    public static MultipartFile convertUrlToMultipartFile(String imageUrl) throws IOException {
+        // URL에서 파일을 가져오기
+        URL url = new URL(imageUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.connect();
+
+        // InputStream을 통해 바이트 배열로 변환
+        try (InputStream inputStream = connection.getInputStream()) {
+            byte[] imageBytes = inputStream.readAllBytes();
+
+            // MultipartFile 생성
+            return new MockMultipartFile(
+                "file",                 // 필드 이름
+                "image.png",            // 파일 이름
+                "image/png",            // MIME 타입
+                imageBytes              // 파일 데이터
+            );
+        }
     }
 }

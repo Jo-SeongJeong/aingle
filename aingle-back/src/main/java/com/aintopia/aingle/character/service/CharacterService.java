@@ -15,6 +15,7 @@ import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.domain.Follow;
@@ -23,6 +24,9 @@ import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
+import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
+import com.aintopia.aingle.post.exception.BadReqeustPostException;
+import com.aintopia.aingle.post.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +61,7 @@ public class CharacterService {
     private final OpenAIClient openAIClient;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
+    private final PostService postService;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -195,6 +200,12 @@ public class CharacterService {
                 .character(saveCharacter)
                 .build());
         saveCharacter.updateSummary(summary);
+
+        // 캐릭터 게시글 올려야 함
+        postService.registCharaterPost(openAIClient.createImageUrl(CharacterInfo.builder()
+            .character(saveCharacter)
+            .build()), saveCharacter.getCharacterId());
+
         log.info("캐릭터 저장 : " + saveCharacter.getCharacterId());
         //캐릭터 이미지 저장
         characterImageRepository.save(CharacterImage.builder()
@@ -215,6 +226,7 @@ public class CharacterService {
         return CharacterCreateResponseDto.builder().characterId(saveCharacter.getCharacterId())
             .build();
     }
+
 
     @Transactional
     public void deleteCharacter(Long memberId, Long characterId) {
