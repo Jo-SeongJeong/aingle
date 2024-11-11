@@ -4,7 +4,7 @@ import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
 import { IComment, IcreateComment } from "../../model/comment";
 import TextHeader from "../../components/header/TextHeader";
-import { deletePopst, getPost, getPostDetail } from "../../api/postAPI";
+import { deletePopst, getPostDetail } from "../../api/postAPI";
 import { IPost } from "../../model/post";
 import clap from "../../assets/icons/comment/clap.png";
 import fire from "../../assets/icons/comment/fire.png";
@@ -21,6 +21,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { calTime } from "../../utils/date";
 import fillHeart from "../../assets/icons/fillHeart.png";
 import { disLike, like } from "../../api/likeAPI";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -28,7 +30,7 @@ const PostDetail = () => {
   const [comments, setComments] = useState<IComment[]>([]);
   const [commentId, setCommentId] = useState(0);
   const [commentWriter, setCommentWriter] = useState("");
-
+  const userData = useRecoilValue(userDataState);
   const [inputComment, setInputcomment] = useState<IcreateComment>({
     postId: Number(id),
     content: "",
@@ -163,12 +165,14 @@ const PostDetail = () => {
                   {calTime(postData.createTime)}
                 </h1>
               </div>
-              <button
-                className="text-xs text-pink-darkest font-semibold"
-                onClick={handleDeleteButton}
-              >
-                삭제
-              </button>
+              {postData.member && postData.member.memberId === userData.id && (
+                    <button
+                      className="text-xs text-pink-darkest font-semibold"
+                      onClick={handleDeleteButton}
+                    >
+                      삭제
+                    </button>
+                  )}
             </div>
           </div>
 
@@ -196,11 +200,11 @@ const PostDetail = () => {
             </div>
           </div>
 
-          <div className="flex space-x-[15px] items-center mb-[10px]">
-            <h1 className="font-semibold text-[16px]">
+          <div className="mb-[10px]">
+            <h1 className="font-semibold text-[15px]">
               {postData.member ? postData.member.name : postData.character.name}
             </h1>
-            <span className="text-[16px] font-medium">{postData.content}</span>
+            <span className="text-[12px] font-medium">{postData.content}</span>
           </div>
           <div style={{ maxHeight: "60vh" }}>
             <div className="mb-[130px]" style={{ maxHeight: "60vh" }}>
