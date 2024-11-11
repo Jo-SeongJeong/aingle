@@ -1,5 +1,6 @@
 import { deleteReply } from "../../api/commentAPI";
 import { IComment, Ireply } from "../../model/comment";
+import { calTime } from "../../utils/date";
 
 interface ICommentProps {
   comment: Ireply;
@@ -33,7 +34,7 @@ const ReplyComment = ({ comment, refreshComments }: ICommentProps) => {
         <div className="flex space-x-[5px] items-center">
           <h1 className="text-[13px] font-semibold ">{member.name}</h1>
           <h1 className="text-[10px] font-medium text-[#A6A6A6]">
-            {comment.createTime.split("T")[0]}
+            {calTime(comment.createTime)}
           </h1>
         </div>
         <span>{comment.content}</span>

@@ -106,11 +106,16 @@ const Post = ({
         </div>
       </div>
 
-      <div className="flex space-x-[15px] items-center mb-[10px]">
-        <h1 className="font-semibold text-[15px]" onClick={onNameClick}>
+      <div className="flex flex-row items-start space-x-[10px] mb-[10px]">
+        <h1
+          className="font-semibold text-[16px] whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]"
+          onClick={onNameClick}
+        >
           {member?.name || character?.name || "Unknown User"}
         </h1>
-        <span className="text-[12px] font-medium">{post.content}</span>
+        <span className="text-[16px] font-medium break-words flex-1">
+          {post.content}
+        </span>
       </div>
       <div onClick={onCommentClick}>
         <h1 className="text-[#A6A6A6] font-medium text-[12px]">

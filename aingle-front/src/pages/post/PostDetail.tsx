@@ -196,12 +196,15 @@ const PostDetail = () => {
             </div>
           </div>
 
-          <div className="flex space-x-[15px] items-center mb-[10px]">
-            <h1 className="font-semibold text-[16px]">
+          <div className="flex flex-row items-start space-x-[10px] mb-[10px]">
+            <h1 className="font-semibold text-[16px] whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
               {postData.member ? postData.member.name : postData.character.name}
             </h1>
-            <span className="text-[16px] font-medium">{postData.content}</span>
+            <span className="text-[16px] font-medium break-words flex-1">
+              {postData.content}
+            </span>
           </div>
+
           <div style={{ maxHeight: "60vh" }}>
             <div className="mb-[130px]" style={{ maxHeight: "60vh" }}>
               {comments.map((comment, idx) => (
