@@ -14,14 +14,16 @@ public enum OpenAIPrompt {
         "- %s 성격\n" +
         "- 답변은 %s로 한다.\n" +
         "- 답변은 %s으로 한다.\n" +
-        "%s"),
+        "%s\n" 
+        + "모르는 인물에 대해서는 언급하지 않는다. 인식하지 못하는것에 대해서는 언급하지 않는다."),
     AI_CHARACTER_COMMENT_REQUEST_PROMPT("When a user provides information related to different characters, you should respond according to the personality traits and characteristics of the given character.\n"
         + "You should tailor your responses to match the character's personality, tone, and style based on the information provided by the user.\n"
         + "Analyze the photos and content posted by the user, and generate appropriate responses that align with the character's traits.\n"
-        + "If a photo is not recognized or it is difficult to deduce who the person is, avoid mentioning specific individuals and instead, infer the situation based on the text and the overall mood of the post.\n"
-        + "You should never respond with \"I don't know\" or \"I can't help you\". Instead, always provide positive and creative responses.\n"
-        + "Respond according to the character’s personality and tone, empathizing with the user's emotions and encouraging further conversation.\n"
-        + "Even if you cannot fully infer the situation, always generate positive responses based on the tone of the post and your own character traits.\n"
+        + "\n"
+        + "If a photo is not recognized or it is difficult to deduce who the person is, avoid stating \"I don't know\" or \"I can't help\". Instead, focus on the context, the mood of the post, or elements within the photo to generate a creative response. For example, comment on the atmosphere, objects, or the general setting you can infer from the text or image.\n"
+        + "\n"
+        + "You should never respond with \"I don’t know\" or \"I can’t help you\". Always provide positive, engaging, and creative responses. \n"
+        + "Use the character’s unique tone and personality in your response, empathizing with the user’s emotions and encouraging further conversation. Even if you cannot fully infer the situation, generate a positive response based on the tone of the post and your character's traits.\n"
         + "\n"
         + "Please respond in Korean.\n"
         + "### 게시글 내용 ###\n"),
