@@ -7,6 +7,7 @@ import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
 import { IPost } from "../../model/post";
 import { calTime } from "../../utils/date.ts";
+import { IComment } from "../../model/comment.ts";
 
 interface postProps {
   post: IPost;
@@ -30,12 +31,41 @@ const Post = ({
   const calDate = calTime(post.createTime);
   const userData = useRecoilValue(userDataState);
   const [likeCount, setLikeCount] = useState(0);
+  const [commentCnt, setCommentCnt] = useState(0);
 
   // 본문 상태
   const [isExpanded, setIsExpanded] = useState(false);
   const isLongContent = post.content.length > 20; // 본문이 20글자를 초과하는지 확인
 
+  const fetchAndFilterComments = async () => {
+    try {
+      const allComments = post.comments;
+      const now = new Date();
+
+      const filteredComments = allComments.filter((comment: IComment) => {
+        if (comment.member) {
+          return true; // member인 경우 시간 조건 무시
+        } else if (comment.character) {
+          const commentTime = new Date(comment.createTime);
+          commentTime.setMinutes(
+            commentTime.getMinutes() + comment.character.commentDelayTime
+          );
+          return commentTime <= now;
+        }
+        return false;
+      });
+
+      // setComments(filteredComments);
+      // setValidCommentCount(filteredComments.length); // 유효한 댓글 개수 설정
+
+      setCommentCnt(filteredComments.length);
+    } catch (error) {
+      console.error("Failed to fetch comments: ", error);
+    }
+  };
+
   useEffect(() => {
+    fetchAndFilterComments();
     if (member?.memberImage) {
       setProfile(member.memberImage);
     } else if (character?.characterImage) {
@@ -107,7 +137,7 @@ const Post = ({
         </div>
         <div className="flex items-center" onClick={onCommentClick}>
           <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
-          <h1 className="text-[12px] font-semibold">{post.totalComment}</h1>
+          <h1 className="text-[12px] font-semibold">{commentCnt}</h1>
         </div>
       </div>
 
@@ -123,14 +153,14 @@ const Post = ({
           {isExpanded || !isLongContent
             ? post.content
             : `${post.content.slice(0, 20)}...`}
-        {!isExpanded && isLongContent && (
-          <button
-            onClick={() => setIsExpanded(true)}
-            className="text-[12px] text-gray-400 ml-1 "
-          >
-            더보기
-          </button>
-        )}
+          {!isExpanded && isLongContent && (
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="text-[12px] text-gray-400 ml-1 "
+            >
+              더보기
+            </button>
+          )}
         </span>
       </div>
 
