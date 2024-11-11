@@ -29,6 +29,11 @@ public enum OpenAIPrompt {
         + "### 게시글 내용 ###\n"),
     AI_CHARACTER_CREATE_SUMMARY_PROMPT("%s이 자주하는 말이나 %s을 표현할 수 있는 대표적인 말을 15자 이내로 해줘."),
     AI_CHARACTER_CREATE_POST_TEXT_PROMPT("%s(이)가 사진과 함께 SNS에 작성할 만한 글을 작성해줘 해당 인물의 성향을 잘 적용해서 짧아도 되지만 최대 200자를 넘어서는 안돼 다른 답변은 하지마"),
+    AI_CHARACTER_CREATE_KEYWORD_PROMPT("이 사진(이미지)에 대한 상황 분석(5문장), 키워드(5개), 추가적인(추측성) 해석(3문장)을 정리 해줘"),
+    AI_CHARACTER_CREATE_ANS_PROMPT("다음 주어지는 내용은 사용자의 SNS게시글을 분석한 결과야\n"
+        + "분석 내용을 참고해서 당신의 성격 성향 특성을 잘 반영해서 해당 게시글에 댓글을 달아줄거야\n"
+        + "나이에 따라 말투, 인터넷용어 등 특성을 많이 활용해서 작성할 댓글을 답변해줘\n"
+        + "### 분석 결과 ###\n"),
     AI_CHARACTER_CREATE_POST_PROMPT("%s이(가) SNS에 [ %s ]라고 글을 작성했어 이 글에 어울리는 실제 같은 이미지를 조건에 충실하게 생성해줘\n"
         + "조건 1. 인물을 이미지에 넣지 말것\n"
         + "조건 2. LLM 모델이 인식 하기 쉬운 이미지로 생성할 것\n");
