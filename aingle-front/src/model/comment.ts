@@ -7,6 +7,7 @@ export interface IComment {
   createTime: string;
   member: IMember | null;
   replies: Ireply[];
+  adjustedCreateTime: string;
 }
 
 export interface IcreateComment {

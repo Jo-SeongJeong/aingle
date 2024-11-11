@@ -12,6 +12,7 @@ import "../../styles/CustomSwiper.css";
 import { useState, useEffect } from "react";
 import {
   doVote,
+  getExpireTime,
   getVoteCharacter,
   getVoteCharacterDetail,
 } from "../../api/voteAPI";
@@ -20,22 +21,59 @@ const VoteMain = () => {
   const navigate = useNavigate();
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
-
   const [voteCount, setVoteCount] = useState<number>(0);
+  const [expireTime, setExpireTime] = useState<string>(""); // 종료 시간
+  const [timeLeft, setTimeLeft] = useState<string>(""); // 남은 시간 표시
 
   const [CharacterInfo, setCharacterInfo] =
     useState<VoteCharacterDetail | null>(null);
-
   const [characters, setCharacters] =
     useState<CharacterGetPublicResponseDto | null>(null);
-
   const [isVisible, setIsVisible] = useState(false);
-
   const [position, setPosition] = useState(3);
-
   const [opacity, setOpacity] = useState(0);
 
-  // function
+  // 종료 시간 가져오기
+  useEffect(() => {
+    const fetchTime = async () => {
+      const response = await getExpireTime();
+      setExpireTime(response);
+    };
+    fetchTime();
+  }, []);
+
+  // 남은 시간 계산
+  useEffect(() => {
+    if (!expireTime) return;
+
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const endTime = new Date(expireTime);
+      const diff = endTime.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeLeft("투표가 종료되었습니다.");
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft(
+        `${days > 0 ? `${days}일 ` : ""}${hours
+          .toString()
+          .padStart(2, "0")}시간 ${minutes
+          .toString()
+          .padStart(2, "0")}분 ${seconds.toString().padStart(2, "0")}초`
+      );
+    };
+
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 해제
+  }, [expireTime]);
+
   const handleClick = () => {
     setIsVisible(true);
     setPosition(16);
@@ -51,14 +89,14 @@ const VoteMain = () => {
   };
 
   const vote = async (id: number) => {
-    if (id == -1) {
+    if (id === -1) {
       return;
     }
     try {
       const data = await doVote(id);
       setVoteCount(data.totalVoteCount);
     } catch (error: any) {
-      if (error.status == 409) {
+      if (error.status === 409) {
         console.error("중복 투표 오류: ", error);
         handleClick();
       } else {
@@ -86,12 +124,12 @@ const VoteMain = () => {
     }
   };
 
-  //useEffect
   useEffect(() => {
     if (selectedId != null) {
       getsetCharacterInfo(selectedId);
     }
   }, [selectedId]);
+
   useEffect(() => {
     fetchCharacter();
   }, []);
@@ -128,21 +166,20 @@ const VoteMain = () => {
             </svg>
           </button>
         </div>
-        <div className="bg-slate-300 w-full h-[70px] flex justify-center items-center rounded-2xl">
-          광고 받습니다
+        <div>
+          {/* 남은 시간 */}
+          <h2 className="text-main-color text-lg font-semibold">
+            남은 시간: {timeLeft}
+          </h2>
         </div>
       </div>
-      <div className="px-4">
-        <div className="bg-white h-[90px] flex flex-col justify-center items-center rounded-2xl">
-          <div className="flex flex-row justify-center items-center">
-            <div>
-              <h1 className="text-main-color font-bold text-[20px]">
-                이번 달 앵표
-              </h1>
-            </div>
-            <div className="ml-1 mt-1">
-              <img src={Trophy_voteMian} alt="" className="w-[40px]" />
-            </div>
+
+      <div className="bg-white w-full h-[90px] flex flex-col justify-center items-center">
+        <div className="flex flex-row justify-center items-center">
+          <div>
+            <h1 className="text-main-color font-bold text-[20px]">
+              이번 달 앵표
+            </h1>
           </div>
           <div className="flex justify-center items-center mt-1 text-[#bdbdbd] text-[14px] font-semibold">
             <h1>가장 사용해 보고 싶은 캐릭터를 골라주세앵</h1>
@@ -167,9 +204,9 @@ const VoteMain = () => {
                     onClick={() => handleSelect(character.characterId)}
                     className={`relative w-[65px] p-2 bg-white rounded-xl flex items-center justify-center shadow-md cursor-pointer ${
                       selectedId === character.characterId
-                        ? "border-2 border-red-500" // 선택된 항목에 빨간색 테두리
+                        ? "border-2 border-red-500"
                         : index === 0
-                        ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
+                        ? "border-2 border-purple-950"
                         : ""
                     }`}
                   >
@@ -255,7 +292,7 @@ const VoteMain = () => {
             className="absolute transition-all duration-500 ease-out"
             style={{ bottom: `${position}px`, opacity }}
             onTransitionEnd={() => {
-              if (opacity === 0) setIsVisible(false); // Hide element when fully transparent
+              if (opacity === 0) setIsVisible(false);
             }}
           >
             <h1 className="bg-[#f7b9e8] font-hakgyo text-main-color px-4 py-2 rounded-md">
