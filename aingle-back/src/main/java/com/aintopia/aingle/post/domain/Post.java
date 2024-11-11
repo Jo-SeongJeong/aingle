@@ -73,7 +73,18 @@ public class Post {
         this.isDeleted = false;
         this.createTime = LocalDateTime.now();
     }
-    
+
+    @Builder(builderMethodName = "registAIBuilder")
+    public Post(RegistPostRequestDto registPostRequestDto, String url, Character character) {
+        this.content = registPostRequestDto.getContent();
+        this.character = character;
+        this.image = url;
+        this.totalLike = 0L;
+        this.totalComment = 0L;
+        this.isDeleted = false;
+        this.createTime = LocalDateTime.now();
+    }
+
     public void delete() {
         this.isDeleted = true;
         this.deleteTime = LocalDateTime.now();
