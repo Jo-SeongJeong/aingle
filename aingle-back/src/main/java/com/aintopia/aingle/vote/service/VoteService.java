@@ -110,7 +110,6 @@ public class VoteService {
             characterImageDtos.add(characterImageDto);
         }
         return new AllCharacterResponse(characterImageDtos);
-
     }
 
     @Transactional(readOnly = true)
@@ -183,5 +182,10 @@ public class VoteService {
         }
 
         character.registerVote(vote);
+    }
+
+    public LocalDateTime getVoteInfo() {
+        Vote vote = voteRepository.findById(currentVoteId).orElseThrow(NotFoundVoteException::new);
+        return vote.getEndTime();
     }
 }
