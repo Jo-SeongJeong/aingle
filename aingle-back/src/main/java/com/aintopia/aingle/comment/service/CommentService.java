@@ -181,6 +181,10 @@ public class CommentService {
             return true;
         }else if (comment.contains("알 수 없")) {
             return true;
+        }else if (comment.contains("할 수 없")) {
+            return true;
+        }else if (comment.contains("인식")) {
+            return true;
         }else {
             return comment.contains("도와줄 수 없어");
         }
