@@ -3,12 +3,14 @@ package com.aintopia.aingle.common.openai.controller;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+import com.aintopia.aingle.common.dto.DummyRequestDto;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.openai.model.PostRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +36,15 @@ public class OpenAIController {
         CharacterInfo characterInfo = character.toDTO();
         log.info("test ai : " + characterInfo);
         return openAIClient.createCommentByAI(postRequest, characterInfo);
+    }
+
+    @Operation(
+        summary = "AI 댓글 생성 더미데이터에 넣을 API",
+        description = "사용자 게시글(사진-S3주소, 글) 생성 후 실행, 캐릭터 유보은으로 댓글 생성 테스트")
+    @PostMapping("/test/comment/do")
+    public ResponseEntity<?> AIComment(@RequestBody DummyRequestDto dummyRequestDto) throws IOException {
+        openAIClient.dummy(dummyRequestDto.getId());
+        return ResponseEntity.ok(200);
     }
 
     @Operation(

@@ -68,3 +68,4 @@ public enum OpenAIPrompt {
         return formatted;
     }
 }
+
