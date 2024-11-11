@@ -181,12 +181,9 @@ const VoteMain = () => {
               이번 달 앵표
             </h1>
           </div>
-          <div className="ml-1 mt-1">
-            <img src={Trophy_voteMian} alt="" className="w-[40px]" />
+          <div className="flex justify-center items-center mt-1 text-[#bdbdbd] text-[14px] font-semibold">
+            <h1>가장 사용해 보고 싶은 캐릭터를 골라주세앵</h1>
           </div>
-        </div>
-        <div className="flex justify-center items-center mt-1 text-[#bdbdbd] text-[14px] font-semibold">
-          <h1>가장 사용해 보고 싶은 캐릭터를 골라주세앵</h1>
         </div>
       </div>
       <div className="w-full h-[150px] max-w-3xl pt-8 pb-2 px-4 flex flex-col items-center">
@@ -285,7 +282,7 @@ const VoteMain = () => {
           </div>
         )}
         <button
-          className="bg-main-color font-semibold text-white rounded-2xl w-[200px] h-[50px]"
+          className="bg-main-color font-semibold text-white rounded-2xl w-full h-[50px]"
           onClick={() => vote(selectedId != null ? selectedId : -1)}
         >
           투표하기

@@ -11,13 +11,15 @@ interface ChDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   CharacterId: number;
+  isPublic : boolean;
 }
-
 const ChDetailModal: React.FC<ChDetailModalProps> = ({
   isOpen,
   onClose,
   CharacterId,
+  isPublic,
 }) => {
+
   const goVote = async () => {
     try {
       await registVote(CharacterId);
@@ -31,7 +33,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
       }
     }
   };
-
+  
   if (!isOpen || !CharacterId) return null;
   const navigate = useNavigate();
   const goFeed = (id: number) => {
@@ -105,9 +107,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
               </div>
             </div>
             <div className="w-full h-3/6 bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium">
-              {CharacterInfo?.summary
-                ? `${CharacterInfo.summary}`
-                : "난 할 말 없어"}
+              {CharacterInfo?.summary}
             </div>
           </div>
           <button
@@ -117,23 +117,25 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
             피드 보러 가기 &gt;
           </button>
         </div>
-        <h1
-          onClick={() => {
-            goVote();
-          }}
-          className="text-2 text-[#91919C] underline text-right absolute left-6 bottom-4"
-        >
-          공유
-        </h1>
-        <h1
-          onClick={() => {
-            deleteCharacter(CharacterId);
-            onClose();
-          }}
-          className="text-2 text-[#91919C] underline text-right absolute right-6 bottom-4"
-        >
-          삭제
-        </h1>
+         {!isPublic && (
+          <>
+            <h1
+              onClick={goVote}
+              className="text-2 text-[#91919C] underline text-right absolute left-6 bottom-4"
+            >
+              공유
+            </h1>
+            <h1
+              onClick={() => {
+                deleteCharacter(CharacterId);
+                onClose();
+              }}
+              className="text-2 text-[#91919C] underline text-right absolute right-6 bottom-4"
+            >
+              삭제
+            </h1>
+          </>
+        )}
       </div>
     </div>
   );
