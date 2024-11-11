@@ -246,9 +246,10 @@ const Onboarding = () => {
         </div>
       )}
       <button
-        className={`py-[20px] w-full text-white bg-pink-base rounded-[10px] font-hakgyo ${
+        className={`absolute bottom-6 left-[23px] max-w-[436px] mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white text-4 font-semibold self-end ${
           pageNumber === 1 ? "mt-[10px]" : "mt-[80px]"
         }`}
+        style={{ width: `calc(100% - 46px)` }}
         onClick={handleButtonClick}
       >
         {buttonText()}
