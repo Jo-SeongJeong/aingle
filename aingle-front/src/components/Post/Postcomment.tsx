@@ -12,7 +12,15 @@ const Postcomment = ({ comment, refreshComments }: ICommentProps) => {
   const navigate = useNavigate();
   const { member, character } = comment;
 
-  const calDate = calTime(comment.createTime);
+  // adjustedCreateTime 계산: character가 있는 경우 createTime에 commentDelayTime을 더함
+  const adjustedCreateTime = character
+    ? new Date(
+        new Date(comment.createTime).getTime() +
+          character.commentDelayTime * 60000
+      )
+    : new Date(comment.createTime);
+
+  const calDate = calTime(adjustedCreateTime.toISOString()); // adjustedCreateTime 사용
 
   const handleDelete = async () => {
     try {
@@ -35,13 +43,13 @@ const Postcomment = ({ comment, refreshComments }: ICommentProps) => {
             );
           }}
           className="bg-black w-[35px] h-[35px] rounded-full object-cover"
-          src={member ? member.memberImage : character?.characterImage} // 기본 이미지 설정
+          src={member ? member.memberImage : character?.characterImage}
           alt="profile"
         />
       </div>
-      <div className="">
-        <div className="flex space-x-[5px] items-center ">
-          <h1 className="text-[13px] font-semibold ">
+      <div>
+        <div className="flex space-x-[5px] items-center">
+          <h1 className="text-[13px] font-semibold">
             {member ? member.name : character?.name}
           </h1>
           <h1 className="text-[10px] font-medium text-[#A6A6A6]">{calDate}</h1>
@@ -53,9 +61,7 @@ const Postcomment = ({ comment, refreshComments }: ICommentProps) => {
           </h1>
           {member && (
             <h1
-              onClick={() => {
-                handleDelete();
-              }}
+              onClick={handleDelete}
               className="cursor-pointer text-[10px] text-[#A6A6A6] pt-[5px] pb-[10px] underline ml-auto"
             >
               삭제
@@ -68,6 +74,3 @@ const Postcomment = ({ comment, refreshComments }: ICommentProps) => {
 };
 
 export default Postcomment;
-
-//트루면 좋아요 누른상태 -> 패치로
-//폴스면 포스트로

@@ -21,7 +21,7 @@ const Vote = () => {
     useState<CharacterGetPublicResponseDto | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<number>(0);
-  const [isPublic , setIsPublic] = useState<boolean>(false);
+  const [isPublic, setIsPublic] = useState<boolean>(false);
   // 캐릭터 데이터를 다시 가져오는 함수
   const refreshCharacters = async () => {
     try {
@@ -54,9 +54,9 @@ const Vote = () => {
     }
   }, [characters, userData]);
 
-  const openModal = (characterId: number , isPublicCharacter : boolean) => {
+  const openModal = (characterId: number, isPublicCharacter: boolean) => {
     setSelectedCharacter(characterId);
-     setIsPublic(isPublicCharacter);
+    setIsPublic(isPublicCharacter);
     setModalOpen(true);
   };
 
@@ -136,7 +136,7 @@ const Vote = () => {
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-pink-lighter border-t-2 w-full" />
       </div>
-      <div className="w-full h-[60px] flex justify-center items-center">
+      <div className="w-full h-[60px] flex justify-center items-center mt-3">
         <div className="bg-gradient-to-r w-[154px] h-[42px] text-[18px] text-[#ffffff] font-semibold from-[#66e3cb] to-[#eabc6b] flex justify-center items-center rounded-full">
           사용자 공유 캐릭터
         </div>

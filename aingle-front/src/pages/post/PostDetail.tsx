@@ -46,7 +46,7 @@ const PostDetail = () => {
       const allComments = await getComments(Number(id));
       const now = new Date();
 
-      const filteredComments = allComments.filter((comment) => {
+      const filteredComments = allComments.filter((comment: IComment) => {
         if (comment.member) {
           return true; // member인 경우 시간 조건 무시
         } else if (comment.character) {
