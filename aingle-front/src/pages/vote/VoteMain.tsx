@@ -128,12 +128,12 @@ const VoteMain = () => {
             </svg>
           </button>
         </div>
-        <div className="bg-slate-300 w-full h-[70px] flex justify-center items-center">
+        <div className="bg-slate-300 w-full h-[70px] flex justify-center items-center rounded-2xl">
           광고 받습니다
         </div>
       </div>
       <div className="px-4">
-        <div className="bg-white h-[90px] flex flex-col justify-center items-center">
+        <div className="bg-white h-[90px] flex flex-col justify-center items-center rounded-2xl">
           <div className="flex flex-row justify-center items-center">
             <div>
               <h1 className="text-main-color font-bold text-[20px]">
