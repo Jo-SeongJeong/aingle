@@ -143,3 +143,15 @@ export const deleteCharacter = async (characterId: number) => {
     throw error;
   }
 };
+
+// 투표 종료 시간 조회
+export const getExpireTime = async () => {
+  try {
+    const response = await axiosInstance.get(`${BASE_URL}/votes/info`);
+    console.log("종료 시간 조회 : ", response.data);
+    return response.data;
+  } catch (error) {
+    console.log("종료 시간 조회 실패: ", error);
+    throw error;
+  }
+};
