@@ -134,7 +134,6 @@ const Vote = () => {
         isPublic={isPublic}
       />
       <div className="w-full h-[30px] flex justify-center items-center">
-        <hr className="border-pink-lighter border-t-2 w-full" />
       </div>
       <div className="w-full h-[60px] flex justify-center items-center mt-3">
         <div className="bg-gradient-to-r w-[154px] h-[42px] text-[18px] text-[#ffffff] font-semibold from-[#66e3cb] to-[#eabc6b] flex justify-center items-center rounded-full">
@@ -165,7 +164,7 @@ const Vote = () => {
             캐릭터는 최대 3개까지 생성할 수 있앵
           </h1>
         </div>
-        <div className="w-full flex justify-between items-center flex-wrap">
+        <div className="w-full flex items-center flex-wrap">
           {makedCharacters?.allCharacterDtos.map((character, index) => (
             <CharacterCard
               key={index}

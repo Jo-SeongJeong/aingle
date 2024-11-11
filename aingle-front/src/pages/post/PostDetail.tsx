@@ -21,6 +21,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { calTime } from "../../utils/date";
 import fillHeart from "../../assets/icons/fillHeart.png";
 import { disLike, like } from "../../api/likeAPI";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../../store/atoms";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -29,7 +31,7 @@ const PostDetail = () => {
   const [validCommentCount, setValidCommentCount] = useState<number>(0); // 유효한 댓글 개수
   const [commentId, setCommentId] = useState(0);
   const [commentWriter, setCommentWriter] = useState("");
-
+  const userData = useRecoilValue(userDataState);
   const [inputComment, setInputcomment] = useState<IcreateComment>({
     postId: Number(id),
     content: "",
@@ -178,12 +180,14 @@ const PostDetail = () => {
                   {calTime(postData.createTime)}
                 </h1>
               </div>
-              <button
-                className="text-xs text-pink-darkest font-semibold"
-                onClick={handleDeleteButton}
-              >
-                삭제
-              </button>
+              {postData.member && postData.member.memberId === userData.id && (
+                    <button
+                      className="text-xs text-pink-darkest font-semibold"
+                      onClick={handleDeleteButton}
+                    >
+                      삭제
+                    </button>
+                  )}
             </div>
           </div>
 
@@ -211,13 +215,11 @@ const PostDetail = () => {
             </div>
           </div>
 
-          <div className="flex flex-row items-start space-x-[10px] mb-[10px]">
-            <h1 className="font-semibold text-[16px] whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
+          <div className="mb-[10px]">
+            <h1 className="font-semibold text-[15px]">
               {postData.member ? postData.member.name : postData.character.name}
             </h1>
-            <span className="text-[16px] font-medium break-words flex-1">
-              {postData.content}
-            </span>
+            <span className="text-[12px] font-medium">{postData.content}</span>
           </div>
 
           <div style={{ maxHeight: "60vh" }}>

@@ -1,12 +1,12 @@
+import { useState, useEffect } from "react";
 import heart from "../../assets/icons/hearth.png";
 import message from "../../assets/icons/message-circle.png";
-import { IPost } from "../../model/post";
-import { calTime } from "../../utils/date.ts";
-import { useState, useEffect } from "react";
 import fillHeart from "../../assets/icons/fillHeart.png";
 import ReactGA from "react-ga4";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
+import { IPost } from "../../model/post";
+import { calTime } from "../../utils/date.ts";
 
 interface postProps {
   post: IPost;
@@ -31,6 +31,10 @@ const Post = ({
   const userData = useRecoilValue(userDataState);
   const [likeCount, setLikeCount] = useState(0);
 
+  // 본문 상태
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLongContent = post.content.length > 20; // 본문이 20글자를 초과하는지 확인
+
   useEffect(() => {
     if (member?.memberImage) {
       setProfile(member.memberImage);
@@ -45,27 +49,25 @@ const Post = ({
       setIsLiked(false);
       setTotalLike((prev) => prev - 1);
 
-      // Dislike 이벤트 전송
       ReactGA.gtag("event", "post_like_count", {
         action: "Dislike",
         user_id: userData.id,
         post_id: post.postId,
         current_like_count: totalLike - 1,
-        total_likes_by_user: likeCount, // 누적 좋아요 횟수
+        total_likes_by_user: likeCount,
       });
     } else {
       onLikeClick();
       setIsLiked(true);
       setTotalLike((prev) => prev + 1);
-      setLikeCount((prev) => prev + 1); // 좋아요 누른 횟수 증가
+      setLikeCount((prev) => prev + 1);
 
-      // Like 이벤트 전송
       ReactGA.gtag("event", "post_like_count", {
         action: "Like",
         user_id: userData.id,
         post_id: post.postId,
         current_like_count: totalLike + 1,
-        total_likes_by_user: likeCount + 1, // 누적 좋아요 횟수
+        total_likes_by_user: likeCount + 1,
       });
     }
   };
@@ -74,17 +76,20 @@ const Post = ({
     <div className="w-full mb-[50px]" key={post.postId}>
       <div className="flex items-center mb-[11px]">
         <img
-          src={profile} // props에서 받은 값을 사용합니다
+          src={profile}
           className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
         />
-        <div>
-          <h1 className="font-semibold text-[15px]" onClick={onNameClick}>
+        <div className="flex flex-col">
+          <h1
+            className="font-semibold text-[15px] inline-block"
+            onClick={onNameClick}
+          >
             {member?.name || character?.name || "Unknown User"}
           </h1>
           <h1 className="text-[10px] text-[#A6A6A6]">{calDate}</h1>
         </div>
       </div>
-      {post.image != "" && (
+      {post.image && (
         <img
           src={post.image}
           className="bg-gray-500 rounded-[5px] w-full aspect-square mb-[20px] object-cover"
@@ -96,7 +101,7 @@ const Post = ({
           <img
             src={isLiked ? fillHeart : heart}
             className="w-[20px] mr-[5px]"
-            onClick={handleLikeToggle} // 클릭 시 좋아요 상태 변경
+            onClick={handleLikeToggle}
           />
           <h1 className="text-[12px] font-semibold">{totalLike}</h1>
         </div>
@@ -106,17 +111,29 @@ const Post = ({
         </div>
       </div>
 
-      <div className="flex flex-row items-start space-x-[10px] mb-[10px]">
+      {/* 작성자 이름과 본문 */}
+      <div className="flex flex-col mb-[10px]">
         <h1
-          className="font-semibold text-[16px] whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]"
+          className="font-semibold text-[15px] inline-block"
           onClick={onNameClick}
         >
           {member?.name || character?.name || "Unknown User"}
         </h1>
-        <span className="text-[16px] font-medium break-words flex-1">
-          {post.content}
+        <span className="text-[12px] font-medium inline">
+          {isExpanded || !isLongContent
+            ? post.content
+            : `${post.content.slice(0, 20)}...`}
+        {!isExpanded && isLongContent && (
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="text-[12px] text-gray-400 ml-1 "
+          >
+            더보기
+          </button>
+        )}
         </span>
       </div>
+
       <div onClick={onCommentClick}>
         <h1 className="text-[#A6A6A6] font-medium text-[12px]">
           댓글 모두 보기
