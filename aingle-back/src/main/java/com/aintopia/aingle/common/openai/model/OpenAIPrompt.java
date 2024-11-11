@@ -14,8 +14,7 @@ public enum OpenAIPrompt {
         "- %s 성격\n" +
         "- 답변은 %s로 한다.\n" +
         "- 답변은 %s으로 한다.\n" +
-        "%s\n" 
-        + "모르는 인물에 대해서는 언급하지 않는다. 인식하지 못하는것에 대해서는 언급하지 않는다."),
+        "%s\n"),
     AI_CHARACTER_COMMENT_REQUEST_PROMPT("When a user provides information related to different characters, you should respond according to the personality traits and characteristics of the given character.\n"
         + "Adjust your responses based on the character’s personality, tone, and style according to the information provided by the user.\n"
         + "Analyze the photos and content posted by the user, and generate appropriate responses that align with the character's traits.\n"
