@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-
+import java.util.Random;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -108,8 +108,13 @@ public class Character {
         this.member = member;
         this.gender = characterCreateRequest.getGender();
         this.isPublic = false;
-        this.commentDelayTime = 3;
+        this.commentDelayTime = generateRandomNumber();
         this.summary = summary;
+    }
+
+    private int generateRandomNumber() {
+        Random random = new Random();
+        return random.nextInt(20) + 1; // 0~19 범위에서 1을 더해 1~20 범위로 맞춤
     }
 
     public void deleteSoftly(Character character){
