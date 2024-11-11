@@ -79,7 +79,6 @@ public class PostService {
         // 페이지네이션과 최신순 정렬 적용
         Page<Post> post = postRepository.findByMemberOrCharacterInAndIsDeletedFalse(member,
             characters, pageable);
-
         return post.stream()
             .map(p -> convertToDto(p, member)) // Post를 PostResponseDto로 변환
             .collect(Collectors.toList());
@@ -190,7 +189,16 @@ public class PostService {
 
         // 좋아요 눌렀는지 확인
         Boolean isLiked = likeRepository.existsByMemberAndPost(member, post);
+        List<Comment> comments = commentRepository.findByPost(post);
 
+        // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
+        List<CommentDto> commentDtos = comments.stream()
+                .filter(comment -> !comment.getIsDeleted())
+                .map(comment -> {
+                    List<Reply> replies = replyRepository.findByComment(comment);
+                    return convertToCommentDto(comment, replies);
+                })
+                .collect(Collectors.toList());
         return new PostResponseDto(
             post.getPostId(),
             post.getContent(),
@@ -200,7 +208,8 @@ public class PostService {
             post.getTotalComment(),
             memberDto,
             characterDto,
-            isLiked
+            isLiked,
+            commentDtos
         );
     }
 
