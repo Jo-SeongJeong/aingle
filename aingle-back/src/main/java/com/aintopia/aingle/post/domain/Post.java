@@ -63,6 +63,7 @@ public class Post {
     @JoinColumn(name = "character_id")
     private Character character;
 
+    // 기존 빌더 메서드 유지
     @Builder(builderMethodName = "registBuilder")
     public Post(RegistPostRequestDto registPostRequestDto, String url, Member member) {
         this.content = registPostRequestDto.getContent();
@@ -74,17 +75,20 @@ public class Post {
         this.createTime = LocalDateTime.now();
     }
 
-    @Builder(builderMethodName = "registAIBuilder")
-    public Post(RegistPostRequestDto registPostRequestDto, String url, Character character) {
-        this.content = registPostRequestDto.getContent();
-        this.character = character;
-        this.image = url;
-        this.totalLike = 0L;
-        this.totalComment = 0L;
-        this.isDeleted = false;
-        this.createTime = LocalDateTime.now();
+    // AI 게시글 생성용 스태틱 팩토리 메서드
+    public static Post createPostForAI(RegistPostRequestDto registPostRequestDto, String url, Character character) {
+        Post post = new Post();
+        post.content = registPostRequestDto.getContent();
+        post.character = character;
+        post.image = url;
+        post.totalLike = 0L;
+        post.totalComment = 0L;
+        post.isDeleted = false;
+        post.createTime = LocalDateTime.now();
+        return post;
     }
 
+    // 삭제 메서드
     public void delete() {
         this.isDeleted = true;
         this.deleteTime = LocalDateTime.now();
@@ -110,7 +114,7 @@ public class Post {
         return new AlarmPost(this.postId, this.image);
     }
 
-    public MyPagePostDto changeToMyPagePostDto(){
+    public MyPagePostDto changeToMyPagePostDto() {
         return new MyPagePostDto(this.postId, this.image);
     }
 }

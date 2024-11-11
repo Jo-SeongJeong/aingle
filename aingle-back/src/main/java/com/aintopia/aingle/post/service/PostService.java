@@ -145,11 +145,7 @@ public class PostService {
 
         RegistPostRequestDto registPostRequestDto = new RegistPostRequestDto();
         registPostRequestDto.setContent(createAIPostResponseDto.getContent());
-        Post post = Post.registAIBuilder()
-            .registPostRequestDto(registPostRequestDto)
-            .url(url)
-            .character(character)
-            .build();
+        Post post = Post.createPostForAI(registPostRequestDto, url, character);
 
         postRepository.save(post);
 
