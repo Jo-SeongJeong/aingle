@@ -85,6 +85,8 @@ public class Character {
     @Column(name = "comment_delay_time")
     private Integer commentDelayTime;
 
+    @Column(name = "seed")
+    private String seed;
 
     public CharacterInfo toDTO() {
         return new CharacterInfo(this.name, this.job, this.age, this.personality, this.gender,
