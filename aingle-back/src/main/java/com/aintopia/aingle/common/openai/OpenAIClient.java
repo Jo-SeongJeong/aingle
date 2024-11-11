@@ -3,6 +3,9 @@ package com.aintopia.aingle.common.openai;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+import com.aintopia.aingle.comment.domain.Comment;
+import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.comment.service.CommentService;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
@@ -52,6 +55,7 @@ public class OpenAIClient {
     private final List<Pair<String, String>> chatHistory = new ArrayList<>();
     private final CharacterRepository characterRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     //댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo)
@@ -252,13 +256,78 @@ public class OpenAIClient {
 
     public void dummy(Long id) throws IOException {
         List<Character> list = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
+        Optional<Post> post = postRepository.findById(id);
         for (Character character : list) {
-            Optional<Post> post = postRepository.findById(id);
             if (post.isPresent()) {
+                int errorCount = 0;
+                String commentContent = "";
+                while (errorCount < 3) {
+                    commentContent = createCommentByAI(PostRequest.builder()
+                        .message(post.get().getContent())
+                        .imageUrl(post.get().getImage())
+                        .build(), CharacterInfo.builder()
+                        .character(character)
+                        .build());
+                    if (inappropriatenessComment(commentContent)) {
+                        errorCount++;
+                        log.info("댓글 모르겠다는 에러 errorCount {}", errorCount);
+                        continue;
+                    }
+                    break;
+                }
+                if (inappropriatenessComment(commentContent)) {
+                    log.info("3번 실패 해도 똑같이 인식 못하면 그냥 저장 안함 댓글 내용 {}", commentContent);
+                    continue;
+                }
+                Comment comment = Comment.makeCommentByAI(post.get(), character, commentContent);
+
+                commentRepository.save(comment);
+
+                post.get().increaseComment();
+                log.info("현재 달고 있는 댓글: {}", character.getName());
+
                 createCommentByAI(PostRequest.builder().imageUrl(post.get().getImage())
                         .message(post.get().getContent()).build(),
                     CharacterInfo.builder().character(character).build());
             }
+        }
+    }
+
+    private boolean inappropriatenessComment(String comment) {
+        if (comment.contains("모르")) {
+            return true;
+        } else if (comment.contains("sorry")) {
+            return true;
+        } else if (comment.contains("can't")) {
+            return true;
+        } else if (comment.contains("사진 속")) {
+            return true;
+        } else if (comment.contains("I'm")) {
+            return true;
+        } else if (comment.contains("죄송")) {
+            return true;
+        } else if (comment.contains("제공할 수 없어")) {
+            return true;
+        } else if (comment.contains("이미지에 대해 알 수 없어")) {
+            return true;
+        } else if (comment.contains("도움은 줄 수 없어")) {
+            return true;
+        } else if (comment.contains("도움 줄 수 없어")) {
+            return true;
+        } else if (comment.contains("I")) {
+            return true;
+        } else if (comment.contains("다른 이야기")) {
+            return true;
+        } else if (comment.contains("이미지")) {
+            return true;
+        } else if (comment.contains("알 수 없")) {
+            return true;
+        } else if (comment.contains("할 수 없")) {
+            return true;
+        } else if (comment.contains("인식")) {
+            return true;
+        } else {
+            return comment.contains("도와줄 수 없어");
         }
     }
 
