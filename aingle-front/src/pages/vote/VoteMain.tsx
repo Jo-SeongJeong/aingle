@@ -132,19 +132,21 @@ const VoteMain = () => {
           광고 받습니다
         </div>
       </div>
-      <div className="bg-white w-full h-[90px] flex flex-col justify-center items-center">
-        <div className="flex flex-row justify-center items-center">
-          <div>
-            <h1 className="text-main-color font-bold text-[20px]">
-              이번 달 앵표
-            </h1>
+      <div className="px-4">
+        <div className="bg-white h-[90px] flex flex-col justify-center items-center">
+          <div className="flex flex-row justify-center items-center">
+            <div>
+              <h1 className="text-main-color font-bold text-[20px]">
+                이번 달 앵표
+              </h1>
+            </div>
+            <div className="ml-1 mt-1">
+              <img src={Trophy_voteMian} alt="" className="w-[40px]" />
+            </div>
           </div>
-          <div className="ml-1 mt-1">
-            <img src={Trophy_voteMian} alt="" className="w-[40px]" />
+          <div className="flex justify-center items-center mt-1 text-[#bdbdbd] text-[14px] font-semibold">
+            <h1>가장 사용해 보고 싶은 캐릭터를 골라주세앵</h1>
           </div>
-        </div>
-        <div className="flex justify-center items-center mt-1 text-[#bdbdbd] text-[14px] font-semibold">
-          <h1>가장 사용해 보고 싶은 캐릭터를 골라주세앵</h1>
         </div>
       </div>
       <div className="w-full h-[150px] max-w-3xl pt-8 pb-2 px-4 flex flex-col items-center">
@@ -167,8 +169,8 @@ const VoteMain = () => {
                       selectedId === character.characterId
                         ? "border-2 border-red-500" // 선택된 항목에 빨간색 테두리
                         : index === 0
-                          ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
-                          : ""
+                        ? "border-2 border-purple-950" // 맨 앞 항목에 그라데이션 테두리
+                        : ""
                     }`}
                   >
                     {index === 0 && (
@@ -243,7 +245,7 @@ const VoteMain = () => {
           </div>
         )}
         <button
-          className="bg-main-color font-semibold text-white rounded-2xl w-[200px] h-[50px]"
+          className="bg-main-color font-semibold text-white rounded-2xl w-full h-[50px]"
           onClick={() => vote(selectedId != null ? selectedId : -1)}
         >
           투표하기
