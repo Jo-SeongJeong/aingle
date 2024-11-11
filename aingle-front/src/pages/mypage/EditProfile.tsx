@@ -180,7 +180,11 @@ const EditProfile = () => {
               </div>
             </div>
           </div>
-          <div className="mt-auto">
+          {/* 버튼 */}
+          <div
+            className="absolute bottom-6 left-[23px] max-w-[436px]"
+            style={{ width: `calc(100% - 46px)` }}
+          >
             <div className="flex">
               <h1
                 onClick={() => {

@@ -147,7 +147,8 @@ const Write: React.FC = () => {
 
         <button
           onClick={handleSubmit}
-          className="mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white text-4 font-semibold self-end"
+          className="absolute bottom-6 left-[23px] max-w-[436px] mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white text-4 font-semibold self-end"
+          style={{ width: `calc(100% - 46px)` }}
         >
           게시하기
         </button>
