@@ -169,9 +169,9 @@ public class CommentService {
             return true;
         }else if (comment.contains("이미지에 대해 알 수 없어")) {
             return true;
-        } else if (comment.contains("이미지")) {
+        } else if (comment.contains("도움은 줄 수 없어")) {
             return true;
-        }else if (comment.contains("이미지")) {
+        }else if (comment.contains("도움 줄 수 없어")) {
             return true;
         }else if (comment.contains("이미지")) {
             return true;
