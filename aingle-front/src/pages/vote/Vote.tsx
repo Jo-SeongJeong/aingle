@@ -21,7 +21,7 @@ const Vote = () => {
     useState<CharacterGetPublicResponseDto | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<number>(0);
-
+  const [isPublic , setIsPublic] = useState<boolean>(false);
   // 캐릭터 데이터를 다시 가져오는 함수
   const refreshCharacters = async () => {
     try {
@@ -54,18 +54,9 @@ const Vote = () => {
     }
   }, [characters, userData]);
 
-  const placeholdersNeeded =
-    (3 - ((characters?.allCharacterDtos?.length ?? 0) % 3)) % 3;
-  const placeholders = Array(placeholdersNeeded).fill(null);
-
-  const placeholdersNeeded2 = Math.max(
-    3 - ((makedCharacters?.allCharacterDtos?.length ?? 0) + 1),
-    0
-  );
-  const placeholders2 = Array(placeholdersNeeded2).fill(null);
-
-  const openModal = (characterId: number) => {
+  const openModal = (characterId: number , isPublicCharacter : boolean) => {
     setSelectedCharacter(characterId);
+     setIsPublic(isPublicCharacter);
     setModalOpen(true);
   };
 
@@ -118,21 +109,20 @@ const Vote = () => {
       </div>
       <div className="w-full py-3 flex justify-center items-center flex-wrap">
         {characters?.allCharacterDtos
-          ? characters.allCharacterDtos.map((character, index) => (
-              <CharacterCard
-                key={index}
-                imageUrl={character.imageUrl}
-                isFollowed={character.follow}
-                onClick={() => openModal(character.characterId)}
-              />
-            ))
+          ? characters.allCharacterDtos
+              .filter(
+                (character) =>
+                  character.characterId >= 1 && character.characterId <= 6
+              )
+              .map((character, index) => (
+                <CharacterCard
+                  key={index}
+                  imageUrl={character.imageUrl}
+                  isFollowed={character.follow}
+                  onClick={() => openModal(character.characterId, true)}
+                />
+              ))
           : null}
-        {placeholders.map((_, index) => (
-          <div
-            key={`placeholder-${index}`}
-            className="w-[100px] h-[100px] mx-1 my-1 opacity-0"
-          />
-        ))}
       </div>
       <ChDetailModal
         isOpen={isModalOpen}
@@ -141,6 +131,7 @@ const Vote = () => {
           refreshCharacters(); // 모달이 닫힐 때 데이터 다시 가져오기
         }}
         CharacterId={selectedCharacter}
+        isPublic={isPublic}
       />
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-pink-lighter border-t-2 w-full" />
@@ -150,7 +141,20 @@ const Vote = () => {
           사용자 공유 캐릭터
         </div>
       </div>
-
+      <div className="w-full py-3 flex justify-center items-center flex-wrap">
+        {characters?.allCharacterDtos
+          ? characters.allCharacterDtos
+              .filter((character) => character.characterId > 6)
+              .map((character, index) => (
+                <CharacterCard
+                  key={index}
+                  imageUrl={character.imageUrl}
+                  isFollowed={character.follow}
+                  onClick={() => openModal(character.characterId, true)}
+                />
+              ))
+          : null}
+      </div>
       <div className="w-full h-[30px] flex justify-center items-center">
         <hr className="border-pink-lighter border-t-2 w-full" />
       </div>
@@ -167,18 +171,12 @@ const Vote = () => {
               key={index}
               imageUrl={character.imageUrl}
               isFollowed={character.follow}
-              onClick={() => openModal(character.characterId)}
+              onClick={() => openModal(character.characterId, false)}
             />
           ))}
           {(makedCharacters?.allCharacterDtos?.length ?? 0) < 3 && (
             <CharacterCardAdd />
           )}
-          {placeholders2.map((_, index) => (
-            <div
-              key={`placeholder-${index}`}
-              className="w-[100px] h-[100px] mx-1 my-1 opacity-0"
-            />
-          ))}
         </div>
       </div>
     </div>
