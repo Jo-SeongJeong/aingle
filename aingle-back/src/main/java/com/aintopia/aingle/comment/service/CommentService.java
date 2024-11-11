@@ -185,6 +185,8 @@ public class CommentService {
             return true;
         }else if (comment.contains("인식")) {
             return true;
+        }else if (comment.contains("다른 도움")) {
+            return true;
         }else {
             return comment.contains("도와줄 수 없어");
         }
