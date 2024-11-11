@@ -48,15 +48,33 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
   const handleEmojiClick = (emoji: string) => {
     setInputcomment((prev) => ({
       ...prev,
-      content: prev.content + emoji, // 기존 내용에 이모티콘 추가
+      content: prev.content + emoji,
     }));
+  };
+
+  // 댓글 필터링
+  const filterValidComments = (allComments: IComment[]) => {
+    const now = new Date();
+    return allComments.filter((comment) => {
+      if (comment.member) {
+        return true; // member는 시간 제한 없음
+      } else if (comment.character) {
+        const commentTime = new Date(comment.createTime);
+        commentTime.setMinutes(
+          commentTime.getMinutes() + comment.character.commentDelayTime
+        );
+        return commentTime <= now; // character는 시간 제한 검증
+      }
+      return false;
+    });
   };
 
   const refreshComments = async () => {
     try {
-      const updatedComments = await getComments(Number(id));
+      const allComments = await getComments(Number(id));
+      const validComments = filterValidComments(allComments);
       setCommentWriter("");
-      setComments(updatedComments);
+      setComments(validComments);
       setCommentId(0);
     } catch (error) {
       console.error("Failed to fetch comments: ", error);
@@ -74,7 +92,7 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
     const deltaY = e.clientY - startY.current;
     if (deltaY > CLOSE_THRESHOLD) {
       setIsDragging(false);
-      closeFn(); // Close modal when dragged down past threshold
+      closeFn();
     }
   };
 
@@ -93,19 +111,21 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
     const deltaY = e.touches[0].clientY - startY.current;
     if (deltaY > CLOSE_THRESHOLD) {
       setIsDragging(false);
-      closeFn(); // Close modal when dragged down past threshold
+      closeFn();
     }
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
-  // 모달창 띄워질때 댓글 목록 가져오기
+
+  // 댓글 조회 및 필터링
   useEffect(() => {
     const fetchComment = async () => {
       try {
-        const response = await getComments(id);
-        setComments(response);
+        const allComments = await getComments(id);
+        const validComments = filterValidComments(allComments);
+        setComments(validComments);
       } catch (error) {
         console.error("댓글 조회 실패 : ", error);
       }
@@ -143,23 +163,17 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
 
     try {
       if (commentId === 0) {
-        // 일반 댓글 작성
         await createComment(inputComment);
       } else {
-        // 답글 작성
         await createReply(commentId, inputComment.content);
       }
 
-      // 댓글 목록 다시 가져오기
-      const updatedComments = await getComments(id);
-      setComments(updatedComments);
-
-      // 입력 초기화
+      await refreshComments();
       setInputcomment((prev) => ({
         ...prev,
         content: "",
       }));
-      setCommentId(0); // 답글 작성 후 commentId 초기화
+      setCommentId(0);
       setCommentWriter("");
     } catch (error) {
       console.error("댓글 등록 실패 : ", error);
@@ -167,7 +181,7 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
   };
 
   if (comments === null) {
-    return null; // comments가 null인 동안 아무것도 렌더링하지 않음
+    return null;
   }
 
   return (
@@ -175,7 +189,6 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
       ref={containerRef}
       className="absolute top-0 left-0 w-full max-w-[480px] h-full"
     >
-      {/* Background overlay */}
       <div
         className="absolute top-0 left-0 w-full max-w-[480px] h-full bg-black opacity-50 z-20 px-[16px] transition-opacity duration-300"
         onClick={closeFn}
@@ -185,14 +198,12 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
         className="z-30 bg-white rounded-t-lg max-w-[480px] fixed bottom-0 w-full overflow-auto transition-all duration-300 ease"
         style={{ height: `90%` }}
       >
-        {/* Drag bar */}
         <div
           className="w-full flex justify-center items-center border-b-[1px] border-[#A6A6A6] h-[60px] relative pb-5 cursor-ns-resize touch-none"
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
           role="separator"
           aria-orientation="horizontal"
-          aria-label="댓글 모달 높이 조절"
         >
           <img
             src={bar}
@@ -231,28 +242,24 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
                   refreshComments={refreshComments}
                 />
                 {comment.replies &&
-                  comment.replies.map((reply, idx) => {
-                    return (
-                      <ReplyComment
-                        key={idx}
-                        comment={reply}
-                        refreshComments={refreshComments}
-                      />
-                    );
-                  })}
+                  comment.replies.map((reply, idx) => (
+                    <ReplyComment
+                      key={idx}
+                      comment={reply}
+                      refreshComments={refreshComments}
+                    />
+                  ))}
               </div>
             ))
           )}
         </div>
-        {/* Icons and comment input */}
-        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px] ">
+        <div className="w-full absolute bottom-0 bg-white z-40 pt-[10px]">
           {commentWriter != "" && (
             <div
               className="px-5 py-2 mb-3 text-white flex justify-between items-center"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             >
               <h1>{commentWriter}에 답글 작성</h1>
-
               <FontAwesomeIcon
                 icon={faXmark}
                 onClick={() => {
@@ -324,4 +331,3 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
 };
 
 export default PostCommentModal;
-// 😂❤️🔥👍👏
