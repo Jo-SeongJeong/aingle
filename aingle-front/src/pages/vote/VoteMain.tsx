@@ -201,7 +201,7 @@ const VoteMain = () => {
             spaceBetween={8}
             pagination={{ clickable: true }}
             modules={[Pagination]}
-            className="w-full h-full"
+            className="w-full h-full "
           >
             {characters != null &&
               characters.allCharacterDtos.map((character, index) => (
