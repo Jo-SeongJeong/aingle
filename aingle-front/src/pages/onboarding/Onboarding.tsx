@@ -239,7 +239,10 @@ const Onboarding = () => {
       {/* 하단 버튼, 스킵 */}
       <div className="absolute bottom-6 w-full left-[23px] ">
         {pageNumber === 1 && (
-          <div className="flex max-w-[436px] w-full px-2 justify-end items-end">
+          <div
+            className="flex max-w-[436px] w-full px-2 justify-end items-end"
+            style={{ width: `calc(100% - 46px)` }}
+          >
             <h1
               className="text-3 text-[#91919C] underline cursor-pointer mb-3"
               onClick={skip}
