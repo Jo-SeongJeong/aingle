@@ -50,7 +50,7 @@ public class AlarmService {
                                     .voteWinnerCharacter(voteWinnerCharacter)
                                     .createTime(alarm.getCreateTime())
                                     .sender(Optional.ofNullable(alarm.getSender())
-                                        .map(Member::changeDto)
+                                        .map(Character::changeDto)
                                         .orElse(null))
                                     .build();
 
