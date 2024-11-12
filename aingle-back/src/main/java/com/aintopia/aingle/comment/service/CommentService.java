@@ -2,7 +2,6 @@ package com.aintopia.aingle.comment.service;
 
 import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
-import com.aintopia.aingle.alarm.service.AlarmService;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
@@ -79,18 +78,6 @@ public class CommentService {
             .registCommentRequestDto(registCommentRequestDto)
             .build());
 
-        // 게시물 작성자에게 알림(본인 게시물, 본인 댓글 아닐 때)
-        if (post.getMember() != null && post.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
-                .orElseThrow(NotFoundMemberException::new);
-
-            alarmRepository.save(Alarm.alarmPostBuilder()
-                .member(alarmMember)
-                .post(post)
-                .sender(member)
-                .build());
-        }
-
         return getCommentsWithReplies(post.getPostId());
     }
 
@@ -121,6 +108,9 @@ public class CommentService {
     public void generateAIComments(Post post, List<Character> characters,
         RegistPostRequestDto registPostRequestDto, String imageUrl) throws IOException {
         log.info("AI 댓글 생성 시작 postId {}", post.getPostId());
+
+        Member member = post.getMember();
+
         for (Character character : characters) {
             int errorCount = 0;
             String commentContent = "";
@@ -147,6 +137,18 @@ public class CommentService {
             commentRepository.save(comment);
 
             post.increaseComment();
+
+            // 게시물 작성자에게 알림(본인 게시물)
+            if (post.getMember() != null) {
+                Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
+                        .orElseThrow(NotFoundMemberException::new);
+
+                alarmRepository.save(Alarm.alarmPostBuilder()
+                        .member(alarmMember)
+                        .post(post)
+                        .sender(character)
+                        .build());
+            }
         }
         postRepository.save(post);
     }

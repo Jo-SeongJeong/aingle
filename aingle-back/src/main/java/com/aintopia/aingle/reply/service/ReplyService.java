@@ -1,6 +1,5 @@
 package com.aintopia.aingle.reply.service;
 
-import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
@@ -49,17 +48,6 @@ public class ReplyService {
                 .member(member)
                 .registReplyRequestDto(registReplyRequestDto)
                 .build());
-
-        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
-        if(comment.getMember() != null && comment.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId()).orElseThrow(NotFoundMemberException::new);
-
-            alarmRepository.save(Alarm.alarmPostBuilder()
-                    .member(alarmMember)
-                    .post(post)
-                    .sender(member)
-                    .build());
-        }
 
         return getCommentsWithReplies(comment.getPost().getPostId());
     }
