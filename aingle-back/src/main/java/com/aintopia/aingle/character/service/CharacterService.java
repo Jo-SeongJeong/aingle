@@ -62,7 +62,7 @@ public class CharacterService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final PostService postService;
-    private static final int MAX_RETRIES = 3;
+    private static final int MAX_RETRIES = 2;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
