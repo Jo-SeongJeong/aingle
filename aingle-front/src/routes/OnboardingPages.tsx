@@ -12,7 +12,7 @@ const OnboardingPages = () => {
         <Route path="/" element={<Onboarding />} />
         <Route path="/loading" element={<OnboardingLoading />} />
         <Route path="/result" element={<OnboardingResult />} />
-        <Route path="login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
     </div>

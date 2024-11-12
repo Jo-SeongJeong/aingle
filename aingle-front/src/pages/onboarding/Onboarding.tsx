@@ -235,25 +235,29 @@ const Onboarding = () => {
         {pageNumber > 1 && <ProgressBar />}
         {renderContent()}
       </div>
-      {pageNumber === 1 && (
-        <div className="flex w-full px-2 justify-end items-end">
-          <h1
-            className="text-3 text-[#91919C] underline cursor-pointer"
-            onClick={skip}
-          >
-            건너뛰기
-          </h1>
-        </div>
-      )}
-      <button
-        className={`absolute bottom-6 left-[23px] max-w-[436px] mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white text-4 font-semibold self-end ${
-          pageNumber === 1 ? "mt-[10px]" : "mt-[80px]"
-        }`}
-        style={{ width: `calc(100% - 46px)` }}
-        onClick={handleButtonClick}
-      >
-        {buttonText()}
-      </button>
+
+      {/* 하단 버튼, 스킵 */}
+      <div className="absolute bottom-6 w-full left-[23px] ">
+        {pageNumber === 1 && (
+          <div className="flex max-w-[436px] w-full px-2 justify-end items-end">
+            <h1
+              className="text-3 text-[#91919C] underline cursor-pointer mb-3"
+              onClick={skip}
+            >
+              건너뛰기
+            </h1>
+          </div>
+        )}
+        <button
+          className={`w-full  mt-auto bg-pink-base  py-5 rounded-[10px] text-white text-4 font-semibold self-end ${
+            pageNumber === 1 ? "mt-[10px]" : "mt-[80px]"
+          }`}
+          style={{ width: `calc(100% - 46px)` }}
+          onClick={handleButtonClick}
+        >
+          {buttonText()}
+        </button>
+      </div>
     </div>
   );
 };
