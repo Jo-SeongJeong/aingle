@@ -15,17 +15,36 @@ const CreateModal = ({
   createdId,
 }: ICharInfo) => {
   const [showBird, setShowBird] = useState(true);
+  const [remainingTime, setRemainingTime] = useState(10); // 10초 카운트다운 추가
 
   const navigate = useNavigate();
 
+  // 상태 메시지 변경 함수
+  const getStatusMessage = (time: number) => {
+    if (time > 8) return "꼼꼼하게 심사 중";
+    if (time > 6) return "앵토피아 입주 하고 있앵!";
+    if (time > 4) return "집 매물 알아보는중";
+    if (time > 2) return "다른 친구들 만나는 중";
+    return "거의 다 됐앵!";
+  };
+
   useEffect(() => {
-    // 3초 후에 bird 이미지를 숨기고 모달 내용을 표시
+    // 0.1초마다 남은 시간 업데이트
+    const interval = setInterval(() => {
+      setRemainingTime((prev) => Math.max(prev - 0.1, 0));
+    }, 100);
+
+    // 10초 후에 bird 이미지를 숨기고 모달 내용을 표시
     const timer = setTimeout(() => {
       setShowBird(false);
-    }, 3500);
+      clearInterval(interval);
+    }, 10000);
 
-    // 컴포넌트가 언마운트될 때 타이머 정리
-    return () => clearTimeout(timer);
+    // 컴포넌트 언마운트 시 타이머 정리
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, []);
 
   const goFeed = (id: number) => {
@@ -50,21 +69,24 @@ const CreateModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         {showBird ? (
-          // bird 이미지 표시
+          // bird 이미지 및 카운트다운 표시
           <div className="w-full h-full flex flex-col justify-center items-center">
             <div>
               <img src={bird} alt="Bird Icon" className="w-[60px]" />
             </div>
-            <div className="mt-5">
+            <div className="mt-5 flex flex-col items-center">
               <h1 className="font-hakgyo text-main-color text-[20px]">
-                캐릭터 등록 중
+                {getStatusMessage(remainingTime)}
               </h1>
+              <span className="ml-2 text-main-color text-[18px]">
+                ({remainingTime.toFixed(1)}s)
+              </span>
             </div>
           </div>
         ) : (
           // 기존 모달 내용
           <div className="w-full h-full flex flex-col items-center gap-4">
-            <h1 className="text-[18px] font-semibold">생성 앵료!</h1>
+            <h1 className="text-[18px] font-semibold">생성 완료!</h1>
 
             <div className="flex p-[15px] gap-5 bg-[#FFE8F1] rounded-[10px] items-center">
               <div className="border-[3px] border-main-color rounded-full h-[60px] w-[60px] overflow-hidden flex-shrink-0">
@@ -78,7 +100,7 @@ const CreateModal = ({
                 />
               </div>
 
-              <div className="">
+              <div>
                 <h1 className="text-[18px] font-semibold">{name}</h1>
                 <div className="font-bold mb-3 text-main-color text-[14px] flex items-center flex-wrap">
                   <div className="mr-2">#{age}세</div>
@@ -93,7 +115,7 @@ const CreateModal = ({
             <div className="bg-[#FFFAFC] rounded-[10px] p-[10px] flex flex-col gap-2 items-center">
               <h1 className="text-[16px] font-gray-2">생성한 캐릭터를</h1>
               <h1 className="text-[16px] font-gray-2">
-                다른 사용자들에게 공유해볼래앵?
+                다른 사용자들에게 공유해볼래?
               </h1>
             </div>
 
