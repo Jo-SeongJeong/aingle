@@ -24,8 +24,6 @@ import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
-import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
-import com.aintopia.aingle.post.exception.BadReqeustPostException;
 import com.aintopia.aingle.post.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +32,6 @@ import java.util.NoSuchElementException;
 
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.MyPagePostDto;
-import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
