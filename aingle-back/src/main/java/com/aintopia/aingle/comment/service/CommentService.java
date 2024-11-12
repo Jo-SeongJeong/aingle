@@ -109,8 +109,6 @@ public class CommentService {
         RegistPostRequestDto registPostRequestDto, String imageUrl) throws IOException {
         log.info("AI 댓글 생성 시작 postId {}", post.getPostId());
 
-        Member member = post.getMember();
-
         for (Character character : characters) {
             int errorCount = 0;
             String commentContent = "";
