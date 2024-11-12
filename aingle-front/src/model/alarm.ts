@@ -2,9 +2,9 @@ import { IvoteWinnerCharacter } from "./vote";
 
 // alarm에 포함되는 알림 sender 정보
 export interface Isender {
-    memberId : number;
+    characterId : number;
     name : string;
-    memberImage : string;
+    characterImage : string;
 }
 
 // alarm에 포함되는 게시글 정보
