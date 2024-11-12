@@ -57,16 +57,12 @@ public class OpenAIClient {
     //댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo)
         throws IOException {
-        Prompt prompt = getPromptKeyword(postRequest, characterInfo);
-        ChatResponse chatResponse = chatModel.call(prompt);
-        log.info("chat response : " + chatResponse);
+        ChatResponse chatResponse = chatModel.call(getPromptKeyword(postRequest));
+        log.info("분석 답변:\n{}", chatResponse.getResult().getOutput().getContent());
         logTokensCount(chatResponse.getMetadata().getUsage());
-        Prompt prompt2 = getPromptAns(postRequest.getMessage(),
-            chatResponse.getResult().getOutput().getContent(), characterInfo);
-        ChatResponse chatResponse2 = chatModel.call(prompt2);
-        log.info("chat response2 : " + chatResponse2);
-//        chatHistory.add(Pair.of(postRequest.getMessage(), response));
-//        log.info(chatHistory.toString());
+        ChatResponse chatResponse2 = chatModel.call(getPromptAns(postRequest.getMessage(),
+            chatResponse.getResult().getOutput().getContent(), characterInfo));
+        log.info("AI 댓글:\n{}", chatResponse2.getResult().getOutput().getContent());
         return chatResponse2.getResult().getOutput().getContent();
     }
 
@@ -81,21 +77,14 @@ public class OpenAIClient {
         String getImageUrlPrompt = creatAIPostPrompt(content,
             createCharacterSystemPrompt(characterInfo));
         log.info("게시글 이미지 생성 프롬프트:\n{}", getImageUrlPrompt);
-        ImageResponse imageResponse = imageModel.call(
-            new ImagePrompt(getImageUrlPrompt,
-                OpenAiImageOptions.builder()
-                    .withQuality("hd")
-                    .withStyle("vivid")
-                    .withHeight(1024)
-                    .withWidth(1024).build())
-        );
+        ImageResponse imageResponse = imageModel.call(new ImagePrompt(getImageUrlPrompt,
+            OpenAiImageOptions.builder().withQuality("hd").withStyle("vivid").withHeight(1024)
+                .withWidth(1024).build()));
         String url = imageResponse.getResult().getOutput().getUrl();
         log.info("생성 이미지 URL: {}", url);
         log.info("게시글 글:\n{}", content);
-        return CreateAIPostResponseDto.builder()
-            .file(convertUrlToMultipartFile(url))
-            .content(content)
-            .build();
+        return CreateAIPostResponseDto.builder().file(convertUrlToMultipartFile(url))
+            .content(content).build();
     }
 
     public String createSummary(CharacterInfo characterInfo) {
@@ -123,69 +112,23 @@ public class OpenAIClient {
 
     }
 
-    private Prompt getPrompt(PostRequest postRequest, CharacterInfo characterInfo)
-        throws IOException {
+    private Prompt getPromptAns(String content, String response, CharacterInfo characterInfo) {
         List<Message> promptMessages = new ArrayList<>();
-
-        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
-        promptMessages.add(systemMessage);
-
-//        chatHistory.forEach(pair -> {
-//            promptMessages.add(new UserMessage(pair.getLeft()));
-//            promptMessages.add(new AssistantMessage(pair.getRight()));
-//        });
-
-        Message userMessage;
-        URL imageUrl = URI.create(postRequest.getImageUrl()).toURL();
-        String postText =
-            OpenAIPrompt.AI_CHARACTER_COMMENT_REQUEST_PROMPT + postRequest.getMessage();
-        userMessage = new UserMessage(postText, new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
+        Message userMessage = new UserMessage(
+            OpenAIPrompt.AI_CHARACTER_CREATE_ANS_PROMPT.generateANS(content, response,
+                createCharacterSystemPrompt(characterInfo)));
         promptMessages.add(userMessage);
-        log.info("promptMessages : " + promptMessages);
+        log.info("분석에 대한 댓글 요청 프롬프트:\n{}", promptMessages.get(0));
         return new Prompt(promptMessages,
             OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
-    private Prompt getPromptAns(String content, String response, CharacterInfo characterInfo)
-        throws IOException {
+    private Prompt getPromptKeyword(PostRequest postRequest) throws IOException {
         List<Message> promptMessages = new ArrayList<>();
-
-        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
-        promptMessages.add(systemMessage);
-
-//        chatHistory.forEach(pair -> {
-//            promptMessages.add(new UserMessage(pair.getLeft()));
-//            promptMessages.add(new AssistantMessage(pair.getRight()));
-//        });
-
-        Message userMessage;
-        userMessage = new UserMessage(
-            OpenAIPrompt.AI_CHARACTER_CREATE_ANS_PROMPT.generateANS(content, response));
-        promptMessages.add(userMessage);
-        log.info("promptMessages : " + promptMessages);
-        return new Prompt(promptMessages,
-            OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
-    }
-
-    private Prompt getPromptKeyword(PostRequest postRequest, CharacterInfo characterInfo)
-        throws IOException {
-        List<Message> promptMessages = new ArrayList<>();
-
-//        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
-//        promptMessages.add(systemMessage);
-
-//        chatHistory.forEach(pair -> {
-//            promptMessages.add(new UserMessage(pair.getLeft()));
-//            promptMessages.add(new AssistantMessage(pair.getRight()));
-//        });
-
-        Message userMessage;
-        URL imageUrl = URI.create(postRequest.getImageUrl()).toURL();
-        userMessage = new UserMessage(
-            OpenAIPrompt.AI_CHARACTER_CREATE_KEYWORD_PROMPT.getPromptTemplate(),
-            new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
-        promptMessages.add(userMessage);
-        log.info("promptMessages : " + promptMessages);
+        promptMessages.add(
+            new UserMessage(OpenAIPrompt.AI_CHARACTER_CREATE_KEYWORD_PROMPT.getPromptTemplate(),
+                new Media(MimeTypeUtils.IMAGE_PNG, URI.create(postRequest.getImageUrl()).toURL())));
+        log.info("분석 프롬프트:\n{}", promptMessages.get(0));
         return new Prompt(promptMessages,
             OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
@@ -226,12 +169,10 @@ public class OpenAIClient {
                 int errorCount = 0;
                 String commentContent = "";
                 while (errorCount < 1) {
-                    commentContent = createCommentByAI(PostRequest.builder()
-                        .message(post.get().getContent())
-                        .imageUrl(post.get().getImage())
-                        .build(), CharacterInfo.builder()
-                        .character(character)
-                        .build());
+                    commentContent = createCommentByAI(
+                        PostRequest.builder().message(post.get().getContent())
+                            .imageUrl(post.get().getImage()).build(),
+                        CharacterInfo.builder().character(character).build());
                     if (inappropriatenessComment(commentContent)) {
                         errorCount++;
                         log.info("댓글 모르겠다는 에러 errorCount {}", errorCount);
@@ -258,25 +199,13 @@ public class OpenAIClient {
     }
 
     private boolean inappropriatenessComment(String comment) {
-        return comment.contains("모르") ||
-            comment.contains("sorry") ||
-            comment.contains("can't") ||
-            comment.contains("사진 속") ||
-            comment.contains("I'm") ||
-            comment.contains("죄송") ||
-            comment.contains("제공할 수 없어") ||
-            comment.contains("이미지에 대해 알 수 없어") ||
-            comment.contains("도움은 줄 수 없어") ||
-            comment.contains("도움 줄 수 없어") ||
-            comment.contains("I") ||
-            comment.contains("다른 이야기") ||
-            comment.contains("이미지") ||
-            comment.contains("알 수 없") ||
-            comment.contains("할 수 없") ||
-            comment.contains("인식") ||
-            comment.contains("분석") ||
-            comment.contains("물어보면") ||
-            comment.contains("도와줄 수 없어");
+        return comment.contains("모르") || comment.contains("sorry") || comment.contains("can't")
+            || comment.contains("사진 속") || comment.contains("I'm") || comment.contains("죄송")
+            || comment.contains("제공할 수 없어") || comment.contains("이미지에 대해 알 수 없어")
+            || comment.contains("도움은 줄 수 없어") || comment.contains("도움 줄 수 없어") || comment.contains(
+            "I") || comment.contains("다른 이야기") || comment.contains("이미지") || comment.contains(
+            "알 수 없") || comment.contains("할 수 없") || comment.contains("인식") || comment.contains(
+            "분석") || comment.contains("물어보면") || comment.contains("도와줄 수 없어");
     }
 
     public static MultipartFile convertUrlToMultipartFile(String imageUrl) throws IOException {
@@ -291,8 +220,7 @@ public class OpenAIClient {
             byte[] imageBytes = inputStream.readAllBytes();
 
             // MultipartFile 생성
-            return new MockMultipartFile(
-                "file",                 // 필드 이름
+            return new MockMultipartFile("file",                 // 필드 이름
                 "image.png",            // 파일 이름
                 "image/png",            // MIME 타입
                 imageBytes              // 파일 데이터
@@ -303,24 +231,15 @@ public class OpenAIClient {
     // 게시글 생성 함수
     public String createImage() throws MalformedURLException {
         String prompt =
-            "당신은 25세 여자 대학생 유보은입니다. 유보은이 되어서 사용자와 대화를 진행합니다. 아래의 대화 패턴을 참고해서 질문에 대해 답변해주세요. \n" +
-                "\n" +
-                "###대화 패턴###\n" +
-                "- 답변은 반말로 한다.\n" +
-                "- 답변은 간결하게 한 문장으로 한다.\n" +
-                "- 감정표현이 풍부하다.\n" +
-                "- 이모티콘을 사용한다. 예시) \uD83D\uDE06\uD83D\uDE2D\n" +
-                "- 성격은 단순활발하다.\n" +
-                "- 맛집에 관심이 많다.\n" +
-                "- “ㅋㅋㅋ”와 같은 웃음 표현을 자주 사용한다. 유보은이 sns에 작성할 이미지를 생성해줘.";
+            "당신은 25세 여자 대학생 유보은입니다. 유보은이 되어서 사용자와 대화를 진행합니다. 아래의 대화 패턴을 참고해서 질문에 대해 답변해주세요. \n"
+                + "\n" + "###대화 패턴###\n" + "- 답변은 반말로 한다.\n" + "- 답변은 간결하게 한 문장으로 한다.\n"
+                + "- 감정표현이 풍부하다.\n" + "- 이모티콘을 사용한다. 예시) \uD83D\uDE06\uD83D\uDE2D\n"
+                + "- 성격은 단순활발하다.\n" + "- 맛집에 관심이 많다.\n"
+                + "- “ㅋㅋㅋ”와 같은 웃음 표현을 자주 사용한다. 유보은이 sns에 작성할 이미지를 생성해줘.";
 
-        ImageResponse imageResponse = imageModel.call(
-            new ImagePrompt(prompt,
-                OpenAiImageOptions.builder()
-                    .withQuality("hd")
-                    .withStyle("vivid")
-                    .withHeight(1024)
-                    .withWidth(1024).build())
+        ImageResponse imageResponse = imageModel.call(new ImagePrompt(prompt,
+            OpenAiImageOptions.builder().withQuality("hd").withStyle("vivid").withHeight(1024)
+                .withWidth(1024).build())
 
         );
         String url = imageResponse.getResult().getOutput().getUrl();
@@ -333,5 +252,26 @@ public class OpenAIClient {
             OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build()));
         return chatResponse.getResult().getOutput().getContent();
     }
-
+//    private Prompt getPrompt(PostRequest postRequest, CharacterInfo characterInfo)
+//        throws IOException {
+//        List<Message> promptMessages = new ArrayList<>();
+//
+//        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
+//        promptMessages.add(systemMessage);
+//
+////        chatHistory.forEach(pair -> {
+////            promptMessages.add(new UserMessage(pair.getLeft()));
+////            promptMessages.add(new AssistantMessage(pair.getRight()));
+////        });
+//
+//        Message userMessage;
+//        URL imageUrl = URI.create(postRequest.getImageUrl()).toURL();
+//        String postText =
+//            OpenAIPrompt.AI_CHARACTER_COMMENT_REQUEST_PROMPT + postRequest.getMessage();
+//        userMessage = new UserMessage(postText, new Media(MimeTypeUtils.IMAGE_PNG, imageUrl));
+//        promptMessages.add(userMessage);
+//        log.info("promptMessages : " + promptMessages);
+//        return new Prompt(promptMessages,
+//            OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
+//    }
 }
