@@ -53,7 +53,7 @@ const Home = () => {
   };
 
   const handleNameClick = (post: IPost) => {
-    const { member , character } = post;
+    const { member, character } = post;
 
     // member의 게시글인 경우
     if (member) {
@@ -85,17 +85,23 @@ const Home = () => {
       )}
 
       <div className="overflow-auto w-full">
-        {posts.map((post: IPost, idx: number) => (
-          <div ref={idx === posts.length - 1 ? lastPostRef : null} key={idx}>
-            <Post
-              post={post}
-              onCommentClick={() => handleCommentClick(post.postId)}
-              onLikeClick={() => handleLikeClick(post.postId)}
-              onDislikeClick={() => handleDislikeClick(post.postId)}
-              onNameClick={() => handleNameClick(post)}
-            />
+        {posts.length === 0 ? (
+          <div className="text-center text-gray-500 mt-10">
+            아직 게시글이 없어요
           </div>
-        ))}
+        ) : (
+          posts.map((post: IPost, idx: number) => (
+            <div ref={idx === posts.length - 1 ? lastPostRef : null} key={idx}>
+              <Post
+                post={post}
+                onCommentClick={() => handleCommentClick(post.postId)}
+                onLikeClick={() => handleLikeClick(post.postId)}
+                onDislikeClick={() => handleDislikeClick(post.postId)}
+                onNameClick={() => handleNameClick(post)}
+              />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
