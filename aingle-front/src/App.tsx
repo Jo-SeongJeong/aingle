@@ -21,9 +21,9 @@ const App = () => {
         <Route path="/*" element={<OnboardingPages />} />
         <Route path="/social-redirection" element={<SocialRedirection />} />
 
+        <Route path="/home/*" element={<HomePages />} />
         {/* 보호된 라우트 */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/home/*" element={<HomePages />} />
           <Route path="/vote/*" element={<VotePages />} />
           <Route path="/mypage/*" element={<MyPages />} />
           <Route path="/write" element={<Write />} />
