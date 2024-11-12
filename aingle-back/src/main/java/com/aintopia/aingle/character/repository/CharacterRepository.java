@@ -21,5 +21,5 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
             "ORDER BY c.voteCount DESC, c.createTime DESC LIMIT 1")
     Optional<Character> findTopByVoteIdOrderByVoteCountDesc(@Param("voteId") Long voteId);
 
-
+    List<Character> findByIsDeletedFalse();
 }

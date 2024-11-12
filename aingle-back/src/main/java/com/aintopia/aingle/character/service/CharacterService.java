@@ -41,6 +41,7 @@ import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,7 +63,7 @@ public class CharacterService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final PostService postService;
-    private static final int MAX_RETRIES = 3;
+    private static final int MAX_RETRIES = 1;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -250,6 +251,19 @@ public class CharacterService {
         }
         throw new RuntimeException("Post 등록 실패");
     }
+
+    // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Transactional
+    public void scheduleCharacterPostCreation(){
+        // 공용 캐릭터, 커스텀 캐릭터
+        List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
+        for(Character character : publicCharacters) {
+            generatePost(character);
+        }
+    }
+
+
 
     @Transactional
     public void deleteCharacter(Long memberId, Long characterId) {

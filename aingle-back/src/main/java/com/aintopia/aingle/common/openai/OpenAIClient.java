@@ -227,7 +227,7 @@ public class OpenAIClient {
             if (post.isPresent()) {
                 int errorCount = 0;
                 String commentContent = "";
-                while (errorCount < 3) {
+                while (errorCount < 1) {
                     commentContent = createCommentByAI(PostRequest.builder()
                         .message(post.get().getContent())
                         .imageUrl(post.get().getImage())
