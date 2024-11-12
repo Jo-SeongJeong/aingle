@@ -6,9 +6,12 @@ services:
     image: spring
     environment:
       - TZ=Asia/Seoul
+      - FIREBASE_CONFIG_PATH=/app/aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json # Firebase 파일 경로 설정
     privileged: true
     networks:
       - aingle
+    volumes:
+      - ./src/main/resources/aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json:/app/aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json # 파일을 컨테이너 내로 마운트
 
 networks:
   aingle:
