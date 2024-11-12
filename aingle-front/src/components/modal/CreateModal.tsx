@@ -115,7 +115,7 @@ const CreateModal = ({
             <div className="bg-[#FFFAFC] rounded-[10px] p-[10px] flex flex-col gap-2 items-center">
               <h1 className="text-[16px] font-gray-2">생성한 캐릭터를</h1>
               <h1 className="text-[16px] font-gray-2">
-                다른 사용자들에게 공유해볼래?
+                다른 사용자들에게 공유해볼래앵?
               </h1>
             </div>
 
@@ -130,7 +130,7 @@ const CreateModal = ({
                 className="bg-pink-500 text-white font-medium w-[50%] h-[48px] text-[16px] py-2 px-4 rounded-xl"
                 onClick={goVote}
               >
-                공유 해볼래
+                공유 해볼래앵
               </button>
             </div>
           </div>
