@@ -2,11 +2,13 @@ package com.aintopia.aingle.reply.service;
 
 import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
+import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -21,20 +23,25 @@ import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
 import com.aintopia.aingle.reply.exception.NotFoundReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReplyService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final AlarmRepository alarmRepository;
+    private final OpenAIClient openAIClient;
 
     @Transactional
     public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto, Long memberId) {
@@ -77,6 +84,28 @@ public class ReplyService {
         replyRepository.save(reply);
 
         return getCommentsWithReplies(post.getPostId());
+    }
+
+    @Transactional
+    @Async
+    public void generateAIReply(Post post, Comment comment, Member member) throws IOException {
+        log.info("AI 대댓글 요청");
+        if(comment.getIsDeleted() || post.getIsDeleted()) throw new ForbiddenReplyException();
+        // AI 대댓글 생성
+        CharacterInfo characterInfo = post.getCharacter().toDTO();
+        String replyWithAI = openAIClient.createReplyByAI(post, comment, characterInfo);
+        replyRepository.save(Reply.makeCharacterReply(comment, post.getCharacter(), new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
+
+        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
+        if(comment.getMember() != null && comment.getMember() != member) {
+            Member alarmMember = memberRepository.findById(post.getMember().getMemberId()).orElseThrow(NotFoundMemberException::new);
+
+            alarmRepository.save(Alarm.alarmPostBuilder()
+                    .member(alarmMember)
+                    .post(post)
+                    .sender(member)
+                    .build());
+        }
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환

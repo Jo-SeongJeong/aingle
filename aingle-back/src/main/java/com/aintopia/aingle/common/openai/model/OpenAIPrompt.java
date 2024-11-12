@@ -1,6 +1,8 @@
 package com.aintopia.aingle.common.openai.model;
 
 import com.aintopia.aingle.character.dto.CharacterInfo;
+import com.aintopia.aingle.comment.domain.Comment;
+import com.aintopia.aingle.post.domain.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -41,7 +43,15 @@ public enum OpenAIPrompt {
         + "작성할 댓글 답변만 답해주고 다른 부가적인 답변은 하지마세요"),
     AI_CHARACTER_CREATE_POST_PROMPT("%s이(가) SNS에 [ %s ]라고 글을 작성했어 이 글에 어울리는 실제 같은 이미지를 조건에 충실하게 생성해줘\n"
         + "조건 1. 인물을 이미지에 넣지 말것\n"
-        + "조건 2. LLM 모델이 인식 하기 쉬운 이미지로 생성할 것\n");
+        + "조건 2. LLM 모델이 인식 하기 쉬운 이미지로 생성할 것\n"),
+    AI_CHARACTER_CRATE_REPLY_PROMPT("다음에 제공되는 분석을 바탕으로 사당신의 SNS 게시글 댓글의 대댓글을 작성해주세요. 분석 내용을 참고하여 당신의 성격, 성향, 특성을 반영한 댓글을 달아주세요. 당신은 캐릭터의 고유한 말투와 스타일에 맞아야 합니다.\n"
+            + "무엇을 하지 말아야 할지보다는, 무엇을 해야 하는지에 초점을 맞추세요. 사용자의 댓글에 맞춰, 나이에 적합한 언어, 인터넷 용어, 그리고 당신의 성격에 맞는 표현을 활용해주세요. 목표는 진정성 있고, 공감 가며, 맞춤형 대댓글을 작성하는 것입니다. 이를 통해 당신의 캐릭터의 독특한 스타일을 드러내세요.\n"
+            + "### 게시글 ### \n"
+            + "게시글과 함께 작성된 내용: %s \n"
+            + "%s\n"
+            + "### 댓글 ###\n"
+            + "%s\n"
+            + "작성할 대댓글 답변만 답해주고 다른 부가적인 답변은 하지마세요");
 
     private final String promptTemplate;
 
@@ -58,6 +68,10 @@ public enum OpenAIPrompt {
 
     public String generateSummaryPrompt(CharacterInfo characterInfo){
         return String.format(promptTemplate, characterInfo.getName(), characterInfo.getName());
+    }
+
+    public String generateReplyPrompt(String postImageDescription, Post post, Comment comment){
+        return String.format(promptTemplate, post.getContent(), postImageDescription, comment.getContent());
     }
 
     private String getDescription(List<String> description) {

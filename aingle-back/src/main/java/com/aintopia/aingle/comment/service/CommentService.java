@@ -25,7 +25,10 @@ import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
+import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
+import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
+import com.aintopia.aingle.reply.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -47,6 +50,7 @@ public class CommentService {
     private final ReplyRepository replyRepository;
     private final AlarmRepository alarmRepository;
     private final OpenAIClient openAIClient;
+    private final ReplyService replyService;
 
     public List<CommentDto> findByPostId(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
@@ -60,7 +64,7 @@ public class CommentService {
 
     @Transactional
     public List<CommentDto> registComment(RegistCommentRequestDto registCommentRequestDto,
-        Long memberId) {
+        Long memberId) throws IOException {
         Post post = postRepository.findById(registCommentRequestDto.getPostId())
             .orElseThrow(NotFoundPostException::new);
         Member member = memberRepository.findById(memberId)
@@ -71,13 +75,13 @@ public class CommentService {
         }
 
         post.increaseComment();
-        postRepository.save(post);
+                    postRepository.save(post);
 
-        commentRepository.save(Comment.commentBuilder()
-            .post(post)
-            .member(member)
-            .registCommentRequestDto(registCommentRequestDto)
-            .build());
+        Comment savedComment = commentRepository.save(Comment.commentBuilder()
+                .post(post)
+                .member(member)
+                .registCommentRequestDto(registCommentRequestDto)
+                .build());
 
         // 게시물 작성자에게 알림(본인 게시물, 본인 댓글 아닐 때)
         if (post.getMember() != null && post.getMember() != member) {
@@ -90,9 +94,14 @@ public class CommentService {
                 .sender(member)
                 .build());
         }
+        // AI 대댓글 요청
+        replyService.generateAIReply(post, savedComment, member);
 
         return getCommentsWithReplies(post.getPostId());
     }
+
+
+
 
     @Transactional
     public List<CommentDto> deleteComment(Long commentId, Long memberId) {
@@ -128,6 +137,7 @@ public class CommentService {
                 commentContent = openAIClient.createCommentByAI(PostRequest.builder()
                     .message(registPostRequestDto.getContent())
                     .imageUrl(imageUrl)
+                    .postId(post.getPostId())
                     .build(), CharacterInfo.builder()
                     .character(character)
                     .build());

@@ -60,6 +60,18 @@ public class Reply {
         this.isDeleted = false;
     }
 
+    public static Reply makeCharacterReply(Comment comment, Character character, RegistReplyRequestDto registReplyRequestDto){
+        return new Reply(comment, character, registReplyRequestDto);
+    }
+
+    public Reply (Comment comment, Character character, RegistReplyRequestDto registReplyRequestDto){
+        this.comment = comment;
+        this.character = character;
+        this.content = registReplyRequestDto.getContent();
+        this.isDeleted = false;
+        this.createTime = LocalDateTime.now();
+    }
+
     public void delete() {
         this.isDeleted = true;
         this.deleteTime = LocalDateTime.now();
