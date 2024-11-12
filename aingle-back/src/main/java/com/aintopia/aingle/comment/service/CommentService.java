@@ -2,7 +2,6 @@ package com.aintopia.aingle.comment.service;
 
 import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
-import com.aintopia.aingle.alarm.service.AlarmService;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
