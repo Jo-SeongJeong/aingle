@@ -36,6 +36,7 @@ cloud:
     region: ap-northeast-2
 
 firebase:
-  config-path : aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json
+  config-path: classpath:aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json
+
 
 
