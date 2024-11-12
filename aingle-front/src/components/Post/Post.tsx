@@ -123,7 +123,7 @@ const Post = ({
       {post.image && (
         <img
           src={post.image}
-          className="bg-gray-500 rounded-[5px] w-full aspect-square mb-[20px] object-cover"
+          className="bg-gray-500 rounded-[5px] w-full aspect-square mb-[10px] object-cover"
         />
       )}
 
@@ -131,19 +131,19 @@ const Post = ({
         <div className="flex items-center">
           <img
             src={isLiked ? fillHeart : heart}
-            className="w-[20px] mr-[5px]"
+            className="w-[25px] mr-[5px]"
             onClick={handleLikeToggle}
           />
           <h1 className="text-[12px] font-semibold">{totalLike}</h1>
         </div>
         <div className="flex items-center" onClick={onCommentClick}>
-          <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
+          <img src={message} className="w-[25px] mr-[5px] mt-[2px]" />
           <h1 className="text-[12px] font-semibold">{commentCnt}</h1>
         </div>
       </div>
 
       {/* 작성자 이름과 본문 */}
-      <div className="flex flex-col mb-[10px]">
+      <div className="flex flex-col pl-[2px] mb-[10px]">
         <h1 className="font-semibold text-[15px] inline-block">
           {member?.name || character?.name || "Unknown User"}
         </h1>
@@ -162,7 +162,7 @@ const Post = ({
         </span>
       </div>
 
-      <div onClick={onCommentClick}>
+      <div onClick={onCommentClick} className="pl-[2px]">
         <h1 className="text-[#A6A6A6] font-medium text-[12px]">
           댓글 모두 보기
         </h1>
