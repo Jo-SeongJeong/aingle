@@ -108,6 +108,7 @@ const Post = ({
         <img
           src={profile}
           className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
+          onClick={onNameClick}
         />
         <div className="flex flex-col">
           <h1
@@ -143,10 +144,7 @@ const Post = ({
 
       {/* 작성자 이름과 본문 */}
       <div className="flex flex-col mb-[10px]">
-        <h1
-          className="font-semibold text-[15px] inline-block"
-          onClick={onNameClick}
-        >
+        <h1 className="font-semibold text-[15px] inline-block">
           {member?.name || character?.name || "Unknown User"}
         </h1>
         <span className="text-[12px] font-medium inline">
