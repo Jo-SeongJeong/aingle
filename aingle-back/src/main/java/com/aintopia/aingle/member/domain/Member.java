@@ -62,6 +62,9 @@ public class Member {
     @ColumnDefault("0")
     private Integer alarmCount;
 
+    @Column(name = "fcmToken")
+    private String fcmToken;
+
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private MemberImage memberImage;
 
@@ -95,5 +98,9 @@ public class Member {
 
     public PostMember changeDto() {
         return new PostMember(this.memberId, this.name, this.memberImage != null ? this.memberImage.getMemberImage() : null);
+    }
+
+    public void updateFcm(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
