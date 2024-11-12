@@ -45,7 +45,6 @@ public class CommentService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
-    private final AlarmService alarmService;
     private final AlarmRepository alarmRepository;
     private final OpenAIClient openAIClient;
 
@@ -153,45 +152,25 @@ public class CommentService {
     }
 
     private boolean inappropriatenessComment(String comment) {
-        if (comment.contains("모르")) {
-            return true;
-        } else if (comment.contains("sorry")) {
-            return true;
-        } else if (comment.contains("can't")) {
-            return true;
-        } else if (comment.contains("사진 속")) {
-            return true;
-        } else if (comment.contains("I'm")) {
-            return true;
-        } else if (comment.contains("죄송")) {
-            return true;
-        } else if (comment.contains("제공할 수 없어")) {
-            return true;
-        }else if (comment.contains("이미지에 대해 알 수 없어")) {
-            return true;
-        } else if (comment.contains("도움은 줄 수 없어")) {
-            return true;
-        }else if (comment.contains("도움 줄 수 없어")) {
-            return true;
-        }else if (comment.contains("I")) {
-            return true;
-        }else if (comment.contains("다른 이야기")) {
-            return true;
-        }else if (comment.contains("이미지")) {
-            return true;
-        }else if (comment.contains("알 수 없")) {
-            return true;
-        }else if (comment.contains("할 수 없")) {
-            return true;
-        }else if (comment.contains("인식")) {
-            return true;
-        }else if (comment.contains("분석")) {
-            return true;
-        }else if (comment.contains("물어보면")) {
-            return true;
-        }else {
-            return comment.contains("도와줄 수 없어");
-        }
+        return comment.contains("모르") ||
+            comment.contains("sorry") ||
+            comment.contains("can't") ||
+            comment.contains("사진 속") ||
+            comment.contains("I'm") ||
+            comment.contains("죄송") ||
+            comment.contains("제공할 수 없어") ||
+            comment.contains("이미지에 대해 알 수 없어") ||
+            comment.contains("도움은 줄 수 없어") ||
+            comment.contains("도움 줄 수 없어") ||
+            comment.contains("I") ||
+            comment.contains("다른 이야기") ||
+            comment.contains("이미지") ||
+            comment.contains("알 수 없") ||
+            comment.contains("할 수 없") ||
+            comment.contains("인식") ||
+            comment.contains("분석") ||
+            comment.contains("물어보면") ||
+            comment.contains("도와줄 수 없어");
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
