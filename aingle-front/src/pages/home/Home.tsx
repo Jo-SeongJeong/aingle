@@ -68,6 +68,10 @@ const Home = () => {
     }
   };
 
+  const handlePostDetail = (id: number) => {
+    navigate(`/post/${id}`);
+  };
+
   const handleLikeClick = (id: number) => {
     like(id);
   };
@@ -98,6 +102,7 @@ const Home = () => {
                 onLikeClick={() => handleLikeClick(post.postId)}
                 onDislikeClick={() => handleDislikeClick(post.postId)}
                 onNameClick={() => handleNameClick(post)}
+                onPostDetail={() => handlePostDetail(post.postId)}
               />
             </div>
           ))
