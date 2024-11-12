@@ -38,3 +38,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Firebase service account file
+**/src/main/resources/aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json

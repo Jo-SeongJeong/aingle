@@ -64,6 +64,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework:spring-web'
     implementation 'org.springframework:spring-test'
+
+    // fcm
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
 }
 
 dependencyManagement {
