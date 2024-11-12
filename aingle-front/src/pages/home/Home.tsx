@@ -81,7 +81,7 @@ const Home = () => {
   };
 
   return (
-    <div className="bg-white h-full w-full px-[16px] pb-[34px] flex flex-col items-center relative">
+    <div className="bg-white min-h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative">
       <PinkTextHeader />
 
       {isModalOpen && (
