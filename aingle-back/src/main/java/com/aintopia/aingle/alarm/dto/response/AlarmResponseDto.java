@@ -1,5 +1,6 @@
 package com.aintopia.aingle.alarm.dto.response;
 
+import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.post.dto.AlarmPost;
 import com.aintopia.aingle.vote.domain.Vote;
@@ -17,6 +18,6 @@ public class AlarmResponseDto {
     private AlarmPost post;
     private VoteWinnerCharacter voteWinnerCharacter;
     private LocalDateTime createTime;
-    private PostMember sender;
+    private PostCharacter sender;
 
 }
