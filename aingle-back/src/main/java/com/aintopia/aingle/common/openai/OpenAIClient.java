@@ -74,14 +74,13 @@ public class OpenAIClient {
     public CreateAIPostResponseDto createImageUrl(CharacterInfo characterInfo) throws IOException {
 
         // 게시글 글 생성
-        Prompt getTextPrompt = getPromptPost(characterInfo);
-        ChatResponse chatResponse = chatModel.call(getTextPrompt);
+        ChatResponse chatResponse = chatModel.call(getPromptPost(characterInfo));
         String content = chatResponse.getResult().getOutput().getContent();
-        log.info("게시글 글: {}", content);
 
         // 글 기반 이미지 생성
-        String getImageUrlPrompt =
-            createCharacterSystemPrompt(characterInfo) + creatAIPostPrompt(characterInfo, content);
+        String getImageUrlPrompt = creatAIPostPrompt(content,
+            createCharacterSystemPrompt(characterInfo));
+        log.info("게시글 이미지 생성 프롬프트:\n{}", getImageUrlPrompt);
         ImageResponse imageResponse = imageModel.call(
             new ImagePrompt(getImageUrlPrompt,
                 OpenAiImageOptions.builder()
@@ -92,6 +91,7 @@ public class OpenAIClient {
         );
         String url = imageResponse.getResult().getOutput().getUrl();
         log.info("생성 이미지 URL: {}", url);
+        log.info("게시글 글:\n{}", content);
         return CreateAIPostResponseDto.builder()
             .file(convertUrlToMultipartFile(url))
             .content(content)
@@ -194,21 +194,19 @@ public class OpenAIClient {
     private Prompt getPromptPost(CharacterInfo characterInfo) {
         List<Message> promptMessages = new ArrayList<>();
 
-        Message systemMessage = new SystemMessage(createCharacterSystemPrompt(characterInfo));
-        promptMessages.add(systemMessage);
-
         Message userMessage;
         userMessage = new UserMessage(
-            OpenAIPrompt.AI_CHARACTER_CREATE_POST_TEXT_PROMPT.getPromptTemplate());
+            OpenAIPrompt.AI_CHARACTER_CREATE_POST_TEXT_PROMPT.generatePostTextPrompt(
+                createCharacterSystemPrompt(characterInfo)));
         promptMessages.add(userMessage);
-        log.info("promptMessages : " + promptMessages);
+        log.info("게시글 텍스트 얻는 최종 프롬프트: \n{}", promptMessages);
         return new Prompt(promptMessages,
             OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
-    private String creatAIPostPrompt(CharacterInfo characterInfo, String content) {
-        return OpenAIPrompt.AI_CHARACTER_CREATE_POST_PROMPT.generateSystemPromptAddSeed(
-            characterInfo, content);
+    private String creatAIPostPrompt(String content, String prompt) {
+        return OpenAIPrompt.AI_CHARACTER_CREATE_POST_PROMPT.generateSystemPromptAddSeed(content,
+            prompt);
     }
 
     private String createCharacterSystemPrompt(CharacterInfo characterInfo) {
