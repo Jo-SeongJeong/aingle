@@ -205,6 +205,7 @@ const CreateChar = () => {
                 className="py-3 px-[22px] border-[1px] border-[#CACDD2] rounded-[10px] flex-grow"
                 type="text"
                 value={personality}
+                maxLength={15}
                 placeholder="예) 긍정, 부정, 사춘기, 츤데레 등"
                 onChange={(e) => setPersonality(e.target.value)}
               />

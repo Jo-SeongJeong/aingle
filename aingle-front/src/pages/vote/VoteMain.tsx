@@ -208,7 +208,7 @@ const VoteMain = () => {
                 <SwiperSlide key={character.characterId}>
                   <div
                     onClick={() => handleSelect(character.characterId)}
-                    className={`relative w-[65px] p-2 bg-white rounded-xl flex items-center justify-center shadow-md cursor-pointer ${
+                    className={`relative w-[65px] p-1 bg-white rounded-xl flex items-center justify-center shadow-md cursor-pointer ${
                       selectedId === character.characterId
                         ? "border-2 border-red-500"
                         : index === 0
@@ -240,7 +240,7 @@ const VoteMain = () => {
             </h1>
           </div>
         ) : (
-          <div className="bg-white w-full h-[210px] flex rounded-2xl px-4">
+          <div className="bg-white w-full h-[275px] flex rounded-2xl px-4">
             <div className="absolute top-4 right-10 flex items-center space-x-1 text-gray-800">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -267,19 +267,19 @@ const VoteMain = () => {
               </div>
             </div>
             <div className="w-3/4">
-              <div className="h-1/3 text-[18px] pl-3 font-extrabold flex items-end">
+              <div className="h-1/4 text-[18px] pl-3 font-extrabold flex pt-10">
                 {CharacterInfo?.name}
               </div>
               <div className="font-bold text-main-color text-[14px] flex pt-[5px] pb-[5px] pl-3 flex-wrap">
-                <div className=" mr-2">#{CharacterInfo?.age}세</div>
-                <div className=" mr-2">#{CharacterInfo?.job}</div>
-                <div className=" mr-2">#{CharacterInfo?.personality}</div>
-                <div className=" mr-2">#{CharacterInfo?.talkType}</div>
+                <div className="mr-2">#{CharacterInfo?.age}세</div>
+                <div className="mr-2">#{CharacterInfo?.job}</div>
+                <div className="mr-2">#{CharacterInfo?.personality}</div>
+                <div className="mr-2">#{CharacterInfo?.talkType}</div>
               </div>
               <div className="pl-3 h-[60px] font-semibold text-[20px] flex justify-start items-center">
                 <h1>{CharacterInfo?.summary}</h1>
               </div>
-              <div className="flex justify-end items-end">
+              <div className="flex justify-end items-end pt-5">
                 <h1 className="text-[12px] text-slate-400">
                   제작자: {CharacterInfo?.memberName}
                 </h1>

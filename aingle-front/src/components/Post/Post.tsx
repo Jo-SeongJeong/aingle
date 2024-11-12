@@ -15,6 +15,7 @@ interface postProps {
   onLikeClick: () => void;
   onDislikeClick: () => void;
   onNameClick: () => void;
+  onPostDetail: () => void;
 }
 
 const Post = ({
@@ -23,6 +24,7 @@ const Post = ({
   onLikeClick,
   onDislikeClick,
   onNameClick,
+  onPostDetail,
 }: postProps) => {
   const { member, character } = post;
   const [profile, setProfile] = useState("");
@@ -124,6 +126,7 @@ const Post = ({
         <img
           src={post.image}
           className="bg-gray-500 rounded-[5px] w-full aspect-square mb-[10px] object-cover"
+          onClick={onPostDetail}
         />
       )}
 
