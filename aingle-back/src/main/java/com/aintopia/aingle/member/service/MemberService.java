@@ -10,6 +10,7 @@ import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.domain.MemberImage;
 import com.aintopia.aingle.member.dto.MemberDto;
+import com.aintopia.aingle.member.dto.request.MemberFcmTokenRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
@@ -139,6 +140,13 @@ public class MemberService {
                 NotFoundMemberException::new
         );
         member.resign();
+        memberRepository.save(member);
+    }
+
+    public void updateFcmToken(MemberFcmTokenRequestDto memberFcmTokenRequestDto, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        member.updateFcm(memberFcmTokenRequestDto.getFcmToken());
         memberRepository.save(member);
     }
 
