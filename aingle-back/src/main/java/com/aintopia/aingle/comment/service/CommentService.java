@@ -158,12 +158,14 @@ public class CommentService {
         }
 
         // FCM 알림을 min 지연 후 전송
-        String title = "새 댓글 알림";
-        String message = "새로운 댓글이 달렸어요!!";
-        String fcmToken = member.getFcmToken();
+        if(member != null) {
+            String title = "새 댓글 알림";
+            String message = "새로운 댓글이 달렸어요!!";
+            String fcmToken = member.getFcmToken();
 
-        if (fcmToken != null && !fcmToken.isEmpty()) {
-            fcmService.scheduleNotificationWithDelay(fcmToken, title, message, min);
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                fcmService.scheduleNotificationWithDelay(fcmToken, title, message, min);
+            }
         }
 
         postRepository.save(post);
