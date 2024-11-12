@@ -33,7 +33,7 @@ const NoticeCard: React.FC<AlarmProps> = ({ alarm, onClickAlarm }) => {
         />
       ) : (
         <img
-          src={sender?.memberImage}
+          src={sender?.characterImage}
           className="w-[30px] h-[30px] bg-black object-cover flex-shrink-0 rounded-[25px]"
         />
       )}
