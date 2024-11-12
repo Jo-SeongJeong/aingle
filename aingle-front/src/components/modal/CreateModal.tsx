@@ -46,7 +46,7 @@ const CreateModal = ({
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
-        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-[300px] h-[399px] relative flex flex-col items-center"
+        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-[300px] h-[430px] relative flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
         {showBird ? (

@@ -11,7 +11,7 @@ interface ChDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   CharacterId: number;
-  isPublic : boolean;
+  isPublic: boolean;
 }
 const ChDetailModal: React.FC<ChDetailModalProps> = ({
   isOpen,
@@ -19,7 +19,6 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
   CharacterId,
   isPublic,
 }) => {
-
   const goVote = async () => {
     try {
       await registVote(CharacterId);
@@ -33,7 +32,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
       }
     }
   };
-  
+
   if (!isOpen || !CharacterId) return null;
   const navigate = useNavigate();
   const goFeed = (id: number) => {
@@ -106,7 +105,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
                 #{CharacterInfo?.tone ? "반말모드" : "예의바른"}
               </div>
             </div>
-            <div className="w-full h-3/6 bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium">
+            <div className="w-full h-3/6 text-center bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium px-10">
               {CharacterInfo?.summary}
             </div>
           </div>
@@ -117,7 +116,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
             피드 보러 가기 &gt;
           </button>
         </div>
-         {!isPublic && (
+        {!isPublic && (
           <>
             <h1
               onClick={goVote}

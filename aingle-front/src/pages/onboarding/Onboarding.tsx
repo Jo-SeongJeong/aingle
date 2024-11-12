@@ -16,19 +16,33 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const [recommendID, setRecommendId] = useRecoilState(characterIdState);
   // 선택된 버튼을 업데이트하는 함수
-  const handleSelect = (questionNumber: number, buttonNumber: number) => {
+  const handleSelect = async (questionNumber: number, buttonNumber: number) => {
     setSelected((prev) => ({
       ...prev,
       [questionNumber]: buttonNumber,
     }));
   };
 
-  useEffect(() => {}, [selected]);
+  useEffect(() => {
+    handleAutoClick();
+  }, [selected]);
 
   // 뒤로가기 버튼 클릭 시 페이지 감소
   const handleBackClick = () => {
     if (pageNumber > 1) {
       setPageNumber(pageNumber - 1);
+    }
+  };
+
+  const handleAutoClick = () => {
+    // 선택되었으면 페이지 넘김
+    if (pageNumber === 1) {
+      return;
+    }
+    if (pageNumber < 5) {
+      setPageNumber(pageNumber + 1);
+    } else {
+      onLastPageReached();
     }
   };
 
@@ -48,7 +62,7 @@ const Onboarding = () => {
   };
 
   // 마지막 페이지 도달 시 실행되는 함수
-  const onLastPageReached = async () => {
+  const onLastPageReached = () => {
     try {
       for (let i = 1; i <= 4; i++) {
         localStorage.setItem(String(i), String(selected[i]));
@@ -239,7 +253,7 @@ const Onboarding = () => {
       {/* 하단 버튼, 스킵 */}
       <div className="absolute bottom-6 w-full left-[23px] ">
         {pageNumber === 1 && (
-          <div className="flex max-w-[436px] w-full px-2 justify-end items-end">
+          <div className="flex max-w-[436px] w-full px-[15%] justify-end">
             <h1
               className="text-3 text-[#91919C] underline cursor-pointer mb-3"
               onClick={skip}
@@ -251,7 +265,7 @@ const Onboarding = () => {
         <button
           className={`w-full  mt-auto bg-pink-base  py-5 rounded-[10px] text-white text-4 font-semibold self-end ${
             pageNumber === 1 ? "mt-[10px]" : "mt-[80px]"
-          }`}
+          } ${pageNumber != 1 ? "hidden" : ""}`}
           style={{ width: `calc(100% - 46px)` }}
           onClick={handleButtonClick}
         >
