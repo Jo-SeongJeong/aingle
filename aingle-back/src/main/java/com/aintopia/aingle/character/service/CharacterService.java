@@ -24,8 +24,6 @@ import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
-import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
-import com.aintopia.aingle.post.exception.BadReqeustPostException;
 import com.aintopia.aingle.post.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,13 +32,13 @@ import java.util.NoSuchElementException;
 
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.dto.MyPagePostDto;
-import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,7 +60,7 @@ public class CharacterService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final PostService postService;
-    private static final int MAX_RETRIES = 2;
+    private static final int MAX_RETRIES = 1;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
         int ei = requestDto.getEi(); // E: 0, I: 1
@@ -250,6 +248,19 @@ public class CharacterService {
         }
         throw new RuntimeException("Post 등록 실패");
     }
+
+    // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Transactional
+    public void scheduleCharacterPostCreation(){
+        // 공용 캐릭터, 커스텀 캐릭터
+        List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
+        for(Character character : publicCharacters) {
+            generatePost(character);
+        }
+    }
+
+
 
     @Transactional
     public void deleteCharacter(Long memberId, Long characterId) {
