@@ -174,18 +174,24 @@ const VoteMain = () => {
         </div>
       </div>
 
-      <div className="bg-white w-full h-[90px] flex flex-col justify-center items-center">
-        <div className="flex flex-row justify-center items-center">
-          <div>
-            <h1 className="text-main-color font-bold text-[20px]">
-              이번 달 앵표
-            </h1>
+      <div className="px-4">
+        <div className="bg-white h-[90px] flex flex-col justify-center items-center rounded-2xl">
+          <div className="flex flex-row justify-center items-center">
+            <div>
+              <h1 className="text-main-color font-bold text-[20px]">
+                이번 달 앵표
+              </h1>
+            </div>
+            <div className="ml-1 mt-1">
+              <img src={Trophy_voteMian} alt="" className="w-[40px]" />
+            </div>
           </div>
           <div className="flex justify-center items-center mt-1 text-[#bdbdbd] text-[14px] font-semibold">
             <h1>가장 사용해 보고 싶은 캐릭터를 골라주세앵</h1>
           </div>
         </div>
       </div>
+
       <div className="w-full h-[150px] max-w-3xl pt-8 pb-2 px-4 flex flex-col items-center">
         {characters != null && characters.allCharacterDtos.length === 0 ? (
           <p className="text-gray-500 text-lg">투표항목이 없어요</p>
