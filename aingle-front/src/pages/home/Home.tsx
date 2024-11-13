@@ -8,6 +8,11 @@ import { disLike, like } from "../../api/likeAPI";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
+import { requestFcmToken } from "../../api/userAPI";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getToken } from "firebase/messaging";
+import { firebaseConfig, messaging } from "../../utils/firebase-init"; // 모듈화된 Firebase 초기화
 
 const Home = () => {
   const [postId, setPostId] = useState<number>(0);
@@ -20,6 +25,30 @@ const Home = () => {
   const navigate = useNavigate();
 
   const lastPostRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    // Firebase Analytics 초기화
+    const app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+
+    // 푸시 알림 권한 요청 및 토큰 발급
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        getToken(messaging, {
+          vapidKey: import.meta.env.VITE_REACT_APP_VAP_ID,
+        })
+          .then((token) => {
+            console.log("푸시 토큰 발급 완료:", token);
+            // requestFcmToken(userData.id, token);
+            requestFcmToken(token);
+          })
+          .catch((err) => {
+            console.error("푸시 토큰 가져오기 실패:", err);
+          });
+      } else {
+        console.log("푸시 권한 거부됨");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (hasMore) {
