@@ -91,7 +91,8 @@ public class OpenAIClient {
 
     @Transactional
     @Async
-    public void generateReplyReplyAI(Post post, Comment comment, Member member) throws IOException {
+    public void generateReplyReplyAI(Post post, Comment comment, Member member, Reply reply)
+        throws IOException {
         if (comment.getCharacter() == null) {
             // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
             log.info("사용자 스스로의 대댓글은 생성 안함");
@@ -109,7 +110,7 @@ public class OpenAIClient {
         // AI 대댓글 생성
         CharacterInfo characterInfo = comment.getCharacter().toDTO();
         String replyWithAI = createReplyReply(post, comment,
-            getCommentWithReplies(post.getPostId()), characterInfo);
+            getCommentWithReplies(post.getPostId()), characterInfo, reply);
         replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
             new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
 
@@ -131,14 +132,19 @@ public class OpenAIClient {
     }
 
     public String createReplyReply(Post post, Comment comment, List<Reply> replies,
-        CharacterInfo characterInfo) throws IOException {
+        CharacterInfo characterInfo, Reply nowReply) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("댓글 기록\n");
         // 위에서 캐릭터 답글에 대한 것만 이 함수로 올 수 있게 해야함
         sb.append(comment.getCharacter().getCharacterId()).append(": ").append(comment.getContent())
             .append("\n");
         if (replies.isEmpty()) {
-            sb.append("없음\n");
+            if (nowReply.getMember() == null) {
+                sb.append("끝\n");
+            } else {
+                sb.append(nowReply.getMember().getName()).append(": ").append(nowReply.getComment())
+                    .append("\n");
+            }
         } else {
             for (Reply reply : replies) {
                 // 멤벙 인지 캐릭터인지 구분 해야함
