@@ -6,13 +6,10 @@ import com.aintopia.aingle.alarm.exception.ForbiddenAlarmException;
 import com.aintopia.aingle.alarm.exception.NotFoundAlarmException;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.domain.Character;
-import com.aintopia.aingle.character.repository.CharacterImageRepository;
-import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.dto.AlarmPost;
-import com.aintopia.aingle.vote.domain.Vote;
 import com.aintopia.aingle.vote.dto.VoteWinnerCharacter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,7 +47,7 @@ public class AlarmService {
                                     .voteWinnerCharacter(voteWinnerCharacter)
                                     .createTime(alarm.getCreateTime())
                                     .sender(Optional.ofNullable(alarm.getSender())
-                                        .map(Member::changeDto)
+                                        .map(Character::changeDto)
                                         .orElse(null))
                                     .build();
 

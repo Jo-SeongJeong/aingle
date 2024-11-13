@@ -1,6 +1,7 @@
 package com.aintopia.aingle.member.controller;
 
 import com.aintopia.aingle.common.util.MemberInfo;
+import com.aintopia.aingle.member.dto.request.MemberFcmTokenRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberSignUpRequestDto;
 import com.aintopia.aingle.member.dto.request.MemberUpdateRequestDto;
 import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
@@ -88,5 +89,18 @@ public class MemberController {
         Long memberId = MemberInfo.getId();
         memberService.resignMember(memberId);
         return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴 성공");
+    }
+
+    @PatchMapping("/fcm-tokens")
+    @Operation(summary = "fcm token 수정", description = "fcm token 수정 할 때 사용하는 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "fcm token 담아 요청",
+                    content = @Content(mediaType = "application/json"))
+    })
+    public ResponseEntity<?> updateFcmToken(@RequestBody MemberFcmTokenRequestDto memberFcmTokenRequestDto) {
+        Long memberId = MemberInfo.getId();
+        memberService.updateFcmToken(memberFcmTokenRequestDto, memberId);
+        return ResponseEntity.status(HttpStatus.OK).body("fcm Token 갱신 성공");
     }
 }

@@ -2,7 +2,6 @@ package com.aintopia.aingle.comment.service;
 
 import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
-import com.aintopia.aingle.alarm.service.AlarmService;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.dto.PostCharacter;
@@ -14,6 +13,7 @@ import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.openai.model.PostRequest;
+import com.aintopia.aingle.common.service.FcmService;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -51,6 +51,7 @@ public class CommentService {
     private final AlarmRepository alarmRepository;
     private final OpenAIClient openAIClient;
     private final ReplyService replyService;
+    private final FcmService fcmService;
 
     public List<CommentDto> findByPostId(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
@@ -75,33 +76,18 @@ public class CommentService {
         }
 
         post.increaseComment();
-                    postRepository.save(post);
+        postRepository.save(post);
 
         Comment savedComment = commentRepository.save(Comment.commentBuilder()
-                .post(post)
-                .member(member)
-                .registCommentRequestDto(registCommentRequestDto)
-                .build());
-
-        // 게시물 작성자에게 알림(본인 게시물, 본인 댓글 아닐 때)
-        if (post.getMember() != null && post.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
-                .orElseThrow(NotFoundMemberException::new);
-
-            alarmRepository.save(Alarm.alarmPostBuilder()
-                .member(alarmMember)
-                .post(post)
-                .sender(member)
-                .build());
-        }
+            .post(post)
+            .member(member)
+            .registCommentRequestDto(registCommentRequestDto)
+            .build());
         // AI 대댓글 요청
         replyService.generateAIReply(post, savedComment, member);
 
         return getCommentsWithReplies(post.getPostId());
     }
-
-
-
 
     @Transactional
     public List<CommentDto> deleteComment(Long commentId, Long memberId) {
@@ -130,6 +116,10 @@ public class CommentService {
     public void generateAIComments(Post post, List<Character> characters,
         RegistPostRequestDto registPostRequestDto, String imageUrl) throws IOException {
         log.info("AI 댓글 생성 시작 postId {}", post.getPostId());
+
+        Member member = post.getMember();
+
+        int min = Integer.MAX_VALUE;
         for (Character character : characters) {
             int errorCount = 0;
             String commentContent = "";
@@ -157,7 +147,34 @@ public class CommentService {
             commentRepository.save(comment);
 
             post.increaseComment();
+
+            // 최초 생성 시간 구하기
+            min = Math.min(min, character.getCommentDelayTime());
+
+            // 게시물 작성자에게 알림(본인 게시물)
+            if (post.getMember() != null) {
+                Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
+                        .orElseThrow(NotFoundMemberException::new);
+
+                alarmRepository.save(Alarm.alarmPostBuilder()
+                        .member(alarmMember)
+                        .post(post)
+                        .sender(character)
+                        .build());
+            }
         }
+
+        // FCM 알림을 min 지연 후 전송
+        if(member != null) {
+            String title = "새 댓글 알림";
+            String message = "새로운 댓글이 달렸어요!!";
+            String fcmToken = member.getFcmToken();
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                fcmService.scheduleNotificationWithDelay(fcmToken, title, message, min);
+            }
+        }
+
         postRepository.save(post);
     }
 

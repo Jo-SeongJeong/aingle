@@ -57,17 +57,6 @@ public class ReplyService {
                 .registReplyRequestDto(registReplyRequestDto)
                 .build());
 
-        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
-        if(comment.getMember() != null && comment.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId()).orElseThrow(NotFoundMemberException::new);
-
-            alarmRepository.save(Alarm.alarmPostBuilder()
-                    .member(alarmMember)
-                    .post(post)
-                    .sender(member)
-                    .build());
-        }
-
         return getCommentsWithReplies(comment.getPost().getPostId());
     }
 
@@ -103,7 +92,7 @@ public class ReplyService {
             alarmRepository.save(Alarm.alarmPostBuilder()
                     .member(alarmMember)
                     .post(post)
-                    .sender(member)
+                    .sender(post.getCharacter())
                     .build());
         }
     }
