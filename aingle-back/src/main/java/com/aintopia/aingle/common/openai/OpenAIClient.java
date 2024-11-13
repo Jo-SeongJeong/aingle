@@ -114,15 +114,15 @@ public class OpenAIClient {
         replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
             new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
 
-        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
-        if (comment.getMember() != null && comment.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
-                .orElseThrow(NotFoundMemberException::new);
-
-            alarmRepository.save(
-                Alarm.alarmPostBuilder().member(alarmMember).post(post).sender(post.getCharacter())
-                    .build());
-        }
+//        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
+//        if (comment.getMember() != null && comment.getMember() != member) {
+//            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
+//                .orElseThrow(NotFoundMemberException::new);
+//
+//            alarmRepository.save(
+//                Alarm.alarmPostBuilder().member(alarmMember).post(post).sender(post.getCharacter())
+//                    .build());
+//        }
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
