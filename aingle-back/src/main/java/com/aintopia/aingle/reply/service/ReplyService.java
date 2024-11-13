@@ -59,12 +59,12 @@ public class ReplyService {
             throw new ForbiddenReplyException();
         }
 
-        replyRepository.save(Reply.replyBuilder()
+        Reply reply = replyRepository.save(Reply.replyBuilder()
             .comment(comment)
             .member(member)
             .registReplyRequestDto(registReplyRequestDto)
             .build());
-        openAIClient.generateReplyReplyAI(comment.getPost(), comment, member);
+        openAIClient.generateReplyReplyAI(comment.getPost(), comment, member, reply);
         return getCommentsWithReplies(comment.getPost().getPostId());
     }
 
