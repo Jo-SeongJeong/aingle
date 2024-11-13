@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { registUserInfo } from "../../api/userAPI";
 import { characterIdState, userDataState } from "../../store/atoms";
 import defaultImg from "../../assets/defaultImg.png";
+import { jwtDecode } from "jwt-decode";
 
 const Signup = () => {
   const location = useLocation();
@@ -71,22 +72,12 @@ const Signup = () => {
     try {
       // 회원가입 요청
       console.log("asdfasfsad:::::" + inputInfo.characterId);
-      const response = await registUserInfo(inputInfo);
-      const { token, id, email, name, language, birth, file, iat, exp } =
-        response;
+      const response = await registUserInfo(inputInfo); //이게 받은 토큰
+      sessionStorage.setItem("accessToken", response);
+      const decoded = jwtDecode(response);
 
       // 유저 정보 저장
-      setUserData({
-        token,
-        id,
-        email,
-        name,
-        language,
-        birth,
-        file,
-        iat,
-        exp,
-      });
+      setUserData(decoded);
 
       // 회원가입 이후 메인 페이지로 리다이렉트
       navigate("/home");
