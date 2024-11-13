@@ -115,7 +115,7 @@ export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
 export const requestFcmToken = async (token: any) => {
   try {
     // FCM 토큰을 서버에 전송하여 업데이트
-    await axios.patch(`/api/members/fcm-token`, token);
+    await axios.patch(`/api/members/fcm-tokens`, token);
     console.log("FCM 토큰이 서버에 저장되었습니다:", token);
 
     // console.log("FCM 토큰을 얻을 수 없습니다. 알림 권한을 확인하세요.");
