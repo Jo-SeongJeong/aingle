@@ -13,6 +13,8 @@ import com.aintopia.aingle.character.exception.CharacterForbiddenException;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+import com.aintopia.aingle.chat.domain.ChatRoom;
+import com.aintopia.aingle.chat.repository.ChatRoomRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
@@ -60,6 +62,7 @@ public class CharacterService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final PostService postService;
+    private final ChatRoomRepository chatRoomRepository;
     private static final int MAX_RETRIES = 1;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
@@ -210,10 +213,18 @@ public class CharacterService {
             throw new FollowDuplicateException();
         }
 
-        followRepository.save(Follow.builder()
-            .member(member)
-            .character(saveCharacter)
-            .build());
+        Follow savedFollow = followRepository.save(Follow.builder()
+                .member(member)
+                .character(saveCharacter)
+                .build());
+
+        // 팔로우하는 캐릭터와 채팅방 생성
+        log.info("생성한 캐릭터 채팅방 생성 캐릭터 id :  " + saveCharacter.getCharacterId());
+        chatRoomRepository.save(ChatRoom.builder()
+                .member(member)
+                .character(savedFollow.getCharacter())
+                .build());
+
 
         return CharacterCreateResponseDto.builder().characterId(saveCharacter.getCharacterId())
             .build();
