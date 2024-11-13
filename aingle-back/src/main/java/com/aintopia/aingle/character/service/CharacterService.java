@@ -15,7 +15,6 @@ import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.repository.CommentRepository;
-import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.domain.Follow;
@@ -59,7 +58,7 @@ public class CharacterService {
     private final OpenAIClient openAIClient;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
-    private final PostService postService;
+
     private static final int MAX_RETRIES = 1;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
@@ -194,9 +193,10 @@ public class CharacterService {
             .characterCreateRequest(characterCreateRequest)
             .member(member)
             .build());
-
+        //AI 캐릭터 한 줄 요약 생성
         generateSummary(saveCharacter);
-        generatePost(saveCharacter);
+        // 비동기로 AI 게시글 생성
+        openAIClient.generatePost(saveCharacter);
 
         log.info("캐릭터 저장 : " + saveCharacter.getCharacterId());
         //캐릭터 이미지 저장
@@ -219,13 +219,14 @@ public class CharacterService {
             .build();
     }
 
-    private void generateSummary(Character saveCharacter) {
+    public void generateSummary(Character saveCharacter) {
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
                 String summary = openAIClient.createSummary(
-                    CharacterInfo.builder().character(saveCharacter).build()
+                        CharacterInfo.builder().character(saveCharacter).build()
                 );
                 saveCharacter.updateSummary(summary);
+
                 return; // 성공 시 메서드 종료
             } catch (Exception e) {
                 log.error("Summary 생성 실패 - 시도 횟수: {}", i + 1, e);
@@ -234,20 +235,6 @@ public class CharacterService {
         throw new RuntimeException("Summary 생성 실패");
     }
 
-    private void generatePost(Character saveCharacter) {
-        for (int i = 0; i < MAX_RETRIES; i++) {
-            try {
-                CreateAIPostResponseDto postResponse = openAIClient.createImageUrl(
-                    CharacterInfo.builder().character(saveCharacter).build()
-                );
-                postService.registCharaterPost(postResponse, saveCharacter.getCharacterId());
-                return; // 성공 시 메서드 종료
-            } catch (Exception e) {
-                log.error("Post 등록 실패 - 시도 횟수: {}", i + 1, e);
-            }
-        }
-        throw new RuntimeException("Post 등록 실패");
-    }
 
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
@@ -256,7 +243,7 @@ public class CharacterService {
         // 공용 캐릭터, 커스텀 캐릭터
         List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
         for(Character character : publicCharacters) {
-            generatePost(character);
+            openAIClient.generatePost(character);
         }
     }
 

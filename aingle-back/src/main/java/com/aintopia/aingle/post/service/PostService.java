@@ -7,7 +7,6 @@ import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.comment.service.CommentService;
-import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
@@ -35,7 +34,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,47 +62,47 @@ public class PostService {
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(NotFoundMemberException::new);
+                .orElseThrow(NotFoundMemberException::new);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "postId"));
 
         // 팔로우한 캐릭터 조회
         List<FollowInfo> followInfo = followService.getFollowList(memberId).getFollowList();
         List<Character> characters = followInfo.stream()
-            .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
-            .filter(Objects::nonNull) // null 값 제외
-            .collect(Collectors.toList());
+                .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
+                .filter(Objects::nonNull) // null 값 제외
+                .collect(Collectors.toList());
 
         // 페이지네이션과 최신순 정렬 적용
         Page<Post> post = postRepository.findByMemberOrCharacterInAndIsDeletedFalse(member,
-            characters, pageable);
+                characters, pageable);
 
         return post.stream()
-            .map(p -> convertToDto(p, member)) // Post를 PostResponseDto로 변환
-            .collect(Collectors.toList());
+                .map(p -> convertToDto(p, member)) // Post를 PostResponseDto로 변환
+                .collect(Collectors.toList());
     }
 
     public PostDetailResponseDto findByPostId(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(NotFoundMemberException::new);
+                .orElseThrow(NotFoundMemberException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundMemberException::new);
         List<Comment> comments = commentRepository.findByPost(post);
 
         // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
         List<CommentDto> commentDtos = comments.stream()
-            .filter(comment -> !comment.getIsDeleted())
-            .map(comment -> {
-                List<Reply> replies = replyRepository.findByComment(comment);
-                return convertToCommentDto(comment, replies);
-            })
-            .collect(Collectors.toList());
+                .filter(comment -> !comment.getIsDeleted())
+                .map(comment -> {
+                    List<Reply> replies = replyRepository.findByComment(comment);
+                    return convertToCommentDto(comment, replies);
+                })
+                .collect(Collectors.toList());
 
         return convertToDetailDto(post, commentDtos, member);
     }
 
     @Transactional
     public void registPost(RegistPostRequestDto registPostRequestDto, MultipartFile file,
-        Long memberId) throws IOException {
+                           Long memberId) throws IOException {
         // 이미지가 있는 경우 S3에 업로드 후 URL 저장
         if (file == null || file.isEmpty()) {
             throw new BadReqeustPostException();
@@ -112,13 +110,13 @@ public class PostService {
         String url = s3Service.uploadFile(file);
 
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(NotFoundMemberException::new);
+                .orElseThrow(NotFoundMemberException::new);
 
         Post post = Post.registBuilder()
-            .registPostRequestDto(registPostRequestDto)
-            .url(url)
-            .member(member)
-            .build();
+                .registPostRequestDto(registPostRequestDto)
+                .url(url)
+                .member(member)
+                .build();
 
         post = postRepository.save(post);
 
@@ -126,66 +124,12 @@ public class PostService {
         // 팔로우한 캐릭터 조회
         List<FollowInfo> followInfo = followService.getFollowList(memberId).getFollowList();
         List<Character> characters = followInfo.stream()
-            .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
-            .filter(Objects::nonNull) // null 값 제외
-            .collect(Collectors.toList());
+                .map(follow -> characterRepository.findById(follow.getCharacterId()).orElse(null))
+                .filter(Objects::nonNull) // null 값 제외
+                .collect(Collectors.toList());
         commentService.generateAIComments(post, characters, registPostRequestDto, url);
 
         // 게시글 생성 이후 좋아요 자동 증가
-        likeService.scheduleLikeIncrease(post);
-    }
-
-    @Async
-    public void registCharaterPost(CreateAIPostResponseDto createAIPostResponseDto,
-        Long characterId)
-        throws IOException {
-        // 이미지가 있는 경우 S3에 업로드 후 URL 저장
-        if (createAIPostResponseDto.getFile() == null || createAIPostResponseDto.getFile()
-            .isEmpty()) {
-            throw new BadReqeustPostException();
-        }
-        String url = s3Service.uploadFile(createAIPostResponseDto.getFile());
-
-        Character character = characterRepository.findById(characterId)
-            .orElseThrow(NotFoundMemberException::new);
-
-        RegistPostRequestDto registPostRequestDto = new RegistPostRequestDto();
-        registPostRequestDto.setContent(createAIPostResponseDto.getContent());
-        Post post = Post.createPostForAI(registPostRequestDto, url, character);
-
-        postRepository.save(post);
-
-        // AI 게시글에 모든 공용 캐릭터가 댓글을 달아줌
-        commentService.generateAIComments(post,
-            characterRepository.findByIsPublicTrueAndIsDeletedFalse(), registPostRequestDto, url);
-        //좋아요
-        likeService.scheduleLikeIncrease(post);
-    }
-
-    @Async
-    public void registCharaterPostTest(CreateAIPostResponseDto createAIPostResponseDto,
-                                   Long characterId, MultipartFile file)
-            throws IOException {
-        // 이미지가 있는 경우 S3에 업로드 후 URL 저장
-        if (file == null || file
-                .isEmpty()) {
-            throw new BadReqeustPostException();
-        }
-        String url = s3Service.uploadFile(file);
-
-        Character character = characterRepository.findById(characterId)
-                .orElseThrow(NotFoundMemberException::new);
-
-        RegistPostRequestDto registPostRequestDto = new RegistPostRequestDto();
-        registPostRequestDto.setContent(createAIPostResponseDto.getContent());
-        Post post = Post.createPostForAI(registPostRequestDto, url, character);
-
-        postRepository.save(post);
-
-        // AI 게시글에 모든 공용 캐릭터가 댓글을 달아줌
-        commentService.generateAIComments(post,
-                characterRepository.findByIsPublicTrueAndIsDeletedFalse(), registPostRequestDto, url);
-        //좋아요
         likeService.scheduleLikeIncrease(post);
     }
 
@@ -211,7 +155,7 @@ public class PostService {
         PostCharacter characterDto = null;
         if (post.getCharacter() != null) {
             characterDto = post.getCharacter()
-                .changeDto(); // `changeDto` 메서드를 사용하여 `Character`를 `PostCharacter`로 변환
+                    .changeDto(); // `changeDto` 메서드를 사용하여 `Character`를 `PostCharacter`로 변환
         }
 
         // 좋아요 눌렀는지 확인
@@ -244,26 +188,26 @@ public class PostService {
 
     // Post를 PostDetailResponseDto로 변환하는 메서드
     private PostDetailResponseDto convertToDetailDto(Post post, List<CommentDto> commentDtos,
-        Member member) {
+                                                     Member member) {
         PostMember memberDto = post.getMember() != null ? post.getMember().changeDto() : null;
         PostCharacter characterDto =
-            post.getCharacter() != null ? post.getCharacter().changeDto() : null;
+                post.getCharacter() != null ? post.getCharacter().changeDto() : null;
 
         // 좋아요 눌렀는지 확인
         Boolean isLiked = likeRepository.existsByMemberAndPost(member, post);
 
         return PostDetailResponseDto.builder()
-            .postId(post.getPostId())
-            .content(post.getContent())
-            .image(post.getImage())
-            .createTime(post.getCreateTime())
-            .totalLike(post.getTotalLike())
-            .totalComment(post.getTotalComment())
-            .member(memberDto)
-            .isLiked(isLiked)
-            .character(characterDto)
-            .comments(commentDtos) // 변환된 댓글 리스트
-            .build();
+                .postId(post.getPostId())
+                .content(post.getContent())
+                .image(post.getImage())
+                .createTime(post.getCreateTime())
+                .totalLike(post.getTotalLike())
+                .totalComment(post.getTotalComment())
+                .member(memberDto)
+                .isLiked(isLiked)
+                .character(characterDto)
+                .comments(commentDtos) // 변환된 댓글 리스트
+                .build();
     }
 
     // Comment를 CommentDto로 변환하는 메서드
@@ -279,31 +223,31 @@ public class PostService {
         }
 
         List<ReplyDto> replyDtos = replies.stream()
-            .filter(reply -> !reply.getIsDeleted())
-            .map(reply -> {
-                // Reply의 Member와 Character를 PostMember와 PostCharacter로 변환
-                PostMember replyMemberDto =
-                    reply.getMember() != null ? reply.getMember().changeDto() : null;
-                PostCharacter replyCharacterDto =
-                    reply.getCharacter() != null ? reply.getCharacter().changeDto() : null;
+                .filter(reply -> !reply.getIsDeleted())
+                .map(reply -> {
+                    // Reply의 Member와 Character를 PostMember와 PostCharacter로 변환
+                    PostMember replyMemberDto =
+                            reply.getMember() != null ? reply.getMember().changeDto() : null;
+                    PostCharacter replyCharacterDto =
+                            reply.getCharacter() != null ? reply.getCharacter().changeDto() : null;
 
-                return ReplyDto.builder()
-                    .replyId(reply.getReplyId())
-                    .content(reply.getContent())
-                    .createTime(reply.getCreateTime())
-                    .member(replyMemberDto) // 변환된 MemberDto 설정
-                    .character(replyCharacterDto) // 변환된 CharacterDto 설정
-                    .build();
-            })
-            .collect(Collectors.toList());
+                    return ReplyDto.builder()
+                            .replyId(reply.getReplyId())
+                            .content(reply.getContent())
+                            .createTime(reply.getCreateTime())
+                            .member(replyMemberDto) // 변환된 MemberDto 설정
+                            .character(replyCharacterDto) // 변환된 CharacterDto 설정
+                            .build();
+                })
+                .collect(Collectors.toList());
 
         return CommentDto.builder()
-            .commentId(comment.getCommentId())
-            .content(comment.getContent())
-            .createTime(comment.getCreateTime())
-            .member(memberDto)
-            .character(characterDto)
-            .replies(replyDtos) // 대댓글 리스트
-            .build();
+                .commentId(comment.getCommentId())
+                .content(comment.getContent())
+                .createTime(comment.getCreateTime())
+                .member(memberDto)
+                .character(characterDto)
+                .replies(replyDtos) // 대댓글 리스트
+                .build();
     }
 }
