@@ -1,6 +1,5 @@
 package com.aintopia.aingle.post.controller;
 
-import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.util.MemberInfo;
 import com.aintopia.aingle.post.dto.Request.RegistPostRequestDto;
 import com.aintopia.aingle.post.dto.Response.PostDetailResponseDto;

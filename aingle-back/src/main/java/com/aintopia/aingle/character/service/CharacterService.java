@@ -15,7 +15,6 @@ import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.repository.CommentRepository;
-import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.domain.Follow;
@@ -59,7 +58,7 @@ public class CharacterService {
     private final OpenAIClient openAIClient;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
-    private final PostService postService;
+
     private static final int MAX_RETRIES = 1;
 
     public CharacterSurveyResponseDto getCharacterSurvey(CharacterSurveyRequestDto requestDto) {
