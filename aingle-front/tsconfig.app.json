@@ -22,7 +22,7 @@
   },
   "include": [
     "src",
-    "public/firebase-init.ts",
-    "public/firebase-messaging-sw.ts"
+    "src/utils/firebase-init.ts",
+    "public/firebase-messaging-sw.js"
   ]
 }

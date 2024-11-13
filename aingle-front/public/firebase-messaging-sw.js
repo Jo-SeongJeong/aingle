@@ -1,5 +1,4 @@
-/// <reference lib="webworker" />
-
+// Firebase 라이브러리 가져오기
 import { initializeApp } from "firebase/app";
 import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 
@@ -22,12 +21,9 @@ onBackgroundMessage(messaging, (payload) => {
   console.log("백그라운드 메시지 수신:", payload);
 
   if (payload.notification) {
-    (self as unknown as ServiceWorkerGlobalScope).registration.showNotification(
-      payload.notification.title!,
-      {
-        body: payload.notification.body,
-      }
-    );
+    self.registration.showNotification(payload.notification.title, {
+      body: payload.notification.body,
+    });
   } else {
     console.warn("Notification payload가 비어 있습니다.");
   }
