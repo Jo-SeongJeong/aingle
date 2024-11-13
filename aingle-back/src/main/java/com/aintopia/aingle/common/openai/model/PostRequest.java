@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 public class PostRequest {
     String message;
     String imageUrl;
+    Long postId;
 
     @Builder
-    public PostRequest(String message, String imageUrl) {
+    public PostRequest(String message, String imageUrl, Long postId) {
         this.message = message;
         this.imageUrl = imageUrl;
+        this.postId = postId;
     }
 }
