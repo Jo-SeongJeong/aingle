@@ -10,10 +10,29 @@ import SocialRedirection from "./pages/onboarding/SocialRedirection";
 import PostDetail from "./pages/post/PostDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./utils/foregroundMessage";
+import { getMessaging, onMessage } from "firebase/messaging";
+import { useEffect } from "react";
+import { app } from "./utils/firebase-init";
 
 const App = () => {
   const location = useLocation();
   const matchPostDetail = useMatch("/post/:id"); // "/post/:id" 경로와 일치 여부 확인
+
+  useEffect(() => {
+    const messaging = getMessaging(app);
+
+    onMessage(messaging, (payload) => {
+      console.log("알림 도착 ", payload);
+      const notificationTitle = payload!.notification!.title;
+      const notificationOptions = {
+        body: payload!.notification!.body,
+      };
+
+      if (Notification.permission === "granted") {
+        new Notification(notificationTitle!, notificationOptions);
+      }
+    });
+  }, []);
 
   return (
     <div className="h-full relative">
