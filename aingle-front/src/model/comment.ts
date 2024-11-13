@@ -16,7 +16,12 @@ export interface IcreateComment {
 }
 
 export interface Ireply {
-  character: string;
+  character: {
+    characterId: number;
+    name: string;
+    characterImage: string;
+    commentDelayTime: number;
+  };
   replyId: number;
   content: string;
   createTime: string;

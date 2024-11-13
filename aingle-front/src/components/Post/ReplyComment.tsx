@@ -1,6 +1,7 @@
 import { deleteReply } from "../../api/commentAPI";
-import { IComment, Ireply } from "../../model/comment";
+import { Ireply } from "../../model/comment";
 import { calTime } from "../../utils/date";
+import { useNavigate } from "react-router-dom";
 
 interface ICommentProps {
   comment: Ireply;
@@ -8,46 +9,67 @@ interface ICommentProps {
 }
 
 const ReplyComment = ({ comment, refreshComments }: ICommentProps) => {
-  if (!comment || !comment.member) {
-    return null; // comment 또는 member가 없으면 렌더링하지 않음
+  if (!comment) {
+    return null;
   }
-  const { member } = comment;
+
+  const { member, character } = comment;
+  const navigate = useNavigate();
+
+  // adjustedCreateTime 계산: character가 있는 경우 createTime에 commentDelayTime을 더함
+  const adjustedCreateTime = character
+    ? new Date(
+        new Date(comment.createTime).getTime() +
+          character.commentDelayTime * 60000
+      )
+    : new Date(comment.createTime);
+
+  const calDate = calTime(adjustedCreateTime.toISOString());
 
   const handleDelete = async () => {
     try {
       await deleteReply(comment.replyId);
       await refreshComments();
     } catch (error) {
-      console.log("삭제 에러");
+      console.error("삭제 에러");
     }
   };
 
   return (
-    <div className="w-full bg-white flex items-start ml-5 mb-3">
-      <div className="mr-[10px] self-start flex-shrink-0">
+    <div className="w-[95%] bg-white flex items-start mb-3 ml-4">
+      <div className="mr-3 flex-shrink-0">
         <img
-          className="bg-black w-[35px] h-[35px] rounded-full object-cover"
-          src={member.memberImage}
+          onClick={() =>
+            navigate(
+              `/vote/charDetail/${
+                member ? member.memberId : character?.characterId
+              }`
+            )
+          }
+          className="w-9 h-9 rounded-full object-cover cursor-pointer"
+          src={member ? member.memberImage : character?.characterImage}
+          alt="profile"
         />
       </div>
-      <div className="">
-        <div className="flex space-x-[5px] items-center">
-          <h1 className="text-[13px] font-semibold ">{member.name}</h1>
-          <h1 className="text-[10px] font-medium text-[#A6A6A6]">
-            {calTime(comment.createTime)}
+      <div className="flex flex-col w-full">
+        <div className="flex items-center space-x-2">
+          <h1 className="text-sm font-semibold">
+            {member ? member.name : character?.name}
           </h1>
+          <h1 className="text-xs text-gray-500">{calDate}</h1>
         </div>
-        <span>{comment.content}</span>
-        {member && (
-          <h1
-            onClick={() => {
-              handleDelete();
-            }}
-            className="cursor-pointer text-[10px] text-[#A6A6A6] pt-[5px] pb-[10px] underline ml-auto"
-          >
-            삭제
-          </h1>
-        )}
+        <span className="mt-1 text-sm">{comment.content}</span>
+        <div className="flex space-x-4 mt-2">
+          <h1 className="text-xs text-gray-500 cursor-pointer">답글 달기</h1>
+          {(member || character) && (
+            <h1
+              onClick={handleDelete}
+              className="text-xs text-gray-500 cursor-pointer underline"
+            >
+              삭제
+            </h1>
+          )}
+        </div>
       </div>
     </div>
   );
