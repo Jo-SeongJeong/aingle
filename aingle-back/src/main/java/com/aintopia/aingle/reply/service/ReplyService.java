@@ -133,7 +133,7 @@ public class ReplyService {
 
         // 댓글에 대한 대댓글 전부 가져오기
         // AI 대댓글 생성
-        CharacterInfo characterInfo = post.getCharacter().toDTO();
+        CharacterInfo characterInfo = comment.getCharacter().toDTO();
         String replyWithAI = openAIClient.createReplyReply(post, comment,
             getCommentWithReplies(post.getPostId()), characterInfo);
         replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
