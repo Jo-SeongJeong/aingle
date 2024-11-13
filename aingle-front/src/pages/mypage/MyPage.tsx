@@ -72,7 +72,7 @@ const MyPage = () => {
             <h1 className="text-lg font-bold text-pink-base">
               {myData.followCount}
             </h1>
-            <h1 className="text-[#6A6A6A]">팔로워</h1>
+            <h1 className="text-[#6A6A6A]">팔로잉</h1>
           </div>
         </div>
       </div>
