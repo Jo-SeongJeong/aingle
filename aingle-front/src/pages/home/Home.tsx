@@ -12,7 +12,7 @@ import { requestFcmToken } from "../../api/userAPI";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getToken } from "firebase/messaging";
-import { firebaseConfig, messaging } from "../../utils/firebase-init"; // 모듈화된 Firebase 초기화
+import { firebaseConfig, messaging } from "../../../public/firebase-init"; // 모듈화된 Firebase 초기화
 
 const Home = () => {
   const [postId, setPostId] = useState<number>(0);
