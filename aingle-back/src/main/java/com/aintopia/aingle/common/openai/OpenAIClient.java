@@ -110,7 +110,7 @@ public class OpenAIClient {
         // AI 대댓글 생성
         CharacterInfo characterInfo = comment.getCharacter().toDTO();
         String replyWithAI = createReplyReply(post, comment,
-            getCommentWithReplies(post.getPostId()), characterInfo, reply);
+            getCommentWithReplies(comment.getCommentId()), characterInfo, reply);
         replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
             new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
 
