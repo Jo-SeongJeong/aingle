@@ -9,6 +9,7 @@ import NoticePages from "./routes/NoticePages";
 import SocialRedirection from "./pages/onboarding/SocialRedirection";
 import PostDetail from "./pages/post/PostDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
+import "./utils/foregroundMessage";
 
 const App = () => {
   const location = useLocation();
