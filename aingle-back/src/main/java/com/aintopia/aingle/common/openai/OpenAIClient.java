@@ -1,5 +1,7 @@
 package com.aintopia.aingle.common.openai;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
+import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.repository.CharacterRepository;
@@ -8,8 +10,15 @@ import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
+import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.member.exception.NotFoundMemberException;
+import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.repository.PostRepository;
+import com.aintopia.aingle.reply.domain.Reply;
+import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
+import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
+import com.aintopia.aingle.reply.repository.ReplyRepository;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.*;
@@ -32,7 +41,9 @@ import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MimeTypeUtils;
 
 import java.io.IOException;
@@ -53,8 +64,11 @@ public class OpenAIClient {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final Map<Long, String> postImageDescriptionRepo = new HashMap<>(); // key : postId, value : 이미지 설명
+    private final ReplyRepository replyRepository;
+    private final MemberRepository memberRepository;
+    private final AlarmRepository alarmRepository;
 
-    //댓글 생성 함수
+    // 댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo)
         throws IOException {
         String imageDescription = getImageDescription(postRequest);
@@ -64,7 +78,7 @@ public class OpenAIClient {
         return chatResponse2.getResult().getOutput().getContent();
     }
 
-    // 대댓글 생성 함수
+    // AI 게시글 댓글에 대한 대댓글 생성 함수
     public String createReplyByAI(Post post, Comment comment, CharacterInfo characterInfo)
         throws IOException {
         String imageDescription = getImageDescription(
@@ -72,6 +86,87 @@ public class OpenAIClient {
         Prompt replyPrompt = getReplyPrompt(characterInfo, imageDescription, post, comment);
         ChatResponse replyResponse = chatModel.call(replyPrompt);
         log.info("대댓글 작성 답변:\n{}", replyResponse.getResult().getOutput().getContent());
+        return replyResponse.getResult().getOutput().getContent();
+    }
+
+    @Transactional
+    @Async
+    public void generateReplyReplyAI(Post post, Comment comment, Member member, Reply reply)
+        throws IOException {
+        if (comment.getCharacter() == null) {
+            // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
+            log.info("사용자 스스로의 대댓글은 생성 안함");
+            return;
+        }
+
+        log.info("AI 대댓글에 따른 대댓글으로 답변 요청");
+
+        // 혹시라도 삭제된거 체크
+        if (comment.getIsDeleted() || post.getIsDeleted()) {
+            throw new ForbiddenReplyException();
+        }
+
+        // 댓글에 대한 대댓글 전부 가져오기
+        // AI 대댓글 생성
+        CharacterInfo characterInfo = comment.getCharacter().toDTO();
+        String replyWithAI = createReplyReply(post, comment,
+            getCommentWithReplies(comment.getCommentId()), characterInfo, reply);
+        replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
+            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
+
+//        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
+//        if (comment.getMember() != null && comment.getMember() != member) {
+//            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
+//                .orElseThrow(NotFoundMemberException::new);
+//
+//            alarmRepository.save(
+//                Alarm.alarmPostBuilder().member(alarmMember).post(post).sender(post.getCharacter())
+//                    .build());
+//        }
+    }
+
+    // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
+    private List<Reply> getCommentWithReplies(Long commentId) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        return replyRepository.findByComment(comment.get());
+    }
+
+    public String createReplyReply(Post post, Comment comment, List<Reply> replies,
+        CharacterInfo characterInfo, Reply nowReply) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("댓글 기록\n");
+        // 위에서 캐릭터 답글에 대한 것만 이 함수로 올 수 있게 해야함
+        sb.append(comment.getCharacter().getCharacterId()).append(": ").append(comment.getContent())
+            .append("\n");
+        if (replies.isEmpty()) {
+            if (nowReply.getMember() == null) {
+                sb.append("끝\n");
+            } else {
+                sb.append(nowReply.getMember().getName()).append(": ").append(nowReply.getComment())
+                    .append("\n");
+            }
+        } else {
+            for (Reply reply : replies) {
+                // 멤벙 인지 캐릭터인지 구분 해야함
+                if (reply.getMember() == null) {
+                    // AI측 답글
+                    sb.append(reply.getCharacter().getName()).append(": ")
+                        .append(reply.getContent()).append("\n");
+                } else {
+                    // 사용자측 답글
+                    sb.append(reply.getMember().getName()).append(": ").append(reply.getContent())
+                        .append("\n");
+                }
+                sb.append(reply).append("\n");
+            }
+        }
+        log.info("댓글 및 대댓글 기록:\n{}", sb);
+
+        Prompt replyReplyPrompt = getReplyReplyPrompt(characterInfo, getImageDescription(
+                PostRequest.builder().imageUrl(post.getImage()).message(post.getContent()).build()),
+            sb.toString());
+        ChatResponse replyResponse = chatModel.call(replyReplyPrompt);
+        log.info("대댓글에 대한 대댓글 답변:\n{}", replyResponse.getResult().getOutput().getContent());
         return replyResponse.getResult().getOutput().getContent();
     }
 
@@ -84,11 +179,27 @@ public class OpenAIClient {
             imageDescription = chatResponse.getResult().getOutput().getContent();
             log.info("게시글 분석 답변:\n{}", imageDescription);
             logTokensCount(chatResponse.getMetadata().getUsage());
-            postImageDescriptionRepo.put(postRequest.getPostId(), imageDescription);
+            if (imageDescription.contains("I'm") || imageDescription.contains("sorry")) {
+                imageDescription = "분석 내용 없음";
+            }
+            postImageDescriptionRepo.put(postRequest.getPostId(),
+                imageDescription + "\n 게시글 글 내용: " + postRequest.getMessage());
         } else {
             imageDescription = postImageDescriptionRepo.get(postRequest.getPostId());
         }
         return imageDescription;
+    }
+
+    private Prompt getReplyReplyPrompt(CharacterInfo characterInfo, String postImageDescription,
+        String comment) {
+        List<Message> promptMessages = new ArrayList<>();
+        String prompt = OpenAIPrompt.AI_CHARACTER_CRATE_REPLY_REPLY_PROMPT.generateReplyReplyPrompt(
+            postImageDescription, comment, createCharacterSystemPrompt(characterInfo));
+        Message userMessage = new UserMessage(prompt);
+        promptMessages.add(userMessage);
+        log.info("답글에 대한 답글 생성 프롬프트:\n {}", promptMessages.get(0));
+        return new Prompt(promptMessages,
+            OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
     private Prompt getReplyPrompt(CharacterInfo characterInfo, String postImageDescription,
