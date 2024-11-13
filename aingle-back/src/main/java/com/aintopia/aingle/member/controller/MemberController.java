@@ -99,6 +99,7 @@ public class MemberController {
                     content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> updateFcmToken(@RequestBody MemberFcmTokenRequestDto memberFcmTokenRequestDto) {
+        System.out.println(memberFcmTokenRequestDto.getFcmToken());
         Long memberId = MemberInfo.getId();
         memberService.updateFcmToken(memberFcmTokenRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.OK).body("fcm Token 갱신 성공");
