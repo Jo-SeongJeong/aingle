@@ -64,7 +64,7 @@ public class ReplyService {
             .member(member)
             .registReplyRequestDto(registReplyRequestDto)
             .build());
-        generateReplyReplyAI(comment.getPost(), comment, member);
+        openAIClient.generateReplyReplyAI(comment.getPost(), comment, member);
         return getCommentsWithReplies(comment.getPost().getPostId());
     }
 
@@ -114,44 +114,6 @@ public class ReplyService {
         }
     }
 
-    @Transactional
-    @Async
-    public void generateReplyReplyAI(Post post, Comment comment, Member member)
-        throws IOException {
-        if (comment.getCharacter() == null) {
-            // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
-            log.info("사용자 스스로의 대댓글은 생성 안함");
-            return;
-        }
-
-        log.info("AI 대댓글에 따른 대댓글으로 답변 요청");
-
-        // 혹시라도 삭제된거 체크
-        if (comment.getIsDeleted() || post.getIsDeleted()) {
-            throw new ForbiddenReplyException();
-        }
-
-        // 댓글에 대한 대댓글 전부 가져오기
-        // AI 대댓글 생성
-        CharacterInfo characterInfo = comment.getCharacter().toDTO();
-        String replyWithAI = openAIClient.createReplyReply(post, comment,
-            getCommentWithReplies(post.getPostId()), characterInfo);
-        replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
-            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
-
-        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
-        if (comment.getMember() != null && comment.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
-                .orElseThrow(NotFoundMemberException::new);
-
-            alarmRepository.save(Alarm.alarmPostBuilder()
-                .member(alarmMember)
-                .post(post)
-                .sender(post.getCharacter())
-                .build());
-        }
-    }
-
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
     private List<CommentDto> getCommentsWithReplies(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
@@ -166,11 +128,6 @@ public class ReplyService {
             .collect(Collectors.toList());
     }
 
-    // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
-    private List<Reply> getCommentWithReplies(Long commentId) {
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        return replyRepository.findByComment(comment.get());
-    }
 
     // Comment를 CommentDto로 변환하는 메서드
     private CommentDto convertToCommentDto(Comment comment, List<Reply> replies) {
