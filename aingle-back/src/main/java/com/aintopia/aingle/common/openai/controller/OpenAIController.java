@@ -48,14 +48,6 @@ public class OpenAIController {
     }
 
     @Operation(
-            summary = "AI 게시글 생성 테스트 API",
-            description = "캐릭터 유보은으로 게시글 생성 테스트")
-    @GetMapping("/test/post")
-    public String testAIPost() throws MalformedURLException {
-        return openAIClient.createImage();
-    }
-
-    @Operation(
         summary = "AI 게시글 생성 테스트 API2",
         description = "캐릭터 유보은으로 게시글 생성 테스트2")
     @GetMapping("/test/post2")
