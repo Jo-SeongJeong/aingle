@@ -1,5 +1,4 @@
-// firebase-init.ts
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getMessaging } from "firebase/messaging";
 
 export const firebaseConfig = {
@@ -12,8 +11,7 @@ export const firebaseConfig = {
   measurementId: import.meta.env.VITE_REACT_APP_MEASUREMENT_ID,
 };
 
-// Firebase 앱 초기화 (앱이 이미 초기화된 경우 방지)
-const app = initializeApp(firebaseConfig);
+// 이미 초기화된 앱이 있는 경우 재사용
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Messaging 인스턴스
 export const messaging = getMessaging(app);

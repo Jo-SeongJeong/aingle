@@ -1,23 +1,22 @@
-// Firebase 라이브러리 가져오기
-import { initializeApp } from "firebase/app";
-import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_REACT_APP_API_KEY,
-  authDomain: import.meta.env.VITE_REACT_APP_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_REACT_APP_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_REACT_APP_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_REACT_APP_APP_ID,
-  measurementId: import.meta.env.VITE_REACT_APP_MEASUREMENT_ID,
-};
+// Firebase 라이브러리 가져오기 (importScripts 사용)
+importScripts("https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/9.x.x/firebase-messaging.js");
 
 // Firebase 초기화
-initializeApp(firebaseConfig);
-const messaging = getMessaging();
+firebase.initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID",
+});
+
+const messaging = firebase.messaging();
 
 // 백그라운드 메시지 처리
-onBackgroundMessage(messaging, (payload) => {
+messaging.onBackgroundMessage((payload) => {
   console.log("백그라운드 메시지 수신:", payload);
 
   if (payload.notification) {
