@@ -170,7 +170,10 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const content = inputComment.content.trim();
+    if (content.length === 0) {
+      return;
+    }
     try {
       if (commentId === 0) {
         await createComment(inputComment);
