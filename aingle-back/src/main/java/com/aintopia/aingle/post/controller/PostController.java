@@ -78,24 +78,6 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
     }
 
-    @PostMapping("/character")
-    @Operation(summary = "캐릭터 게시글 등록", description = "게시글 등록시 사용하는 API")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "게시글 등록 성공",
-                    content = @Content(mediaType = "application/json")
-            )
-    })
-    ResponseEntity<?> registcharacterPost(@RequestPart("registPostRequestDto") CreateAIPostResponseDto createAIPostResponseDto,
-                                 @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-        Long memberId = MemberInfo.getId();
-
-        postService.registCharaterPostTest(createAIPostResponseDto, 1L, file);
-
-        return ResponseEntity.status(HttpStatus.OK).body("게시글 등록 성공!");
-    }
-
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제", description = "게시글 삭제시 사용하는 API")
     @ApiResponses(value = {
