@@ -4,7 +4,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import img from "../../assets/icons/image.png";
 import { IcreatePost } from "../../model/post";
 import { createPost } from "../../api/postAPI";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { useRecoilValue } from "recoil";
@@ -13,10 +13,10 @@ import { userDataState } from "../../store/atoms";
 const Write: React.FC = () => {
   const navigate = useNavigate();
   const userData = useRecoilValue(userDataState);
-
+  const [isClicked, setIsClicked] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 미리보기 URL을 저장할 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 입력을 참조할 ref
-
+  const [isVisible, setIsVisible] = useState(false);
   // 유저 정보 수정 api 요청 할 때 인수로 사용할 객체 생성
   const [post, setPost] = useState<IcreatePost>({
     content: "",
@@ -61,10 +61,24 @@ const Write: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 2000); // 3초 후에 isVisible을 false로 변경
 
+      // 컴포넌트가 언마운트되거나 isVisible이 변경되면 타이머를 정리
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    if (post.content.trim().length === 0 || post.postImage === null) {
+      setIsVisible(true);
+      return;
+    }
+    if (isClicked) return;
+    setIsClicked(true);
     try {
       await createPost(post);
 
@@ -138,20 +152,28 @@ const Write: React.FC = () => {
             onChange={(e) => {
               handleChange("content", e.target.value);
             }}
+            required
             className="w-full h-[186px] text-3 border-2 border-pink-base rounded-[10px] p-4 resize-none focus:outline-none focus:ring-2 focus:ring-pink-300"
           ></textarea>
           <div className="absolute right-4 bottom-3 text-sm text-gray-500">
             {post.content.length}/200
           </div>
         </div>
-
         <button
           onClick={handleSubmit}
           className="absolute bottom-6 left-[23px] max-w-[436px] mt-auto bg-pink-base w-full py-5 rounded-[10px] text-white text-4 font-semibold self-end"
           style={{ width: `calc(100% - 46px)` }}
+          disabled={isClicked}
         >
           게시하기
         </button>
+      </div>
+      <div
+        className={`flex justify-center items-center font-semibold text-[20px] text-main-color ${
+          isVisible ? "" : "hidden"
+        }`}
+      >
+        사진과 글은 필수 입니다!
       </div>
     </div>
   );
