@@ -1,12 +1,10 @@
-// Firebase 라이브러리 가져오기 (importScripts 사용)
 importScripts("https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js");
 importScripts(
   "https://www.gstatic.com/firebasejs/9.16.0/firebase-messaging.js"
 );
 
-// Firebase 초기화
 firebase.initializeApp({
-  apiKey: process.env.VITE_REACT_APP_API_KEY,
+  apiKey: process.env.VITE_REACT_APP_API_KEY, // define 주입된 값으로 대체
   authDomain: process.env.VITE_REACT_APP_AUTH_DOMAIN,
   projectId: process.env.VITE_REACT_APP_PROJECT_ID,
   storageBucket: process.env.VITE_REACT_APP_STORAGE_BUCKET,
@@ -15,17 +13,18 @@ firebase.initializeApp({
   measurementId: process.env.VITE_REACT_APP_MEASUREMENT_ID,
 });
 
+// Messaging 생성
 const messaging = firebase.messaging();
 
-// 백그라운드 메시지 처리
+// 백그라운드 메시지
 messaging.onBackgroundMessage((payload) => {
-  console.log("백그라운드 메시지 수신:", payload);
+  console.log("백그라운드 메시지:", payload);
 
   if (payload.notification) {
     self.registration.showNotification(payload.notification.title, {
       body: payload.notification.body,
     });
   } else {
-    console.warn("Notification payload가 비어 있습니다.");
+    console.warn("Notification payload가 비어 있음");
   }
 });
