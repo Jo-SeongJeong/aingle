@@ -117,12 +117,16 @@ const accessToken = localStorage.getItem("accessToken");
 export const requestFcmToken = async (token: string) => {
   try {
     // FCM 토큰을 서버에 전송하여 업데이트
-    await axios.patch(`/api/members/fcm-tokens`, token, {
-      headers: {
-        "Content-Type": "application/json", // 서버에서 JSON 요청을 기대할 때
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    await axios.patch(
+      `/api/members/fcm-tokens`,
+      { fcmToken: token },
+      {
+        headers: {
+          "Content-Type": "application/json", // 서버에서 JSON 요청을 기대할 때
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     console.log("FCM 토큰이 서버에 저장되었습니다:", token);
   } catch (error) {
     console.error("FCM 토큰 요청 중 오류 발생:", error);
