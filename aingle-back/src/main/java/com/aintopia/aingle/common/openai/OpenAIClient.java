@@ -10,6 +10,7 @@ import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.repository.PostRepository;
+import com.aintopia.aingle.reply.domain.Reply;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.*;
@@ -54,7 +55,7 @@ public class OpenAIClient {
     private final CommentRepository commentRepository;
     private final Map<Long, String> postImageDescriptionRepo = new HashMap<>(); // key : postId, value : 이미지 설명
 
-    //댓글 생성 함수
+    // 댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo)
         throws IOException {
         String imageDescription = getImageDescription(postRequest);
@@ -64,7 +65,7 @@ public class OpenAIClient {
         return chatResponse2.getResult().getOutput().getContent();
     }
 
-    // 대댓글 생성 함수
+    // AI 게시글 댓글에 대한 대댓글 생성 함수
     public String createReplyByAI(Post post, Comment comment, CharacterInfo characterInfo)
         throws IOException {
         String imageDescription = getImageDescription(
@@ -72,6 +73,40 @@ public class OpenAIClient {
         Prompt replyPrompt = getReplyPrompt(characterInfo, imageDescription, post, comment);
         ChatResponse replyResponse = chatModel.call(replyPrompt);
         log.info("대댓글 작성 답변:\n{}", replyResponse.getResult().getOutput().getContent());
+        return replyResponse.getResult().getOutput().getContent();
+    }
+
+    public String createReplyReply(Post post, Comment comment, List<Reply> replies,
+        CharacterInfo characterInfo) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("댓글 기록\n");
+        // 위에서 캐릭터 답글에 대한 것만 이 함수로 올 수 있게 해야함
+        sb.append(comment.getCharacter().getCharacterId()).append(": ").append(comment.getContent())
+            .append("\n");
+        if (replies.isEmpty()) {
+            sb.append("없음\n");
+        } else {
+            for (Reply reply : replies) {
+                // 멤벙 인지 캐릭터인지 구분 해야함
+                if (reply.getMember() == null) {
+                    // AI측 답글
+                    sb.append(reply.getCharacter().getName()).append(": ")
+                        .append(reply.getContent()).append("\n");
+                } else {
+                    // 사용자측 답글
+                    sb.append(reply.getMember().getName()).append(": ").append(reply.getContent())
+                        .append("\n");
+                }
+                sb.append(reply).append("\n");
+            }
+        }
+        log.info("댓글 및 대댓글 기록:\n{}", sb);
+
+        Prompt replyReplyPrompt = getReplyReplyPrompt(characterInfo, getImageDescription(
+                PostRequest.builder().imageUrl(post.getImage()).message(post.getContent()).build()),
+            sb.toString());
+        ChatResponse replyResponse = chatModel.call(replyReplyPrompt);
+        log.info("대댓글에 대한 대댓글 답변:\n{}", replyResponse.getResult().getOutput().getContent());
         return replyResponse.getResult().getOutput().getContent();
     }
 
@@ -87,11 +122,24 @@ public class OpenAIClient {
             if (imageDescription.contains("I'm") || imageDescription.contains("sorry")) {
                 imageDescription = "분석 내용 없음";
             }
-            postImageDescriptionRepo.put(postRequest.getPostId(), imageDescription);
+            postImageDescriptionRepo.put(postRequest.getPostId(),
+                imageDescription + "\n 게시글 글 내용: " + postRequest.getMessage());
         } else {
             imageDescription = postImageDescriptionRepo.get(postRequest.getPostId());
         }
         return imageDescription;
+    }
+
+    private Prompt getReplyReplyPrompt(CharacterInfo characterInfo, String postImageDescription,
+        String comment) {
+        List<Message> promptMessages = new ArrayList<>();
+        String prompt = OpenAIPrompt.AI_CHARACTER_CRATE_REPLY_REPLY_PROMPT.generateReplyReplyPrompt(
+            postImageDescription, comment, createCharacterSystemPrompt(characterInfo));
+        Message userMessage = new UserMessage(prompt);
+        promptMessages.add(userMessage);
+        log.info("답글에 대한 답글 생성 프롬프트:\n {}", promptMessages.get(0));
+        return new Prompt(promptMessages,
+            OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
     private Prompt getReplyPrompt(CharacterInfo characterInfo, String postImageDescription,
