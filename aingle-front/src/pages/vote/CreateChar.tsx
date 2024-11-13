@@ -7,7 +7,6 @@ import CreateModal from "../../components/modal/CreateModal";
 import ShareModal from "../../components/modal/ShareModal";
 import { createCharacter } from "../../api/voteAPI";
 import { CreateCharacter } from "../../model/character";
-import { followBot } from "../../api/followAPI";
 
 const CreateChar = () => {
   const [userName, setUserName] = useState("");
@@ -64,7 +63,8 @@ const CreateChar = () => {
 
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const startTime = new Date();
+    console.log("캐릭터 생성 요청 시간 : " , startTime)
     // 필수 항목 체크
     if (!userName || !job || !age || !personality || !selectedImage) {
       alert("모든 필수 항목을 입력해 주세요!");
@@ -90,9 +90,12 @@ const CreateChar = () => {
     try {
       const data = await createCharacter(characterInfo);
       setCreatedId(data.characterId);
-      // followBot(data.characterId);
+      if (data) {
+        const date = new Date();
+        console.log("캐릭터 생성 완료 시간 : " , date);
+      }
     } catch (error) {
-      console.log("캐릭터 등록 실패");
+      console.error("캐릭터 등록 실패 : " , error);
     }
   };
 
