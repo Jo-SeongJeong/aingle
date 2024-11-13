@@ -63,6 +63,7 @@ const EditProfile = () => {
 
     // localStorage 및 sessionStorage 정리
     localStorage.removeItem("recoil-persist"); // persistAtom으로 저장된 데이터 삭제
+    sessionStorage.removeItem("fcmToken");
     sessionStorage.clear();
 
     // 로그아웃 후 메인 페이지로 이동
