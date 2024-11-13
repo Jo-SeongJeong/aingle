@@ -45,7 +45,6 @@ public class ReplyService {
     private final AlarmRepository alarmRepository;
     private final OpenAIClient openAIClient;
 
-    @Async
     @Transactional
     public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto,
         Long memberId) throws IOException {
