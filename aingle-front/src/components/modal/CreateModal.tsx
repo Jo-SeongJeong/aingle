@@ -4,54 +4,39 @@ import { ICharInfo } from "../../model/character";
 import { useNavigate } from "react-router-dom";
 import { registVote } from "../../api/voteAPI";
 
-const CreateModal = ({
-  age,
-  profileImg,
-  job,
-  personality,
-  tone,
-  talkType,
-  name,
-  createdId,
-}: ICharInfo) => {
+const CreateModal = ({age,profileImg,job,personality,tone,talkType,name,createdId}: ICharInfo) => {
   const [showBird, setShowBird] = useState(true);
-  const [remainingTime, setRemainingTime] = useState(0); // 타이머 상태를 관리하는 변수
+  const [remainingTime, setRemainingTime] = useState(10); // 10초 카운트다운 추가
 
   const navigate = useNavigate();
 
-  // 상태 메시지를 반환하는 함수
+  // 상태 메시지 변경 함수
   const getStatusMessage = (time: number) => {
-    if (time < 3) return "꼼꼼하게 심사 중";
-    if (time >= 3 && time < 6) return "앵토피아 입주 하고 있앵!";
-    if (time >= 6 && time < 8) return "집 매물 알아보는 중";
-    if (time >= 8 && time < 10) return "다른 친구들 만나는 중";
+    if (time > 8) return "꼼꼼하게 심사 중";
+    if (time > 6) return "앵토피아 입주 하고 있앵!";
+    if (time > 4) return "집 매물 알아보는중";
+    if (time > 2) return "다른 친구들 만나는 중";
     return "거의 다 됐앵!";
   };
-
+  
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
+    // 0.1초마다 남은 시간 업데이트
+    const interval = setInterval(() => {
+      setRemainingTime((prev) => Math.max(prev - 0.1, 0));
+    }, 100);
 
-    // 캐릭터 생성이 안됐을때 타이머 돌림
-    if (createdId === -1) {
-      setShowBird(true);
-      timer = setInterval(() => {
-        setRemainingTime((prev) => {
-          const newTime = prev + 1;
-          if (newTime >= 10) {
-            clearInterval(timer!); // 10초가 지나면 타이머 중지
-          }
-          return newTime;
-        });
-      }, 1000); // 1초마다 업데이트
-    } else {
+    // 10초 후에 bird 이미지를 숨기고 모달 내용을 표시
+    const timer = setTimeout(() => {
       setShowBird(false);
-    }
+      clearInterval(interval);
+    }, 10000);
 
-    // 컴포넌트가 언마운트될 때 타이머 정리
+    // 컴포넌트 언마운트 시 타이머 정리
     return () => {
-      if (timer) clearInterval(timer);
+      clearTimeout(timer);
+      clearInterval(interval);
     };
-  }, [createdId]);
+  }, []);
 
   const goFeed = (id: number) => {
     navigate(`/vote/chardetail/${id}`);
@@ -75,19 +60,22 @@ const CreateModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         {showBird ? (
+          // bird 이미지 및 카운트다운 표시
           <div className="w-full h-full flex flex-col justify-center items-center">
             <div>
               <img src={bird} alt="Bird Icon" className="w-[60px]" />
             </div>
             <div className="mt-5 flex flex-col items-center">
               <h1 className="font-hakgyo text-main-color text-[20px]">
-                {getStatusMessage(remainingTime)} {/* 상태 메시지 출력 */}
+                {getStatusMessage(remainingTime)}
               </h1>
             </div>
           </div>
         ) : (
+          // 기존 모달 내용
           <div className="w-full h-full flex flex-col items-center gap-4">
             <h1 className="text-[18px] font-semibold">생성 완료!</h1>
+
             <div className="flex p-[15px] gap-5 bg-[#FFE8F1] rounded-[10px] items-center">
               <div className="border-[3px] border-main-color rounded-full h-[60px] w-[60px] overflow-hidden flex-shrink-0">
                 <div
@@ -99,6 +87,7 @@ const CreateModal = ({
                   }}
                 />
               </div>
+
               <div>
                 <h1 className="text-[18px] font-semibold">{name}</h1>
                 <div className="font-bold mb-3 text-main-color text-[14px] flex items-center flex-wrap">
@@ -110,12 +99,14 @@ const CreateModal = ({
                 </div>
               </div>
             </div>
+
             <div className="bg-[#FFFAFC] rounded-[10px] p-[10px] flex flex-col gap-2 items-center">
               <h1 className="text-[16px] font-gray-2">생성한 캐릭터를</h1>
               <h1 className="text-[16px] font-gray-2">
                 다른 사용자들에게 공유해볼래앵?
               </h1>
             </div>
+
             <div className="flex gap-3 w-full">
               <button
                 className="bg-white border-[2px] box-border border-pink-500 text-pink-500 font-medium w-[50%] h-[48px] text-[16px] py-2 px-4 rounded-xl"
