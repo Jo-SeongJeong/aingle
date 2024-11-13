@@ -1,6 +1,8 @@
 // Firebase 라이브러리 가져오기 (importScripts 사용)
-importScripts("https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/9.1.1/firebase-messaging.js");
+importScripts("https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.16.0/firebase-messaging.js"
+);
 
 // Firebase 초기화
 firebase.initializeApp({
