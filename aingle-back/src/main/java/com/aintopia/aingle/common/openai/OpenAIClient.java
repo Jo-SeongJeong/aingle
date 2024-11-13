@@ -84,6 +84,9 @@ public class OpenAIClient {
             imageDescription = chatResponse.getResult().getOutput().getContent();
             log.info("게시글 분석 답변:\n{}", imageDescription);
             logTokensCount(chatResponse.getMetadata().getUsage());
+            if (imageDescription.contains("I'm") || imageDescription.contains("sorry")) {
+                imageDescription = "분석 내용 없음";
+            }
             postImageDescriptionRepo.put(postRequest.getPostId(), imageDescription);
         } else {
             imageDescription = postImageDescriptionRepo.get(postRequest.getPostId());
