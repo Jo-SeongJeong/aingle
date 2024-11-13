@@ -1,5 +1,7 @@
 package com.aintopia.aingle.common.openai;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
+import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.repository.CharacterRepository;
@@ -8,9 +10,15 @@ import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
+import com.aintopia.aingle.member.domain.Member;
+import com.aintopia.aingle.member.exception.NotFoundMemberException;
+import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
+import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
+import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
+import com.aintopia.aingle.reply.repository.ReplyRepository;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.*;
@@ -33,7 +41,9 @@ import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MimeTypeUtils;
 
 import java.io.IOException;
@@ -54,6 +64,9 @@ public class OpenAIClient {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final Map<Long, String> postImageDescriptionRepo = new HashMap<>(); // key : postId, value : 이미지 설명
+    private final ReplyRepository replyRepository;
+    private final MemberRepository memberRepository;
+    private final AlarmRepository alarmRepository;
 
     // 댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo)
@@ -74,6 +87,47 @@ public class OpenAIClient {
         ChatResponse replyResponse = chatModel.call(replyPrompt);
         log.info("대댓글 작성 답변:\n{}", replyResponse.getResult().getOutput().getContent());
         return replyResponse.getResult().getOutput().getContent();
+    }
+
+    @Transactional
+    @Async
+    public void generateReplyReplyAI(Post post, Comment comment, Member member) throws IOException {
+        if (comment.getCharacter() == null) {
+            // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
+            log.info("사용자 스스로의 대댓글은 생성 안함");
+            return;
+        }
+
+        log.info("AI 대댓글에 따른 대댓글으로 답변 요청");
+
+        // 혹시라도 삭제된거 체크
+        if (comment.getIsDeleted() || post.getIsDeleted()) {
+            throw new ForbiddenReplyException();
+        }
+
+        // 댓글에 대한 대댓글 전부 가져오기
+        // AI 대댓글 생성
+        CharacterInfo characterInfo = comment.getCharacter().toDTO();
+        String replyWithAI = createReplyReply(post, comment,
+            getCommentWithReplies(post.getPostId()), characterInfo);
+        replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
+            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
+
+        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
+        if (comment.getMember() != null && comment.getMember() != member) {
+            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
+                .orElseThrow(NotFoundMemberException::new);
+
+            alarmRepository.save(
+                Alarm.alarmPostBuilder().member(alarmMember).post(post).sender(post.getCharacter())
+                    .build());
+        }
+    }
+
+    // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
+    private List<Reply> getCommentWithReplies(Long commentId) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        return replyRepository.findByComment(comment.get());
     }
 
     public String createReplyReply(Post post, Comment comment, List<Reply> replies,
