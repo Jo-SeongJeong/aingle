@@ -31,6 +31,10 @@ public class ChatMessage {
     @JoinColumn(name = "character_id")
     private Character character;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
+
     @Column(name = "content", length = 120)
     private String content;
 

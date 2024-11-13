@@ -1,9 +1,14 @@
 package com.aintopia.aingle.chat.service;
 
-import com.aintopia.aingle.character.dto.ChatCharacter;
+import com.aintopia.aingle.chat.domain.ChatMessage;
 import com.aintopia.aingle.chat.domain.ChatRoom;
+import com.aintopia.aingle.chat.dto.ChatMessageDto;
+import com.aintopia.aingle.chat.dto.ChatResponse;
 import com.aintopia.aingle.chat.dto.ChatRoomDto;
 import com.aintopia.aingle.chat.dto.ChatRoomResponse;
+import com.aintopia.aingle.chat.exception.ForbiddenChatRoomException;
+import com.aintopia.aingle.chat.exception.NotFoundChatRoomException;
+import com.aintopia.aingle.chat.repository.ChatMessageRepository;
 import com.aintopia.aingle.chat.repository.ChatRoomRepository;
 import com.aintopia.aingle.follow.domain.Follow;
 import com.aintopia.aingle.follow.repository.FollowRepository;
@@ -12,6 +17,10 @@ import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +35,7 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
 
@@ -57,5 +67,24 @@ public class ChatService {
         return new ChatRoomResponse(chatRoomDtos);
 
 
+    }
+
+    @Transactional(readOnly = true)
+    public ChatResponse getChatMessageByChatRoom(Long memberId, int page, int size, Long chatRoomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(NotFoundChatRoomException::new);
+        if(chatRoom.getMember().getMemberId() != memberId) {
+            // 나의 채팅방이 아닐 때,
+            throw new ForbiddenChatRoomException();
+        }
+        // 최신순으로 내림차순
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "chatMessageId"));
+
+        Page<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom(chatRoom, pageable);
+
+        List<ChatMessageDto> chatMessageList = chatMessages.stream()
+                .map(chatMessage -> new ChatMessageDto(chatMessage))
+                .collect(Collectors.toList());
+
+        return new ChatResponse(chatRoomId, chatMessageList);
     }
 }

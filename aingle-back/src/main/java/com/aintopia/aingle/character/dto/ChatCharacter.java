@@ -12,8 +12,10 @@ public class ChatCharacter {
     private String characterImage;
 
     public ChatCharacter(Character character){
-        this.characterId = character.getCharacterId();
-        this.name = character.getName();
-        this.characterImage = character.getCharacterImage().getImageUrl();
+        if(character != null){
+            this.characterId = character.getCharacterId();
+            this.name = character.getName();
+            this.characterImage = character.getCharacterImage().getImageUrl();
+        }
     }
 }
