@@ -22,10 +22,12 @@ public class FcmService {
                 () -> sendNotification(token, title, message),
                 new Date(System.currentTimeMillis() + (delayMinutes * 60 * 1000))
         );
+        log.info("Scheduled notification with delay: " + delayMinutes + " minutes 뒤에 알림을 보낼겁니다!");
     }
 
     public void sendNotification(String token, String title, String message) {
         try {
+            log.info("Sending notification to FCM: 최초 댓글 생성 알림을 보낼게요!");
             Message fcmMessage = Message.builder()
                     .setToken(token)
                     .setNotification(Notification.builder()
