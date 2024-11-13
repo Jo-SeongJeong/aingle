@@ -77,7 +77,11 @@ const PostDetail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const content = inputComment.content.trim();
 
+    if (content.length === 0) {
+      return;
+    }
     try {
       if (commentId === 0) {
         // 일반 댓글 작성
@@ -181,13 +185,13 @@ const PostDetail = () => {
                 </h1>
               </div>
               {postData.member && postData.member.memberId === userData.id && (
-                    <button
-                      className="text-xs text-pink-darkest font-semibold"
-                      onClick={handleDeleteButton}
-                    >
-                      삭제
-                    </button>
-                  )}
+                <button
+                  className="text-xs text-pink-darkest font-semibold"
+                  onClick={handleDeleteButton}
+                >
+                  삭제
+                </button>
+              )}
             </div>
           </div>
 
