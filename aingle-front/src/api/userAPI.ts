@@ -31,6 +31,8 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
         "Content-Type": "multipart/form-data",
       },
     });
+
+    console.log("회원가입 성공 : ", response.data);
     return response.data;
   } catch (error) {
     console.log("회원 가입 실패: ", error);
