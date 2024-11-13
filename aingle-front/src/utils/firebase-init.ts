@@ -12,6 +12,6 @@ export const firebaseConfig = {
 };
 
 // 이미 초기화된 앱이 있는 경우 재사용
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 export const messaging = getMessaging(app);

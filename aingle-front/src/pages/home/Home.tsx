@@ -10,7 +10,6 @@ import { useRecoilValue } from "recoil";
 import { userDataState } from "../../store/atoms";
 import { requestFcmToken } from "../../api/userAPI";
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getToken } from "firebase/messaging";
 import { firebaseConfig, messaging } from "../../utils/firebase-init";
 
@@ -28,7 +27,6 @@ const Home = () => {
   useEffect(() => {
     // Firebase Analytics 초기화
     const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
 
     // 푸시 알림 권한 요청 및 토큰 발급
     Notification.requestPermission().then((permission) => {

@@ -1,30 +1,55 @@
-importScripts("https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js");
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.16.0/firebase-messaging.js"
-);
+// importScripts(
+//   "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"
+// );
+// importScripts(
+//   "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"
+// );
 
-firebase.initializeApp({
-  apiKey: process.env.VITE_REACT_APP_API_KEY, // define 주입된 값으로 대체
-  authDomain: process.env.VITE_REACT_APP_AUTH_DOMAIN,
-  projectId: process.env.VITE_REACT_APP_PROJECT_ID,
-  storageBucket: process.env.VITE_REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.VITE_REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.VITE_REACT_APP_APP_ID,
-  measurementId: process.env.VITE_REACT_APP_MEASUREMENT_ID,
-});
+// self.addEventListener("install", function (e) {
+//   self.skipWaiting();
+// });
 
-// Messaging 생성
-const messaging = firebase.messaging();
+// self.addEventListener("activate", function (e) {
+//   console.log("fcm service worker가 실행되었습니다.");
+// });
 
-// 백그라운드 메시지
-messaging.onBackgroundMessage((payload) => {
-  console.log("백그라운드 메시지:", payload);
+// const firebaseConfig = {
+//   apiKey: "AIzaSyCj8ziF_YZzfJCQAM7oOYIhJDI-c2-fOs8",
+//   authDomain: "aingle-ab0b9.firebaseapp.com",
+//   projectId: "aingle-ab0b9",
+//   storageBucket: "aingle-ab0b9.firebasestorage.app",
+//   messagingSenderId: "935748386192",
+//   appId: "1:935748386192:web:5daa90f9e20041efb3c715",
+//   measurementId: "G-J5271LZYWK",
+// };
 
-  if (payload.notification) {
-    self.registration.showNotification(payload.notification.title, {
-      body: payload.notification.body,
-    });
-  } else {
-    console.warn("Notification payload가 비어 있음");
-  }
-});
+// firebase.initializeApp(firebaseConfig);
+
+// const messaging = firebase.messaging();
+
+// messaging.onBackgroundMessage((payload) => {
+//   const notificationTitle = payload.title;
+//   const notificationOptions = {
+//     body: payload.body,
+//     // icon: payload.icon
+//   };
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });
+
+// // export function registerServiceWorker() {
+// //   if ("serviceWorker" in navigator) {
+// //     window.addEventListener("load", function () {
+// //       navigator.serviceWorker
+// //         .register("/firebase-messaging-sw.js")
+// //         .then(function (registration) {
+// //           console.log(
+// //             "Service Worker가 scope에 등록되었습니다.:",
+// //             registration.scope
+// //           );
+// //         })
+// //         .catch(function (err) {
+// //           console.log("Service Worker 등록 실패:", err);
+// //         });
+// //     });
+// //   }
+// // }
