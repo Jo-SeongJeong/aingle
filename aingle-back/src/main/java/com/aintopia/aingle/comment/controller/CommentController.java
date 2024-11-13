@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/comments")
@@ -44,7 +45,7 @@ public class CommentController {
                     content = @Content(mediaType = "application/json")
             )
     })
-    ResponseEntity<?> registComment(@RequestBody RegistCommentRequestDto registCommentRequestDto) {
+    ResponseEntity<?> registComment(@RequestBody RegistCommentRequestDto registCommentRequestDto) throws IOException {
         Long memberId = MemberInfo.getId();
 
         List<CommentDto> commentDtoList = commentService.registComment(registCommentRequestDto, memberId);
