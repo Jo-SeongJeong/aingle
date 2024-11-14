@@ -93,7 +93,7 @@ public class ReplyService {
     @Transactional
     @Async
     public void generateAIReply(Post post, Comment comment, Member member) throws IOException {
-        // 사용자 게시글이면, AI가 포스트 주인이 아니니 예외처리
+        // 사용자 게시글이면 예외처리 (AI가 포스트 주인이 아님)
         if(post.getCharacter() == null) throw new ForbiddenReplyException();
 
         log.info("AI 대댓글 요청");
