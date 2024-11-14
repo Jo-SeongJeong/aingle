@@ -68,6 +68,44 @@ const PostDetail = () => {
     }
   };
 
+  const filterValidComments = (allComments: IComment[]) => {
+    const now = new Date();
+    return allComments
+      .map((comment) => {
+        if (comment.character) {
+          const commentTime = new Date(comment.createTime);
+          commentTime.setMinutes(
+            commentTime.getMinutes() + comment.character.commentDelayTime
+          );
+          return {
+            ...comment,
+            adjustedCreateTime: commentTime.toISOString(), // 새로운 필드 추가
+          };
+        } else {
+          return {
+            ...comment,
+            adjustedCreateTime: comment.createTime, // 멤버는 기존 createTime 사용
+          };
+        }
+      })
+      .filter((comment) => {
+        const adjustedTime = new Date(comment.adjustedCreateTime);
+        return adjustedTime <= now; // 현재 시간 이전의 댓글만 표시
+      });
+  };
+
+  const refreshComments = async () => {
+    try {
+      const allComments = await getComments(Number(id));
+      const validComments = filterValidComments(allComments);
+      setCommentWriter("");
+      setComments(validComments);
+      setCommentId(0);
+    } catch (error) {
+      console.error("Failed to fetch comments: ", error);
+    }
+  };
+
   const addEmoji = (emoji: string) => {
     setInputcomment((prev) => ({
       ...prev,
@@ -160,74 +198,86 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="bg-white h-full w-full flex flex-col items-center relative pt-[50px] pb-[150px]">
+    <div className="bg-white min-h-screen overflow-scroll w-full flex flex-col items-center relative pt-[50px] pb-[150px]">
       <TextHeader headerText="게시물" navTo="" />
-      <div className="overflow-auto w-full mt-1">
-        <div className="w-full mb-[160px] px-[16px] ">
-          <div className="flex items-center mb-[11px]">
-            <img
-              src={
-                postData.member
-                  ? postData.member.memberImage
-                  : postData.character.characterImage
-              }
-              className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
-            />
-            <div className="flex justify-content w-[100%] justify-between">
-              <div>
-                <h1 className="text-[15px] text-black font-semibold">
+      <div className=" w-full mt-1">
+        {/* 게시글 + 댓글*/}
+        <div className="w-full mt-1 px-[16px] ">
+          {/* 포스트 */}
+          <div>
+            {/* 작성자 정보 */}
+            <div className="flex items-center mb-[11px]">
+              <img
+                src={
+                  postData.member
+                    ? postData.member.memberImage
+                    : postData.character.characterImage
+                }
+                className="w-[35px] h-[35px] rounded-full border-[2px] border-solid border-[#FB599A] mr-[10px]"
+              />
+              <div className="flex justify-content w-[100%] justify-between">
+                <div>
+                  <h1 className="text-[15px] text-black font-semibold">
+                    {postData.member
+                      ? postData.member.name
+                      : postData.character.name}
+                  </h1>
+                  <h1 className="text-[10px] text-[#A6A6A6]">
+                    {calTime(postData.createTime)}
+                  </h1>
+                </div>
+                {postData.member &&
+                  postData.member.memberId === userData.id && (
+                    <button
+                      className="text-xs text-pink-darkest font-semibold"
+                      onClick={handleDeleteButton}
+                    >
+                      삭제
+                    </button>
+                  )}
+              </div>
+            </div>
+            {/* 포스트 사진 */}
+            <div>
+              {postData.image && (
+                <img
+                  src={postData.image}
+                  className="bg-gray-500 rounded-[10px] w-full aspect-square mb-[20px] object-cover"
+                />
+              )}
+
+              <div className="flex space-x-[10px] mb-[6px]">
+                <div className="flex items-center">
+                  <img
+                    src={isLiked ? fillHeart : heart}
+                    className="w-[20px] mr-[5px] cursor-pointer"
+                    onClick={handleLikeToggle}
+                  />
+                  <h1 className="text-[12px] font-semibold">{totalLike}</h1>
+                </div>
+                <div className="flex items-center">
+                  <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
+                  <h1 className="text-[12px] font-semibold">
+                    {validCommentCount} {/* 유효한 댓글 개수 */}
+                  </h1>
+                </div>
+              </div>
+              {/* 작성자 정보 */}
+              <div className="mb-[10px]">
+                <h1 className="font-semibold text-[15px]">
                   {postData.member
                     ? postData.member.name
                     : postData.character.name}
                 </h1>
-                <h1 className="text-[10px] text-[#A6A6A6]">
-                  {calTime(postData.createTime)}
-                </h1>
+                <span className="text-[12px] font-medium">
+                  {postData.content}
+                </span>
               </div>
-              {postData.member && postData.member.memberId === userData.id && (
-                <button
-                  className="text-xs text-pink-darkest font-semibold"
-                  onClick={handleDeleteButton}
-                >
-                  삭제
-                </button>
-              )}
             </div>
           </div>
-
-          {postData.image && (
-            <img
-              src={postData.image}
-              className="bg-gray-500 rounded-[10px] w-full aspect-square mb-[20px] object-cover"
-            />
-          )}
-
-          <div className="flex space-x-[10px] mb-[6px]">
-            <div className="flex items-center">
-              <img
-                src={isLiked ? fillHeart : heart}
-                className="w-[20px] mr-[5px] cursor-pointer"
-                onClick={handleLikeToggle}
-              />
-              <h1 className="text-[12px] font-semibold">{totalLike}</h1>
-            </div>
-            <div className="flex items-center">
-              <img src={message} className="w-[20px] mr-[5px] mt-[2px]" />
-              <h1 className="text-[12px] font-semibold">
-                {validCommentCount} {/* 유효한 댓글 개수 */}
-              </h1>
-            </div>
-          </div>
-
-          <div className="mb-[10px]">
-            <h1 className="font-semibold text-[15px]">
-              {postData.member ? postData.member.name : postData.character.name}
-            </h1>
-            <span className="text-[12px] font-medium">{postData.content}</span>
-          </div>
-
-          <div style={{ maxHeight: "60vh" }}>
-            <div className="mb-[130px]" style={{ maxHeight: "60vh" }}>
+          {/* 댓글 */}
+          <div style={{}}>
+            <div className="" style={{}}>
               {comments.map((comment, idx) => (
                 <div
                   key={idx}
@@ -246,23 +296,36 @@ const PostDetail = () => {
                     refreshComments={fetchAndFilterComments}
                   />
                   {comment.replies &&
-                    comment.replies.map((reply, idx) => (
-                      <ReplyComment
-                        key={idx}
-                        comment={reply}
-                        refreshComments={fetchAndFilterComments}
-                      />
-                    ))}
+                    comment.replies
+                      .filter((reply) => {
+                        const adjustedReplyTime = new Date(reply.createTime);
+
+                        if (reply.character?.commentDelayTime) {
+                          adjustedReplyTime.setMinutes(
+                            adjustedReplyTime.getMinutes() +
+                              reply.character.commentDelayTime
+                          );
+                        }
+                        return adjustedReplyTime <= new Date(); // 현재 시간 이전의 대댓글만 표시
+                      })
+                      .map((reply, idx) => (
+                        <ReplyComment
+                          key={idx}
+                          comment={reply}
+                          refreshComments={refreshComments}
+                        />
+                      ))}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
+        {/* 글 입력칸 */}
         <div className="w-full max-w-[480px] fixed bottom-0 bg-white z-40">
           {commentWriter != "" && (
             <div
-              className="px-5 py-2 text-white flex justify-between items-center"
+              className="px-5  text-white flex justify-between items-center"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             >
               <h1>{commentWriter}에 답글 작성</h1>
