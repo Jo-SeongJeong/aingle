@@ -255,13 +255,25 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
                   refreshComments={refreshComments}
                 />
                 {comment.replies &&
-                  comment.replies.map((reply, idx) => (
-                    <ReplyComment
-                      key={idx}
-                      comment={reply}
-                      refreshComments={refreshComments}
-                    />
-                  ))}
+                  comment.replies
+                    .filter((reply) => {
+                      const adjustedReplyTime = new Date(reply.createTime);
+
+                      if (reply.character?.commentDelayTime) {
+                        adjustedReplyTime.setMinutes(
+                          adjustedReplyTime.getMinutes() +
+                            reply.character.commentDelayTime
+                        );
+                      }
+                      return adjustedReplyTime <= new Date(); // 현재 시간 이전의 대댓글만 표시
+                    })
+                    .map((reply, idx) => (
+                      <ReplyComment
+                        key={idx}
+                        comment={reply}
+                        refreshComments={refreshComments}
+                      />
+                    ))}
               </div>
             ))
           )}
@@ -344,3 +356,33 @@ const PostCommentModal: React.FC<PostCommentModalProps> = ({ id, closeFn }) => {
 };
 
 export default PostCommentModal;
+
+/*
+  // 댓글 필터링
+  const filterValidComments = (allComments: IComment[]) => {
+    const now = new Date();
+    return allComments
+      .map((comment) => {
+        if (comment.character) {
+          const commentTime = new Date(comment.createTime);
+          commentTime.setMinutes(
+            commentTime.getMinutes() + comment.character.commentDelayTime
+          );
+          return {
+            ...comment,
+            adjustedCreateTime: commentTime.toISOString(), // 새로운 필드 추가
+          };
+        } else {
+          return {
+            ...comment,
+            adjustedCreateTime: comment.createTime, // 멤버는 기존 createTime 사용
+          };
+        }
+      })
+      .filter((comment) => {
+        const adjustedTime = new Date(comment.adjustedCreateTime);
+        return adjustedTime <= now; // 현재 시간 이전의 댓글만 표시
+      });
+  };
+
+   */
