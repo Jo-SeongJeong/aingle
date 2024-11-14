@@ -1,76 +1,180 @@
 import { useEffect, useRef, useState } from "react";
 import send from "../../assets/icons/send.png";
+import { getChatDetail, postChat } from "../../api/chatAPI";
+import { useParams } from "react-router-dom";
+import { IchatRoomDetail, Inumbers, IpostChat } from "../../model/chat";
+import { calTime } from "../../utils/date";
 
 const ChatDetail = () => {
-  const [messages, setMessages] = useState<{ text: string; user: boolean }[]>(
-    []
-  );
-
+  const [chatDetails, setChatDetails] = useState<IchatRoomDetail[]>([]);
   const [inputValue, setInputValue] = useState("");
-  // const navigate = useNavigate();
-  const chatBoxRef = useRef<HTMLDivElement>(null); // HTMLDivElement 타입으로 명시적으로 지정
+  const [hasMore, setHasMore] = useState(true);
+  const [afterPost , setAfterPost] = useState(false);
+  const [page, setPage] = useState(0);
+  const chatBoxRef = useRef<HTMLDivElement>(null);
+  const { id } = useParams();
+  const parseId = parseInt(id);
+
+  const params = {
+    chatRoomId: parseId,
+    page: page,
+    size: 10,
+  };
 
   useEffect(() => {
-    setMessages([
-      {
-        text: "안녕하세요 멍이냥 챗봇입니다! 궁금하신 내용의 버튼을 선택하거나 아래 채팅창에 질문을 주세요 🐶",
-        user: false,
-      },
-    ]);
-  }, []);
+    const handleScroll = () => {
+      if (chatBoxRef.current) {
+        // Check if scrolled to the top
+        if (chatBoxRef.current.scrollTop === 0 && hasMore) {
+          setPage((prevPage) => prevPage + 1); // Increase page
+        }
+      }
+    };
+
+    const chatBox = chatBoxRef.current;
+    if (chatBox) {
+      chatBox.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (chatBox) {
+        chatBox.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [hasMore]);
+
+
+  const fetchChatDetail = async (params: Inumbers) => {
+    console.log(params)
+    try {
+      if (!afterPost) {
+        const response = await getChatDetail(params);
+        console.log(response);
+
+        if (response.chatMessageList.length === 0) {
+          setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
+        } else {
+          const sortedChatDetails = response.chatMessageList.sort(
+            (a, b) => a.chatMessageId - b.chatMessageId
+          );
+          setChatDetails((prev) => [...sortedChatDetails, ...prev]);
+        }
+      } else {
+        const nums = {
+          chatRoomId: parseId,
+          page: 0,
+          size: 10,
+        };
+        console.log("채팅 보내고 나서 호출되는 영역 : " , nums);
+        const response = await getChatDetail(nums);
+        setAfterPost(false);
+        console.log(response);
+        if (response.chatMessageList.length === 0) {
+          setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
+        } else {
+          const sortedChatDetails = response.chatMessageList.sort(
+            (a, b) => a.chatMessageId - b.chatMessageId
+          );
+          setChatDetails((prev) => [...sortedChatDetails, ...prev]);
+        }
+      }
+    } catch (error) {
+      console.error("채팅방 불러오기 실패: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatDetail(params);
+  }, [page]);
 
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [chatDetails]);
+
+  // IntersectionObserver 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage((prev) => prev + 1); // 페이지 증가
+      }
+    });
+
+    if (chatBoxRef.current) {
+      observer.observe(chatBoxRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore]);
 
   const handleSend = async () => {
     if (inputValue.trim()) {
-      const newMessages = [...messages, { text: inputValue, user: true }];
-      setMessages(newMessages);
+      const temporaryMessage: IchatRoomDetail = {
+        chatMessageId: Date.now(),
+        message: inputValue,
+        createTime: new Date().toISOString(),
+        memberId: parseId,
+        character: null,
+      };
+      setChatDetails((prev) => [...prev, temporaryMessage]);
       setInputValue("");
 
-      // const reply = await getReply(inputValue, token);
-      // const botMessage = reply
-      //   ? reply
-      //   : "챗봇 서비스에 문제가 발생했습니다. 나중에 다시 시도해주세요.";
+      const newMessage: IpostChat = {
+        chatRoomId: parseId,
+        message: inputValue,
+      };
 
-      // setMessages((prevMessages) => [
-      //   ...prevMessages,
-      //   { text: botMessage, user: false },
-      // ]);
+      try {
+        await postChat(newMessage);
+        setAfterPost(true);
+        console.log(afterPost);
+        fetchChatDetail(params); // 메시지 전송 후 최신 메시지 불러오기
+      } catch (error) {
+        console.error("메시지 전송 실패: ", error);
+      }
     }
   };
+  console.log(chatDetails);
   return (
-    <div className="bg-[#ffe8f1] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-scroll">
+    <div className="bg-[#ffe8f1] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-hidden">
       <div
-        className="flex flex-col justify-start flex-1 overflow-y-auto "
+        className="flex flex-col justify-start flex-1 h-full overflow-y-scroll scrollbar-hide"
         ref={chatBoxRef}
       >
-        <div className="flex flex-col gap-2  overflow-y-auto">
-          {messages.map((message, index) =>
-            message.user ? (
-              <div
-                key={index}
-                className="max-w-[60%] p-3 bg-[#FF589B] text-white rounded-lg self-end text-sm leading-6"
-              >
-                {message.text}
+        <div className="flex flex-col gap-4">
+          {chatDetails.map((chatDetail, index) =>
+            chatDetail.memberId ? (
+              <div key={index} className="flex items-center justify-end">
+                <span className="text-gray-400 text-xs mr-2 self-end">
+                  {calTime(chatDetail.createTime)}
+                </span>
+                <div className="max-w-[60%] p-3 bg-[#FF589B] text-white rounded-lg text-sm leading-6">
+                  {chatDetail.message}
+                </div>
               </div>
             ) : (
               <div key={index} className="flex items-center">
-                {/* 상대방 이미지 */}
-                <img src={""} className="w-8 mr-1.5" />
+                <img
+                  src={chatDetail.character?.characterImage}
+                  className="w-8 h-8 rounded-full mr-2"
+                  alt="Character"
+                />
                 <div className="max-w-[60%] p-3 bg-[#FFC2DB] rounded-lg text-sm leading-6 border-2 border-[#FB599A]">
-                  {message.text}
+                  {chatDetail.message}
                 </div>
+                <span className="text-gray-400 text-xs ml-2 self-end">
+                  {calTime(chatDetail.createTime)}
+                </span>
               </div>
             )
           )}
         </div>
       </div>
 
-      <div className="flex w-full absolute bottom-0 items-center p-2.5 bg-white border-t border-gray-200  left-0 pl-5 box-border z-10">
+      <div className="flex w-full absolute bottom-0 items-center p-2.5 bg-white border-t border-gray-200 left-0 pl-5 box-border z-10">
         <input
           type="text"
           value={inputValue}

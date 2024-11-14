@@ -1,3 +1,10 @@
+export interface Inumbers {
+    chatRoomId : number;
+    page : number;
+    size : number;
+}
+
+
 export interface Icharacter {
     characterId : number;
     name : string;
@@ -14,4 +21,12 @@ export interface IchatRoom {
     lastMessage : string;
     lastMessageTime : string;
     character : Icharacter;
+}
+
+export interface IchatRoomDetail {
+    character : Icharacter | null;
+    chatMessageId : number;
+    createTime : string;
+    memberId : number | null;
+    message : string;
 }

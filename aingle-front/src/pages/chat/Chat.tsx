@@ -25,7 +25,6 @@ const Chat = () => {
       try {
         const response = await getChatList();
 
-        // lastMessageTime을 기준으로 최신순으로 정렬
         const sortedChatList = response.sort(
           (a, b) =>
             new Date(b.lastMessageTime).getTime() -

@@ -1,6 +1,6 @@
 import axiosInstance from "./axiosInstance";
 import { BASE_URL } from "./APIconfig";
-import {IpostChat} from "../model/chat";
+import {Inumbers, IpostChat} from "../model/chat";
 
 export const getChatList = async() => {
     try {
@@ -12,9 +12,12 @@ export const getChatList = async() => {
 };
 
 
-export const getChatDetail = async(chatRoomId : number) => {
+export const getChatDetail = async(numbers : Inumbers) => {
+
+    const {chatRoomId , page , size} = numbers
+
     try {
-        const response = await axiosInstance.get(`${BASE_URL}/chat/${chatRoomId}`);
+        const response = await axiosInstance.get(`${BASE_URL}/chat/${chatRoomId}?page=${page}&size=${size}`);
 
         return response.data;
     } catch (error) {
@@ -25,7 +28,7 @@ export const getChatDetail = async(chatRoomId : number) => {
 export const postChat = async(chat : IpostChat) => {
 
     const {chatRoomId , message} = chat;
-
+    
     try {
         const response = await axiosInstance.post(`${BASE_URL}/chat/${chatRoomId}` , {message} );
         return response.data;
