@@ -8,7 +8,9 @@ import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.dto.FcmDto;
 import com.aintopia.aingle.common.openai.OpenAIClient;
+import com.aintopia.aingle.common.service.FcmService;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
@@ -22,7 +24,6 @@ import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
 import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
 import com.aintopia.aingle.reply.exception.NotFoundReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -44,6 +45,7 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
     private final AlarmRepository alarmRepository;
     private final OpenAIClient openAIClient;
+    private final FcmService fcmService;
 
     @Transactional
     public List<CommentDto> registReply(RegistReplyRequestDto registReplyRequestDto,
@@ -106,11 +108,23 @@ public class ReplyService {
             Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
                 .orElseThrow(NotFoundMemberException::new);
 
-            alarmRepository.save(Alarm.alarmPostBuilder()
+            Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
                 .member(alarmMember)
                 .post(post)
                 .sender(post.getCharacter())
                 .build());
+
+            FcmDto fcmDto = FcmDto.builder()
+                    .fcmToken(post.getMember().getFcmToken())
+                    .title("새 대댓글 알림")
+                    .message("나의 댓글에 대댓글이 달렸어요!!")
+                    .delayMinutes(post.getCharacter().getCommentDelayTime())
+                    .postId(post.getPostId())
+                    .alarmId(alarm.getAlarmId())
+                    .build();
+
+            // FCM 알림을 delay-time 지연 후 전송
+            if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
         }
     }
 
