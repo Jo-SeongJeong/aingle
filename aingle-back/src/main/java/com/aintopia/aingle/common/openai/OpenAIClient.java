@@ -203,7 +203,7 @@ public class OpenAIClient {
         StringBuilder sb = new StringBuilder();
         sb.append("댓글 기록\n");
         // 위에서 캐릭터 답글에 대한 것만 이 함수로 올 수 있게 해야함
-        sb.append(comment.getCharacter().getCharacterId()).append(": ").append(comment.getContent())
+        sb.append(comment.getCharacter().getName()).append(": ").append(comment.getContent())
                 .append("\n");
         if (replies.isEmpty()) {
             if (nowReply.getMember() == null) {
