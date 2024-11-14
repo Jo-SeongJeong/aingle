@@ -67,7 +67,6 @@ public enum OpenAIPrompt {
     public String generateSystemPrompt(CharacterInfo characterInfo) {
         return String.format(promptTemplate, characterInfo.getAge(),
             characterInfo.getGenderAsString(), characterInfo.getJob(), characterInfo.getName(),
-            characterInfo.getName(),
             characterInfo.getPersonality(), characterInfo.getToneAsString(),
             characterInfo.getTalkTypeAsString(), getDescription(characterInfo.getDescription()));
     }
