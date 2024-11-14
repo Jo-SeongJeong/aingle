@@ -93,6 +93,9 @@ public class ReplyService {
     @Transactional
     @Async
     public void generateAIReply(Post post, Comment comment, Member member) throws IOException {
+        // 사용자 게시글이면, AI가 포스트 주인이 아니니 예외처리
+        if(post.getCharacter() == null) throw new ForbiddenReplyException();
+
         log.info("AI 대댓글 요청");
         if (comment.getIsDeleted() || post.getIsDeleted()) {
             throw new ForbiddenReplyException();
@@ -103,29 +106,27 @@ public class ReplyService {
         replyRepository.save(Reply.makeCharacterReply(comment, post.getCharacter(),
             new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
 
-        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
-        if (comment.getMember() != null && comment.getMember() != member) {
-            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
-                .orElseThrow(NotFoundMemberException::new);
 
-            Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
-                .member(alarmMember)
+        // 1. 사용자가 캐릭터 게시글에 댓글 남긴 경우
+        // db에 알람 생성
+        Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
+                .member(member)
                 .post(post)
                 .sender(post.getCharacter())
                 .build());
 
-            FcmDto fcmDto = FcmDto.builder()
-                    .fcmToken(post.getMember().getFcmToken())
-                    .title("새 대댓글 알림")
-                    .message("나의 댓글에 대댓글이 달렸어요!!")
-                    .delayMinutes(post.getCharacter().getCommentDelayTime())
-                    .postId(post.getPostId())
-                    .alarmId(alarm.getAlarmId())
-                    .build();
+        // FCM 보내기
+        FcmDto fcmDto = FcmDto.builder()
+                .fcmToken(member.getFcmToken())
+                .title("새 대댓글 알림")
+                .message("나의 댓글에 대댓글이 달렸어요!!")
+                .delayMinutes(post.getCharacter().getCommentDelayTime())
+                .postId(post.getPostId())
+                .alarmId(alarm.getAlarmId())
+                .build();
 
-            // FCM 알림을 delay-time 지연 후 전송
-            if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
-        }
+        // FCM 알림을 delay-time 지연 후 전송
+        if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
