@@ -90,7 +90,7 @@ const CharDetail = () => {
       </div>
 
       {/* 게시물 리스트 섹션 */}
-      <div className="px-[23px] pt-[24px] grid grid-cols-3 gap-4">
+      <div className="px-[23px] py-[24px] grid grid-cols-3 gap-4">
         {/* 게시물 데이터 매핑 */}
         {botDetail?.postImageUrls.map((post) => (
           <PostCard key={post.postId} id={post.postId} image={post.image} />
