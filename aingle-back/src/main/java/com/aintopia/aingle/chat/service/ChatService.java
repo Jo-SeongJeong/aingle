@@ -74,7 +74,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public ChatResponse getChatMessageByChatRoom(Long memberId, int page, int size, Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(NotFoundChatRoomException::new);
-        if (chatRoom.getMember().getMemberId() != memberId) {
+        if (!chatRoom.getMember().getMemberId().equals(memberId)) {
             // 나의 채팅방이 아닐 때,
             throw new ForbiddenChatRoomException();
         }
