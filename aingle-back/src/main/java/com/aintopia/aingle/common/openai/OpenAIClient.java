@@ -1,5 +1,6 @@
 package com.aintopia.aingle.common.openai;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
 import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.CharacterInfo;
@@ -7,8 +8,10 @@ import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
+import com.aintopia.aingle.common.dto.FcmDto;
 import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
+import com.aintopia.aingle.common.service.FcmService;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
@@ -17,6 +20,7 @@ import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
 import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
+import com.aintopia.aingle.reply.exception.NotFoundReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 
 import java.io.InputStream;
@@ -72,6 +76,7 @@ public class OpenAIClient {
     private final Map<Long, List<String>> chatHistory = new HashMap<>(); //key : chatRoomId, value : 최근 대화 10건
 
     private static final int MAX_RETRIES = 1;
+    private final FcmService fcmService;
 
     @Transactional
     public String getChatByAI(CharacterInfo characterInfo, String chatMessage, Long chatRoomId){
@@ -142,18 +147,15 @@ public class OpenAIClient {
     @Async
     public void generateReplyReplyAI(Post post, Comment comment, Member member, Reply reply)
             throws IOException {
-        if (comment.getCharacter() == null) {
-            // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
-            log.info("사용자 스스로의 대댓글은 생성 안함");
-            return;
-        }
 
-        log.info("AI 대댓글에 따른 대댓글으로 답변 요청");
+        // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
+        if (comment.getCharacter() == null) throw new ForbiddenReplyException();
 
         // 혹시라도 삭제된거 체크
-        if (comment.getIsDeleted() || post.getIsDeleted()) {
-            throw new ForbiddenReplyException();
-        }
+        if (comment.getIsDeleted() || post.getIsDeleted()) throw new NotFoundReplyException();
+
+        // 2. 캐릭터 댓글에 사용자가 대댓글을 남긴 경우
+        log.info("사용자 대댓글에 따른 대댓글으로 답변 요청");
 
         // 댓글에 대한 대댓글 전부 가져오기
         // AI 대댓글 생성
@@ -163,15 +165,25 @@ public class OpenAIClient {
         replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
                 new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
 
-//        // 댓글 작성자에게 알림(본인 댓글, 본인 대댓글 아닐 때)
-//        if (comment.getMember() != null && comment.getMember() != member) {
-//            Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
-//                .orElseThrow(NotFoundMemberException::new);
-//
-//            alarmRepository.save(
-//                Alarm.alarmPostBuilder().member(alarmMember).post(post).sender(post.getCharacter())
-//                    .build());
-//        }
+        // db에 알람 생성
+        Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
+                .member(member)
+                .post(post)
+                .sender(post.getCharacter())
+                .build());
+
+        // FCM 보내기
+        FcmDto fcmDto = FcmDto.builder()
+                .fcmToken(post.getMember().getFcmToken())
+                .title("새 대댓글 알림")
+                .message("나의 대댓글에 대댓글이 달렸어요!!")
+                .delayMinutes(comment.getCharacter().getCommentDelayTime())
+                .postId(post.getPostId())
+                .alarmId(alarm.getAlarmId())
+                .build();
+
+        // FCM 알림을 delay-time 지연 후 전송
+        if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
