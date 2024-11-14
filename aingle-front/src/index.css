@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  overscroll-behavior: none;
+}
+
+body {
+  @apply overflow-y-auto;
+}
+
 :root {
   font-family: "Pretendard", Inter, system-ui, Avenir, Helvetica, Arial,
     sans-serif;
