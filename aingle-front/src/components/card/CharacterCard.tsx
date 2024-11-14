@@ -8,7 +8,7 @@ interface CharacterCardProps {
 
 const CharacterCard: React.FC<CharacterCardProps> = ({
   imageUrl = "",
-  isFollowed = false,
+  isFollowed = true,
   onClick,
 }) => {
   return (
