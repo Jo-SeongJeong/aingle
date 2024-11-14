@@ -68,6 +68,10 @@ public class OpenAIClient {
     private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
 
+    public String getChatByAI(CharacterInfo characterInfo){
+        return "";
+    }
+
     // 댓글 생성 함수
     public String createCommentByAI(PostRequest postRequest, CharacterInfo characterInfo)
         throws IOException {

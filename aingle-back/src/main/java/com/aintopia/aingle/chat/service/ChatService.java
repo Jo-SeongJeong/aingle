@@ -2,10 +2,7 @@ package com.aintopia.aingle.chat.service;
 
 import com.aintopia.aingle.chat.domain.ChatMessage;
 import com.aintopia.aingle.chat.domain.ChatRoom;
-import com.aintopia.aingle.chat.dto.ChatMessageDto;
-import com.aintopia.aingle.chat.dto.ChatResponse;
-import com.aintopia.aingle.chat.dto.ChatRoomDto;
-import com.aintopia.aingle.chat.dto.ChatRoomResponse;
+import com.aintopia.aingle.chat.dto.*;
 import com.aintopia.aingle.chat.exception.ForbiddenChatRoomException;
 import com.aintopia.aingle.chat.exception.NotFoundChatRoomException;
 import com.aintopia.aingle.chat.repository.ChatMessageRepository;
@@ -48,7 +45,7 @@ public class ChatService {
             // 초기에 채팅방 아무것도 없으면 생성
             log.info("초기 채팅방 생성하기 (내가 팔로우하고 있는 모든 캐릭터와)");
             List<Follow> followCharacters = followRepository.findByMemberAndCharacterIsDeletedFalse(member);
-            for(Follow follow : followCharacters) {
+            for (Follow follow : followCharacters) {
                 ChatRoom savedChatRoom = chatRoomRepository.save(ChatRoom.builder()
                         .member(member)
                         .character(follow.getCharacter())
@@ -72,7 +69,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public ChatResponse getChatMessageByChatRoom(Long memberId, int page, int size, Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(NotFoundChatRoomException::new);
-        if(chatRoom.getMember().getMemberId() != memberId) {
+        if (chatRoom.getMember().getMemberId() != memberId) {
             // 나의 채팅방이 아닐 때,
             throw new ForbiddenChatRoomException();
         }
@@ -86,5 +83,20 @@ public class ChatService {
                 .collect(Collectors.toList());
 
         return new ChatResponse(chatRoomId, chatMessageList);
+    }
+
+    public ChatResponse makeChat(Long memberId, Long chatRoomId, ChatRequest chatRequest) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(NotFoundChatRoomException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        // 삭제된 캐릭터 채팅방도 삭제
+        // 채팅 저장
+        ChatMessage chatMessage = chatMessageRepository.save(ChatMessage.builder()
+                .member(member)
+                .chatRoom(chatRoom)
+                .content(chatRequest.getMessage())
+                .build());
+        // AI 채팅 답변 요청
+        return new ChatResponse();
+
     }
 }

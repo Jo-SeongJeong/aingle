@@ -4,6 +4,7 @@ import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -43,5 +44,13 @@ public class ChatMessage {
 
     @Column(name = "is_read")
     private Boolean isRead;
+
+    @Builder
+    public ChatMessage (Member member, Character character, ChatRoom chatRoom, String content) {
+        this.member = member;
+        this.character = character;
+        this.chatRoom = chatRoom;
+        this.content = content;
+    }
 
 }
