@@ -156,17 +156,19 @@ public class CommentService {
                         .sender(character)
                         .build());
 
-                FcmDto fcmDto = FcmDto.builder()
-                        .fcmToken(post.getMember().getFcmToken())
-                        .title("새 댓글 알림")
-                        .message("새로운 댓글이 달렸어요!!")
-                        .delayMinutes(character.getCommentDelayTime())
-                        .postId(post.getPostId())
-                        .alarmId(alarm.getAlarmId())
-                        .build();
+                if(post.getMember().getFcmToken() != null) {
+                    FcmDto fcmDto = FcmDto.builder()
+                            .fcmToken(post.getMember().getFcmToken())
+                            .title("새 댓글 알림")
+                            .message("새로운 댓글이 달렸어요!!")
+                            .delayMinutes(character.getCommentDelayTime())
+                            .postId(post.getPostId())
+                            .alarmId(alarm.getAlarmId())
+                            .build();
 
-                // FCM 알림을 delay-time 지연 후 전송
-                if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
+                    // FCM 알림을 delay-time 지연 후 전송
+                    if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
+                }
             }
         }
 

@@ -116,17 +116,19 @@ public class ReplyService {
                 .build());
 
         // FCM 보내기
-        FcmDto fcmDto = FcmDto.builder()
-                .fcmToken(member.getFcmToken())
-                .title("새 대댓글 알림")
-                .message("나의 댓글에 대댓글이 달렸어요!!")
-                .delayMinutes(post.getCharacter().getCommentDelayTime())
-                .postId(post.getPostId())
-                .alarmId(alarm.getAlarmId())
-                .build();
+        if(member.getFcmToken() != null) {
+            FcmDto fcmDto = FcmDto.builder()
+                    .fcmToken(member.getFcmToken())
+                    .title("새 대댓글 알림")
+                    .message("나의 댓글에 대댓글이 달렸어요!!")
+                    .delayMinutes(post.getCharacter().getCommentDelayTime())
+                    .postId(post.getPostId())
+                    .alarmId(alarm.getAlarmId())
+                    .build();
 
-        // FCM 알림을 delay-time 지연 후 전송
-        if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
+            // FCM 알림을 delay-time 지연 후 전송
+            if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
+        }
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
