@@ -11,6 +11,7 @@ import com.aintopia.aingle.comment.dto.Request.RegistCommentRequestDto;
 import com.aintopia.aingle.comment.exception.ForbiddenCommentException;
 import com.aintopia.aingle.comment.exception.NotFoundCommentException;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.dto.FcmDto;
 import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.common.service.FcmService;
@@ -117,9 +118,6 @@ public class CommentService {
         RegistPostRequestDto registPostRequestDto, String imageUrl) throws IOException {
         log.info("AI 댓글 생성 시작 postId {}", post.getPostId());
 
-        Member member = post.getMember();
-
-        int min = Integer.MAX_VALUE;
         for (Character character : characters) {
             int errorCount = 0;
             String commentContent = "";
@@ -148,30 +146,28 @@ public class CommentService {
 
             post.increaseComment();
 
-            // 최초 생성 시간 구하기
-            min = Math.min(min, character.getCommentDelayTime());
-
             // 게시물 작성자에게 알림(본인 게시물)
             if (post.getMember() != null) {
                 Member alarmMember = memberRepository.findById(post.getMember().getMemberId())
                         .orElseThrow(NotFoundMemberException::new);
 
-                alarmRepository.save(Alarm.alarmPostBuilder()
+                Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
                         .member(alarmMember)
                         .post(post)
                         .sender(character)
                         .build());
-            }
-        }
 
-        // FCM 알림을 min 지연 후 전송
-        if(member != null) {
-            String title = "새 댓글 알림";
-            String message = "새로운 댓글이 달렸어요!!";
-            String fcmToken = member.getFcmToken();
+                FcmDto fcmDto = FcmDto.builder()
+                        .fcmToken(post.getMember().getFcmToken())
+                        .title("새 댓글 알림")
+                        .message("새로운 댓글이 달렸어요!!")
+                        .delayMinutes(character.getCommentDelayTime())
+                        .postId(post.getPostId())
+                        .alarmId(alarm.getAlarmId())
+                        .build();
 
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                fcmService.scheduleNotificationWithDelay(fcmToken, title, message, min);
+                // FCM 알림을 delay-time 지연 후 전송
+                if (fcmDto.getFcmToken() != null && !fcmDto.getFcmToken().isEmpty()) fcmService.scheduleNotificationWithDelay(fcmDto);
             }
         }
 
