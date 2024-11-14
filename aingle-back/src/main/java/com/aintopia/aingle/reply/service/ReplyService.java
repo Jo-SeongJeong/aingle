@@ -67,7 +67,7 @@ public class ReplyService {
             .registReplyRequestDto(registReplyRequestDto)
             .build());
         openAIClient.generateReplyReplyAI(comment.getPost(), comment, member, reply);
-        return getCommentsWithReplies(comment.getPost().getPostId());
+        return getCommentsWithReplies(comment.getPost().getPostId(), member);
     }
 
     @Transactional
@@ -87,7 +87,7 @@ public class ReplyService {
         reply.delete();
         replyRepository.save(reply);
 
-        return getCommentsWithReplies(post.getPostId());
+        return getCommentsWithReplies(post.getPostId(), member);
     }
 
     @Transactional
@@ -129,9 +129,9 @@ public class ReplyService {
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
-    private List<CommentDto> getCommentsWithReplies(Long postId) {
+    private List<CommentDto> getCommentsWithReplies(Long postId, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-        List<Comment> comments = commentRepository.findByPost(post);
+        List<Comment> comments = commentRepository.findByPostAndMemberIsNullOrMember(post, member);
 
         return comments.stream()
             .filter(comment -> !comment.getIsDeleted())
