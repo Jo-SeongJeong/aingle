@@ -5,11 +5,13 @@ import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.post.domain.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @AllArgsConstructor
 @Getter
+@Slf4j
 public enum OpenAIPrompt {
     AI_CHARACTER_SYSTEM_PROMPT(
         "당신은 %d세 %s %s %s입니다. 대화 패턴을 참고해서 질문에 대해 답변해주세요\n" +
@@ -59,10 +61,24 @@ public enum OpenAIPrompt {
             + "%s\n"
             + "#프롬프트\n"
             + "%s\n"
-            + "프롬프트가 본인이라고 생각하고 본인 이름이 불렸다면 잘 인식하세요. 해당 인물이 마지막에 작성할만한 대댓글 답변만 답해주고 다른 부가적인 답변은 하지마세요");
-
+            + "프롬프트가 본인이라고 생각하고 본인 이름이 불렸다면 잘 인식하세요. 해당 인물이 마지막에 작성할만한 대댓글 답변만 답해주고 다른 부가적인 답변은 하지마세요"),
+    AI_CHARACTER_CHAT_PROMPT(
+            "사용자가 언급하는 내용에 대해 세심한 주의를 기울이며, 관련성 있고 구체적인 답변을 합니다. 대화 내역을 참고하며 대화의 흐름에 집중합니다. 관련 없는 임의의 주제를 소개하는 것을 피합니다. 답변 형식은 어떤 형식도 붙이지 않고 순수 답변만 합니다.\n"
+                    + "대화 내역 :\n"
+                    + "%s\n"
+                    + "사용자 답변 : %s\n"),
+    CHAT_USER("사용자 : %s"),
+    CHAT_CHARACTER(" %s : %s");
 
     private final String promptTemplate;
+
+    public String makeUserChatHistory(String userMessage){
+        return String.format(promptTemplate, userMessage);
+    }
+
+    public String makeCharacterChatHistory(String characterName, String characterMessage){
+        return String.format(promptTemplate, characterName, characterMessage);
+    }
 
     public String generateSystemPrompt(CharacterInfo characterInfo) {
         return String.format(promptTemplate, characterInfo.getAge(),
@@ -104,6 +120,10 @@ public enum OpenAIPrompt {
 
     private String getChatHistory(List<String> chatHistory) {
         StringBuilder formatted = new StringBuilder();
+        if(chatHistory.isEmpty()) {
+            log.info("이전 대화 기록이 없습니다.");
+            return "";
+        }
         for (String d : chatHistory) {
             formatted.append("-").append(d).append(",").append("\n");
         }

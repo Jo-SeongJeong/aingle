@@ -3,6 +3,7 @@ package com.aintopia.aingle.chat.controller;
 import com.aintopia.aingle.chat.dto.ChatRequest;
 import com.aintopia.aingle.chat.dto.ChatResponse;
 import com.aintopia.aingle.chat.dto.ChatRoomResponse;
+import com.aintopia.aingle.chat.dto.MakeChatResponse;
 import com.aintopia.aingle.chat.service.ChatService;
 import com.aintopia.aingle.common.util.MemberInfo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,11 +63,16 @@ public class ChatController {
     }
 
     @PostMapping(value = "/{chatRoomId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "채팅 전송", description = "채팅보내기 API 입니다.")
+    @Operation(summary = "채팅 전송", description = "채팅보내기 API 입니다. 글자수 제한 : 120자")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "채팅방 내 채팅리스트 리스트 조회에 성공하였습니다!",
+                    description = "채팅 전송에 성공하였습니다!",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "캐릭터가 삭제되어 채팅을 더이상 할 수 없습니다.",
                     content = @Content(mediaType = "application/json")
             ),
             @ApiResponse(
@@ -75,9 +81,9 @@ public class ChatController {
                     content = @Content(mediaType = "application/json")
             ),
     })
-    public ResponseEntity<ChatResponse> makeChat(@PathVariable Long chatRoomId, @RequestBody ChatRequest chatRequest) {
+    public ResponseEntity<MakeChatResponse> makeChat(@PathVariable Long chatRoomId, @RequestBody ChatRequest chatRequest) {
         Long memberId = MemberInfo.getId();
-        ChatResponse chatResponse = chatService.makeChat(memberId, chatRoomId, chatRequest);
+        MakeChatResponse chatResponse = chatService.makeChat(memberId, chatRoomId, chatRequest);
         return ResponseEntity.ok().body(chatResponse);
     }
 }

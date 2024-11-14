@@ -52,6 +52,8 @@ import java.net.URL;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.aintopia.aingle.common.openai.model.OpenAIPrompt.*;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -67,12 +69,52 @@ public class OpenAIClient {
     private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final Map<Long, List<String>> chatHistory = new HashMap<>(); //key : chatRoomId, value : 최근 대화 10건
 
     private static final int MAX_RETRIES = 1;
 
+    @Transactional
+    public String getChatByAI(CharacterInfo characterInfo, String chatMessage, Long chatRoomId){
+        if(!chatHistory.containsKey(chatRoomId)){
+            chatHistory.put(chatRoomId, new ArrayList<>());
+        }
+        Prompt chatPrompt = getChatPrompt(characterInfo, chatMessage, chatRoomId);
+        ChatResponse chatResponse = chatModel.call(chatPrompt);
+        String characterMessage = chatResponse.getResult().getOutput().getContent();
+        // 채팅 history 저장
+        String userHistory = CHAT_USER.makeUserChatHistory(chatMessage);
+        String characterHistory = CHAT_CHARACTER.makeCharacterChatHistory(characterInfo.getName(), characterMessage);
+        manageChatHistory(chatRoomId, userHistory, characterHistory);
 
-    public String getChatByAI(CharacterInfo characterInfo){
-        return "";
+        log.info("채팅 답변:\n{}", chatResponse.getResult().getOutput().getContent());
+        return chatResponse.getResult().getOutput().getContent();
+    }
+
+    private void manageChatHistory(Long chatRoomId, String userHistory, String characterHistory){
+        List<String> history = chatHistory.get(chatRoomId);
+        if(history.size() > 8){
+            // 가장 오래된 기록 삭제
+            history.remove(0);
+            history.remove(1);
+        }
+        history.add(userHistory);
+        history.add(characterHistory);
+        log.info("chat history : " + chatHistory.get(chatRoomId));
+    }
+
+    private Prompt getChatPrompt(CharacterInfo characterInfo, String chatMessage, Long chatRoomId) {
+        List<Message> promptMessages = new ArrayList<>();
+        // 대화 기록 불러오기
+        List<String> chatList = chatHistory.get(chatRoomId);
+
+        String prompt = AI_CHARACTER_SYSTEM_PROMPT.generateSystemPrompt(characterInfo)
+                + AI_CHARACTER_CHAT_PROMPT.generateChatprompt(chatList, chatMessage);
+
+        Message userMessage = new UserMessage(prompt);
+        promptMessages.add(userMessage);
+        log.info("채팅 생성 프롬프트:\n {}", promptMessages.get(0));
+        return new Prompt(promptMessages,
+                OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build());
     }
 
     // 댓글 생성 함수

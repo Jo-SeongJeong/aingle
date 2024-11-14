@@ -1,12 +1,16 @@
 package com.aintopia.aingle.chat.service;
 
+import com.aintopia.aingle.character.dto.CharacterInfo;
+import com.aintopia.aingle.character.dto.ChatCharacter;
 import com.aintopia.aingle.chat.domain.ChatMessage;
 import com.aintopia.aingle.chat.domain.ChatRoom;
 import com.aintopia.aingle.chat.dto.*;
+import com.aintopia.aingle.chat.exception.ForbiddenCharacterChatException;
 import com.aintopia.aingle.chat.exception.ForbiddenChatRoomException;
 import com.aintopia.aingle.chat.exception.NotFoundChatRoomException;
 import com.aintopia.aingle.chat.repository.ChatMessageRepository;
 import com.aintopia.aingle.chat.repository.ChatRoomRepository;
+import com.aintopia.aingle.common.openai.OpenAIClient;
 import com.aintopia.aingle.follow.domain.Follow;
 import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
@@ -21,7 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
+    private final OpenAIClient openAIClient;
 
     public ChatRoomResponse getAllChatRoom(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
@@ -73,6 +78,10 @@ public class ChatService {
             // 나의 채팅방이 아닐 때,
             throw new ForbiddenChatRoomException();
         }
+        if(chatRoom.getCharacter().getIsDeleted()){
+            throw new ForbiddenCharacterChatException();
+        }
+
         // 최신순으로 내림차순
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "chatMessageId"));
 
@@ -85,18 +94,33 @@ public class ChatService {
         return new ChatResponse(chatRoomId, chatMessageList);
     }
 
-    public ChatResponse makeChat(Long memberId, Long chatRoomId, ChatRequest chatRequest) {
+    public MakeChatResponse makeChat(Long memberId, Long chatRoomId, ChatRequest chatRequest) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(NotFoundChatRoomException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-        // 삭제된 캐릭터 채팅방도 삭제
+        // 삭제된 캐릭터 채팅 불가
+        if(chatRoom.getCharacter().getIsDeleted()){
+            throw new ForbiddenCharacterChatException();
+        }
+
         // 채팅 저장
-        ChatMessage chatMessage = chatMessageRepository.save(ChatMessage.builder()
+        chatMessageRepository.save(ChatMessage.builder()
                 .member(member)
                 .chatRoom(chatRoom)
                 .content(chatRequest.getMessage())
                 .build());
         // AI 채팅 답변 요청
-        return new ChatResponse();
+        String chatByAI = openAIClient.getChatByAI(CharacterInfo.builder()
+                .character(chatRoom.getCharacter())
+                .build(), chatRequest.getMessage(), chatRoomId);
+        // AI 채팅 저장
+        chatMessageRepository.save(ChatMessage.builder()
+                .character(chatRoom.getCharacter())
+                .chatRoom(chatRoom)
+                .content(chatByAI)
+                .build());
+        // 채팅방 정보 업데이트(가장 최근 메세지)
+        chatRoom.updateLastMessage(chatByAI);
+        return new MakeChatResponse(chatByAI, new ChatCharacter(chatRoom.getCharacter()), LocalDateTime.now());
 
     }
 }

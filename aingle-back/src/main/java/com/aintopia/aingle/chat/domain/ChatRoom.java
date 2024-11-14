@@ -45,4 +45,10 @@ public class ChatRoom {
         this.lastMessage = "";
         this.lastChatTime = LocalDateTime.now();
     }
+
+    public void updateLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+        this.lastChatTime = LocalDateTime.now();
+    }
 }
+
