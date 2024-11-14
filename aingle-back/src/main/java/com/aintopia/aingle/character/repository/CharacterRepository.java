@@ -22,4 +22,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     Optional<Character> findTopByVoteIdOrderByVoteCountDesc(@Param("voteId") Long voteId);
 
     List<Character> findByIsDeletedFalse();
+    List<Character> findByIsPublicTrueAndIsDeletedFalseAndCharacterIdNot(Long characterId);
+
 }
