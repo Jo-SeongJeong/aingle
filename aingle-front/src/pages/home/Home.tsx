@@ -24,32 +24,30 @@ const Home = () => {
   const navigate = useNavigate();
 
   const lastPostRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    // Firebase Analytics 초기화
-    const app = initializeApp(firebaseConfig);
+  useEffect(
+    () => {
+      // Firebase Analytics 초기화
+      const app = initializeApp(firebaseConfig);
 
-    // 푸시 알림 권한 요청 및 토큰 발급
-    // if (!sessionStorage.getItem("fcmToken")) {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        getToken(messaging, {
-          vapidKey: import.meta.env.VITE_REACT_APP_VAP_ID,
+      // 푸시 알림 권한 요청 및 토큰 발급
+      // if (!sessionStorage.getItem("fcmToken")) {
+
+      getToken(messaging, {
+        vapidKey: import.meta.env.VITE_REACT_APP_VAP_ID,
+      })
+        .then((token) => {
+          console.log("푸시 토큰 발급 완료:", token);
+          // requestFcmToken(userData.id, token);
+          requestFcmToken(token);
+          sessionStorage.setItem("fcmToken", token);
         })
-          .then((token) => {
-            console.log("푸시 토큰 발급 완료:", token);
-            // requestFcmToken(userData.id, token);
-            requestFcmToken(token);
-            sessionStorage.setItem("fcmToken", token);
-          })
-          .catch((err) => {
-            console.error("푸시 토큰 가져오기 실패:", err);
-          });
-      } else {
-        console.log("푸시 권한 거부됨");
-      }
-    });
+        .catch((err) => {
+          console.error("푸시 토큰 가져오기 실패:", err);
+        });
+    },
     // }
-  }, []);
+    []
+  );
 
   useEffect(() => {
     if (hasMore) {
