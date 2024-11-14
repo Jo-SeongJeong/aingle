@@ -105,7 +105,7 @@ const ChDetailModal: React.FC<ChDetailModalProps> = ({
                 #{CharacterInfo?.tone ? "반말모드" : "예의바른"}
               </div>
             </div>
-            <div className="w-full h-3/6 text-center bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium px-10">
+            <div className="w-full h-3/6 text-center bg-pink-50 rounded-xl flex items-center justify-center text-gray-500 text-lg font-medium px-7">
               {CharacterInfo?.summary}
             </div>
           </div>

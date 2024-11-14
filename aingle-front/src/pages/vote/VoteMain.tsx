@@ -24,7 +24,7 @@ const VoteMain = () => {
   const [voteCount, setVoteCount] = useState<number>(0);
   const [expireTime, setExpireTime] = useState<string>(""); // 종료 시간
   const [timeLeft, setTimeLeft] = useState<string>(""); // 남은 시간 표시
-
+  const [isDisable, setIsDisable] = useState(false);
   const [CharacterInfo, setCharacterInfo] =
     useState<VoteCharacterDetail | null>(null);
   const [characters, setCharacters] =
@@ -41,6 +41,13 @@ const VoteMain = () => {
     };
     fetchTime();
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsDisable(false);
+    }, 1600); // 1.6초 뒤 실행
+    return () => clearTimeout(timer);
+  }, [isDisable]);
 
   // 남은 시간 계산
   useEffect(() => {
@@ -89,6 +96,7 @@ const VoteMain = () => {
   };
 
   const vote = async (id: number) => {
+    setIsDisable(true);
     if (id === -1) {
       return;
     }
@@ -290,6 +298,7 @@ const VoteMain = () => {
         <button
           className="bg-main-color font-semibold text-white rounded-2xl w-full h-[50px]"
           onClick={() => vote(selectedId != null ? selectedId : -1)}
+          disabled={isDisable}
         >
           투표하기
         </button>
@@ -301,7 +310,7 @@ const VoteMain = () => {
               if (opacity === 0) setIsVisible(false);
             }}
           >
-            <h1 className="bg-[#f7b9e8] font-hakgyo text-main-color px-4 py-2 rounded-md">
+            <h1 className="bg-[#f7b9e8] font-hakgyo text-center text-main-color px-4 py-2 rounded-md w-[250px] h-[40px]">
               투표는 하루에 한 번 가능합니다!
             </h1>
           </div>
