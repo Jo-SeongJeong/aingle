@@ -5,6 +5,8 @@ import com.aintopia.aingle.character.domain.CharacterImage;
 import com.aintopia.aingle.character.exception.NotFoundCharacterException;
 import com.aintopia.aingle.character.repository.CharacterImageRepository;
 import com.aintopia.aingle.character.repository.CharacterRepository;
+import com.aintopia.aingle.chat.domain.ChatRoom;
+import com.aintopia.aingle.chat.repository.ChatRoomRepository;
 import com.aintopia.aingle.follow.domain.Follow;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.dto.FollowListResponse;
@@ -30,6 +32,7 @@ public class FollowService {
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
     private final CharacterImageRepository characterImageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     public void resistFollow(Long memberId, Long characterId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
@@ -39,10 +42,16 @@ public class FollowService {
             throw new FollowDuplicateException();
         }
 
-        followRepository.save(Follow.builder()
-                        .member(member)
-                        .character(character)
-                        .build());
+        Follow savedFollow = followRepository.save(Follow.builder()
+                .member(member)
+                .character(character)
+                .build());
+        // 팔로우하는 캐릭터와 채팅방 생성
+        chatRoomRepository.save(ChatRoom.builder()
+                .member(member)
+                .character(savedFollow.getCharacter())
+                .build());
+
     }
 
     public void deleteFollow(Long memberId, Long characterId) {
