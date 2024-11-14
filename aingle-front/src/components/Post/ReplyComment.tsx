@@ -61,7 +61,7 @@ const ReplyComment = ({ comment, refreshComments }: ICommentProps) => {
         <span className="mt-1 text-sm">{comment.content}</span>
         <div className="flex space-x-4 mt-2">
           <h1 className="text-xs text-gray-500 cursor-pointer">답글 달기</h1>
-          {(member || character) && (
+          {!character && (
             <h1
               onClick={handleDelete}
               className="text-xs text-gray-500 cursor-pointer underline"
