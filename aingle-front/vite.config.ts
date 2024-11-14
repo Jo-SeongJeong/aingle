@@ -1,6 +1,19 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "@tanstack/react-query"],
+        },
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ["@tanstack/react-query"],
+  },
   define: {
     "process.env.VITE_REACT_APP_API_KEY": JSON.stringify(
       process.env.VITE_REACT_APP_API_KEY
