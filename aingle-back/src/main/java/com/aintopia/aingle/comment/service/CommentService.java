@@ -26,8 +26,6 @@ import com.aintopia.aingle.post.exception.NotFoundPostException;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.ReplyDto;
-import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
-import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 import com.aintopia.aingle.reply.service.ReplyService;
 import lombok.RequiredArgsConstructor;
