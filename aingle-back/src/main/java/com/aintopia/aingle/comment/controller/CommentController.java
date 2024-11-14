@@ -31,7 +31,8 @@ public class CommentController {
             )
     })
     ResponseEntity<?> findByPostId(@PathVariable("postId") Long postId) {
-        List<CommentDto> commentDtoList = commentService.findByPostId(postId);
+        Long memberId = MemberInfo.getId();
+        List<CommentDto> commentDtoList = commentService.findByPostId(postId, memberId);
 
         return ResponseEntity.ok().body(commentDtoList);
     }

@@ -1,5 +1,6 @@
 package com.aintopia.aingle.common.service;
 
+import com.aintopia.aingle.common.dto.FcmDto;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Date;
 
@@ -17,23 +19,26 @@ public class FcmService {
 
     private final TaskScheduler taskScheduler;
 
-    public void scheduleNotificationWithDelay(String token, String title, String message, int delayMinutes) {
+    @TransactionalEventListener
+    public void scheduleNotificationWithDelay(FcmDto fcmDto) {
         taskScheduler.schedule(
-                () -> sendNotification(token, title, message),
-                new Date(System.currentTimeMillis() + (delayMinutes * 60 * 1000))
+                () -> sendNotification(fcmDto),
+                new Date(System.currentTimeMillis() + (fcmDto.getDelayMinutes() * 60 * 1000))
         );
-        log.info("Scheduled notification with delay: " + delayMinutes + " minutes 뒤에 알림을 보낼겁니다!");
+        log.info("Scheduled notification with delay: " + fcmDto.getDelayMinutes() + " 분 뒤에 알림을 보낼겁니다!");
     }
 
-    public void sendNotification(String token, String title, String message) {
+    public void sendNotification(FcmDto fcmDto) {
         try {
-            log.info("Sending notification to FCM: 최초 댓글 생성 알림을 보낼게요!");
+            log.info("Sending notification to FCM: 댓글 생성 알림을 보낼게요!");
             Message fcmMessage = Message.builder()
-                    .setToken(token)
+                    .setToken(fcmDto.getFcmToken())
                     .setNotification(Notification.builder()
-                            .setTitle(title)
-                            .setBody(message)
+                            .setTitle(fcmDto.getTitle())
+                            .setBody(fcmDto.getMessage())
                             .build())
+                    .putData("postId", fcmDto.getPostId().toString())
+                    .putData("alarmId", fcmDto.getAlarmId().toString())
                     .build();
 
             FirebaseMessaging.getInstance().send(fcmMessage);
