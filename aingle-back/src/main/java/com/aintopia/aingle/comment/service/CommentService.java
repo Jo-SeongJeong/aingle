@@ -52,14 +52,15 @@ public class CommentService {
     private final ReplyService replyService;
     private final FcmService fcmService;
 
-    public List<CommentDto> findByPostId(Long postId) {
+    public List<CommentDto> findByPostId(Long postId, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
 
         if (post.getIsDeleted()) {
             throw new ForbbidenPostException();
         }
 
-        return getCommentsWithReplies(post.getPostId());
+        return getCommentsWithReplies(post.getPostId(), member);
     }
 
     @Transactional
@@ -85,7 +86,7 @@ public class CommentService {
         // AI 대댓글 요청
         replyService.generateAIReply(post, savedComment, member);
 
-        return getCommentsWithReplies(post.getPostId());
+        return getCommentsWithReplies(post.getPostId(), member);
     }
 
     @Transactional
@@ -107,7 +108,7 @@ public class CommentService {
         c.delete();
         commentRepository.save(c);
 
-        return getCommentsWithReplies(post.getPostId());
+        return getCommentsWithReplies(post.getPostId(), member);
     }
 
     @Async
@@ -195,9 +196,9 @@ public class CommentService {
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
-    private List<CommentDto> getCommentsWithReplies(Long postId) {
+    private List<CommentDto> getCommentsWithReplies(Long postId, Member member) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-        List<Comment> comments = commentRepository.findByPost(post);
+        List<Comment> comments = commentRepository.findByPostAndMemberIsNullOrMember(post, member);
 
         return comments.stream()
             .filter(comment -> !comment.getIsDeleted())

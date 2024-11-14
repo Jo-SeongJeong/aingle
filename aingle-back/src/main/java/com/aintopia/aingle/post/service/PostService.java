@@ -86,7 +86,7 @@ public class PostService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundMemberException::new);
-        List<Comment> comments = commentRepository.findByPost(post);
+        List<Comment> comments = commentRepository.findByPostAndMemberIsNullOrMember(post, member);
 
         // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
         List<CommentDto> commentDtos = comments.stream()
@@ -160,10 +160,10 @@ public class PostService {
 
         // 좋아요 눌렀는지 확인
         Boolean isLiked = likeRepository.existsByMemberAndPost(member, post);
-        List<Comment> comments = commentRepository.findByPost(post);
-
 
         // 댓글 리스트와 각각의 대댓글 리스트를 변환하여 함께 처리
+        List<Comment> comments = commentRepository.findByPostAndMemberIsNullOrMember(post, member);
+
         List<CommentDto> commentDtos = comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .map(comment -> {
