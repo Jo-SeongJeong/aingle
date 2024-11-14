@@ -201,6 +201,7 @@ public class OpenAIClient {
     public String createReplyReply(Post post, Comment comment, List<Reply> replies,
                                    CharacterInfo characterInfo, Reply nowReply) throws IOException {
         StringBuilder sb = new StringBuilder();
+        replies.sort(Comparator.comparing(Reply::getReplyId).reversed());
         sb.append("댓글 기록\n");
         // 위에서 캐릭터 답글에 대한 것만 이 함수로 올 수 있게 해야함
         sb.append(comment.getCharacter().getName()).append(": ").append(comment.getContent())
@@ -222,9 +223,8 @@ public class OpenAIClient {
                 } else {
                     // 사용자측 답글
                     sb.append(reply.getMember().getName()).append(": ").append(reply.getContent())
-                            .append("\n");
+                        .append("\n");
                 }
-                sb.append(reply).append("\n");
             }
         }
         log.info("댓글 및 대댓글 기록:\n{}", sb.toString());
