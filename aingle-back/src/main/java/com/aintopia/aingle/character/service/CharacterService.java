@@ -26,6 +26,7 @@ import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -312,6 +313,7 @@ public class CharacterService {
         for (Post post : characterPosts) {
             postImageUrls.add(post.changeToMyPagePostDto());
         }
+        Collections.reverse(postImageUrls);
         // 팔로우 여부
         Member member = memberRepository.findById(memberId)
             .orElseThrow(NotFoundMemberException::new);
