@@ -10,10 +10,16 @@ import SocialRedirection from "./pages/onboarding/SocialRedirection";
 import PostDetail from "./pages/post/PostDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./utils/foregroundMessage";
+import ChatPages from "./routes/ChatPages";
+import { useEffect } from "react";
 
 const App = () => {
   const location = useLocation();
   const matchPostDetail = useMatch("/post/:id"); // "/post/:id" 경로와 일치 여부 확인
+
+  useEffect(() => {
+    Notification.requestPermission();
+  }, []);
 
   return (
     <div className="h-full relative">
@@ -30,6 +36,7 @@ const App = () => {
           <Route path="/write" element={<Write />} />
           <Route path="/notice/*" element={<NoticePages />} />
           <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/chat/*" element={<ChatPages />} />
         </Route>
       </Routes>
 
@@ -41,6 +48,7 @@ const App = () => {
         location.pathname !== "/mypage/edit" &&
         location.pathname !== "/login" &&
         location.pathname !== "/signup" &&
+        location.pathname !== "/chat" &&
         location.pathname !== "/loading" && <Footer />}
     </div>
   );
