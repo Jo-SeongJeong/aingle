@@ -148,9 +148,16 @@ public class OpenAIClient {
     public void generateReplyReplyAI(Post post, Comment comment, Member member, Reply reply)
             throws IOException {
 
+        Character character = comment.getCharacter();
+        List<Reply> replies = getCommentWithReplies(comment.getCommentId());
         // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
-        if (comment.getCharacter() == null) throw new ForbiddenReplyException();
-
+        if (comment.getCharacter() == null) {
+            for(Reply r : replies) {
+                if(r.getCharacter() == null) continue;
+                character = r.getCharacter();
+                break;
+            }
+        }
         // 혹시라도 삭제된거 체크
         if (comment.getIsDeleted() || post.getIsDeleted()) throw new NotFoundReplyException();
 
@@ -159,17 +166,16 @@ public class OpenAIClient {
 
         // 댓글에 대한 대댓글 전부 가져오기
         // AI 대댓글 생성
-        CharacterInfo characterInfo = comment.getCharacter().toDTO();
-        String replyWithAI = createReplyReply(post, comment,
-                getCommentWithReplies(comment.getCommentId()), characterInfo, reply);
-        replyRepository.save(Reply.makeCharacterReply(comment, comment.getCharacter(),
+        CharacterInfo characterInfo = character.toDTO();
+        String replyWithAI = createReplyReply(post, comment, replies, characterInfo, reply);
+        replyRepository.save(Reply.makeCharacterReply(comment, character,
                 new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
 
         // db에 알람 생성
         Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
                 .member(member)
                 .post(post)
-                .sender(post.getCharacter())
+                .sender(character)
                 .build());
 
         // FCM 보내기
