@@ -78,7 +78,7 @@ const MyPage = () => {
       </div>
 
       {/* 게시물 리스트 섹션 */}
-      <div className="px-4 pt-[24px] grid grid-cols-3 gap-4">
+      <div className="px-4 py-[24px] grid grid-cols-3 gap-4">
         {/* 게시물 데이터 매핑 */}
         {myData.post &&
           myData.post.map((post) => (
