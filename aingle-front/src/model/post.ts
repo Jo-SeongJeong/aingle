@@ -10,8 +10,8 @@ export interface IPost {
   image: string;
   isLiked: boolean;
   postId: number;
-  totalComment: string;
-  totalLike: string;
+  totalComment: number;
+  totalLike: number;
   member: IMember;
 }
 
