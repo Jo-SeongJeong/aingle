@@ -209,7 +209,7 @@ public class OpenAIClient {
             if (nowReply.getMember() == null) {
                 sb.append("끝\n");
             } else {
-                sb.append(nowReply.getMember().getName()).append(": ").append(nowReply.getComment())
+                sb.append(nowReply.getMember().getName()).append(": ").append(nowReply.getContent())
                         .append("\n");
             }
         } else {
@@ -227,7 +227,7 @@ public class OpenAIClient {
                 sb.append(reply).append("\n");
             }
         }
-        log.info("댓글 및 대댓글 기록:\n{}", sb);
+        log.info("댓글 및 대댓글 기록:\n{}", sb.toString());
 
         Prompt replyReplyPrompt = getReplyReplyPrompt(characterInfo, getImageDescription(
                         PostRequest.builder().imageUrl(post.getImage()).message(post.getContent()).build()),
