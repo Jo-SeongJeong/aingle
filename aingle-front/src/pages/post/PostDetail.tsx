@@ -191,7 +191,7 @@ const PostDetail = () => {
 
       fetchData();
     }
-  }, [id]);
+  }, [id, validCommentCount]);
 
   if (!postData) {
     return <div>Loading...</div>;
@@ -298,15 +298,17 @@ const PostDetail = () => {
                   {comment.replies &&
                     comment.replies
                       .filter((reply) => {
-                        const adjustedReplyTime = new Date(reply.createTime);
+                        const replyTime = new Date(reply.createTime);
 
                         if (reply.character?.commentDelayTime) {
-                          adjustedReplyTime.setMinutes(
-                            adjustedReplyTime.getMinutes() +
+                          replyTime.setMinutes(
+                            replyTime.getMinutes() +
                               reply.character.commentDelayTime
                           );
+                          return replyTime <= new Date(); // character가 있는 대댓글만 시간 필터링 적용
                         }
-                        return adjustedReplyTime <= new Date(); // 현재 시간 이전의 대댓글만 표시
+
+                        return true; // character가 없는 대댓글은 필터링 없이 표시
                       })
                       .map((reply, idx) => (
                         <ReplyComment

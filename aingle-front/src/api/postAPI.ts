@@ -22,7 +22,7 @@ export const getPostDetail = async (postId: string) => {
     const response = await axiosInstance.get(
       `${BASE_URL}/posts/details/${postId}`
     );
-
+    console.log(`포스트 ${postId}디테일 : `, response.data);
     return response.data;
   } catch (error) {
     console.error(`${postId}번 게시글 상세 조회 실패 : `, error);
