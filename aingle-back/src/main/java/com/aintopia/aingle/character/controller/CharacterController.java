@@ -8,7 +8,6 @@ import com.aintopia.aingle.character.dto.response.CharacterDetailResponse;
 import com.aintopia.aingle.character.dto.response.CharacterPostResponse;
 import com.aintopia.aingle.character.service.CharacterService;
 import com.aintopia.aingle.common.util.MemberInfo;
-import com.aintopia.aingle.member.dto.response.MemberDetailResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

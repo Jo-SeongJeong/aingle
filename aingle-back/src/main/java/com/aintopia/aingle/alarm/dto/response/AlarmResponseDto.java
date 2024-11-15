@@ -1,9 +1,7 @@
 package com.aintopia.aingle.alarm.dto.response;
 
 import com.aintopia.aingle.character.dto.PostCharacter;
-import com.aintopia.aingle.member.dto.PostMember;
 import com.aintopia.aingle.post.dto.AlarmPost;
-import com.aintopia.aingle.vote.domain.Vote;
 import com.aintopia.aingle.vote.dto.VoteWinnerCharacter;
 import lombok.Builder;
 import lombok.Data;

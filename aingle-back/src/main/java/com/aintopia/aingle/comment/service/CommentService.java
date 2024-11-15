@@ -98,7 +98,7 @@ public class CommentService {
         Post post = postRepository.findById(c.getPost().getPostId())
             .orElseThrow(NotFoundPostException::new);
 
-        if (post.getIsDeleted() || memberId != member.getMemberId()) {
+        if (post.getIsDeleted() || member != post.getMember()) {
             throw new ForbiddenCommentException();
         }
 

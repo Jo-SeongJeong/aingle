@@ -80,7 +80,7 @@ public class ReplyService {
         Post post = postRepository.findById(c.getPost().getPostId())
             .orElseThrow(NotFoundPostException::new);
 
-        if (post.getIsDeleted() || c.getIsDeleted() || memberId != member.getMemberId()) {
+        if (post.getIsDeleted() || c.getIsDeleted() || member != reply.getMember()) {
             throw new ForbiddenReplyException();
         }
 
