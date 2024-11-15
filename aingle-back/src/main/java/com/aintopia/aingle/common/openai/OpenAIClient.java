@@ -235,6 +235,8 @@ public class OpenAIClient {
                         .append("\n");
                 }
             }
+            sb.append(nowReply.getMember().getName()).append(": ").append(nowReply.getContent())
+                .append("\n");
         }
         log.info("댓글 및 대댓글 기록:\n{}", sb.toString());
 
