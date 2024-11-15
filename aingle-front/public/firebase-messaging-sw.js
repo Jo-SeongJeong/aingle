@@ -28,12 +28,17 @@ self.addEventListener("activate", (event) => {
   console.log("Service Worker activated");
 });
 
+// self.addEventListener("fetch", (event) => {
+//   event.respondWith(
+//     fetch(event.request, { mode: "cors", cache: "no-store" }).catch(() => {
+//       return new Response("Network error occurred", { status: 408 });
+//     })
+//   );
+// });
+
+// 요청 가로채기 이벤트
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    fetch(event.request, { mode: "cors", cache: "no-store" }).catch(() => {
-      return new Response("Network error occurred", { status: 408 });
-    })
-  );
+  event.respondWith(fetch(event.request));
 });
 
 messaging.onBackgroundMessage((payload) => {
