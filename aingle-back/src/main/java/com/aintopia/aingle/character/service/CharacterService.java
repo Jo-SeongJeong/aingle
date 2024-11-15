@@ -25,7 +25,6 @@ import com.aintopia.aingle.follow.repository.FollowRepository;
 import com.aintopia.aingle.member.domain.Member;
 import com.aintopia.aingle.member.exception.NotFoundMemberException;
 import com.aintopia.aingle.member.repository.MemberRepository;
-import com.aintopia.aingle.post.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +60,6 @@ public class CharacterService {
     private final OpenAIClient openAIClient;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
-    private final PostService postService;
     private final ChatRoomRepository chatRoomRepository;
     private static final int MAX_RETRIES = 1;
 
