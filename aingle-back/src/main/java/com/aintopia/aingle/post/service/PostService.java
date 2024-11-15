@@ -97,7 +97,7 @@ public class PostService {
         List<CommentDto> commentDtos = comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .map(comment -> {
-                    List<Reply> replies = replyRepository.findByComment(comment);
+                    List<Reply> replies = replyRepository.findByCommentAndMember(comment, member);
                     return convertToCommentDto(comment, replies);
                 })
                 .collect(Collectors.toList());
@@ -180,7 +180,7 @@ public class PostService {
         List<CommentDto> commentDtos = comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .map(comment -> {
-                    List<Reply> replies = replyRepository.findByComment(comment);
+                    List<Reply> replies = replyRepository.findByCommentAndMember(comment, member);
                     return convertToCommentDto(comment, replies);
                 })
                 .collect(Collectors.toList());
