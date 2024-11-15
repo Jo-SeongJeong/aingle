@@ -18,7 +18,9 @@ const App = () => {
   const matchPostDetail = useMatch("/post/:id"); // "/post/:id" 경로와 일치 여부 확인
 
   useEffect(() => {
-    Notification.requestPermission();
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
   }, []);
 
   return (
