@@ -6,10 +6,10 @@ import axiosInstance from "./axiosInstance";
 export const getPublicCharacter = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters`);
-    console.log("퍼블릭 캐릭터 조회 : ", response.data);
+    // console.log("퍼블릭 캐릭터 조회 : ", response.data);
     return response.data;
   } catch (error) {
-    console.log("퍼블릭 캐릭터 전체 조회 실패: ", error);
+    // console.log("퍼블릭 캐릭터 전체 조회 실패: ", error);
     throw error;
   }
 };
@@ -18,10 +18,10 @@ export const getPublicCharacter = async () => {
 export const getCharacterDetail = async (id: number) => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/characters/${id}`);
-    console.log("캐릭터 상세 조회 성공 : ", response.data);
+    // console.log("캐릭터 상세 조회 성공 : ", response.data);
     return response.data;
   } catch (error) {
-    console.log("캐릭터 상세 조회 실패: ", error);
+    // console.log("캐릭터 상세 조회 실패: ", error);
     throw error;
   }
 };
@@ -31,10 +31,10 @@ export const getPrivateCharacter = async () => {
     const response = await axiosInstance.get(
       `${BASE_URL}/characters/my-character`
     );
-    console.log("내 캐릭터 조회 : ", response.data);
+    // console.log("내 캐릭터 조회 : ", response.data);
     return response.data;
   } catch (error) {
-    console.error("나만의 작은 캐릭터 조회 실패 : ", error);
+    // console.error("나만의 작은 캐릭터 조회 실패 : ", error);
     throw error;
   }
 };
@@ -45,7 +45,7 @@ export const getVoteCharacter = async () => {
     const response = await axiosInstance.get(`${BASE_URL}/votes`);
     return response.data;
   } catch (error) {
-    console.error("투표 대상 캐릭터 조회 실패 : ", error);
+    // console.error("투표 대상 캐릭터 조회 실패 : ", error);
     throw error;
   }
 };
@@ -56,7 +56,7 @@ export const getVoteCharacterDetail = async (id: number) => {
     const response = await axiosInstance.get(`${BASE_URL}/votes/${id}`);
     return response.data;
   } catch (error) {
-    console.error("투표 대상 캐릭터 상세 조회 실패 : ", error);
+    // console.error("투표 대상 캐릭터 상세 조회 실패 : ", error);
     throw error;
   }
 };
@@ -67,7 +67,7 @@ export const doVote = async (id: number) => {
     const response = await axiosInstance.post(`${BASE_URL}/votes/${id}`);
     return response.data;
   } catch (error) {
-    console.error("투표 실패 : ", error);
+    // console.error("투표 실패 : ", error);
     throw error;
   }
 };
@@ -97,10 +97,10 @@ export const createCharacter = async (info: CreateCharacter) => {
         },
       }
     );
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("캐릭터 등록 실패:", error);
+    // console.error("캐릭터 등록 실패:", error);
     throw error;
   }
 };
@@ -112,7 +112,7 @@ export const registVote = async (id: number) => {
       characterId: id,
     });
   } catch (error) {
-    console.error("투표 등록 실패 : ", error);
+    // console.error("투표 등록 실패 : ", error);
     throw error;
   }
 };
@@ -123,10 +123,10 @@ export const getCharDetail = async (characterId: number) => {
     const response = await axiosInstance.get(
       `${BASE_URL}/characters/${characterId}/post-info`
     );
-    console.log(`캐릭터 ${characterId} 정보 조회 성공 : `, response.data);
+    // console.log(`캐릭터 ${characterId} 정보 조회 성공 : `, response.data);
     return response.data;
   } catch (error) {
-    console.error(`캐릭터 ${characterId} 정보 조회 실패 : `, error);
+    // console.error(`캐릭터 ${characterId} 정보 조회 실패 : `, error);
     throw error;
   }
 };
@@ -137,9 +137,9 @@ export const deleteCharacter = async (characterId: number) => {
     const response = await axiosInstance.delete(
       `${BASE_URL}/characters/${characterId}`
     );
-    console.log(`캐릭터 ${characterId} 삭제 성공 : `, response.data);
+    // console.log(`캐릭터 ${characterId} 삭제 성공 : `, response.data);
   } catch (error) {
-    console.error(`캐릭터 ${characterId} 삭제 실패 : `, error);
+    // console.error(`캐릭터 ${characterId} 삭제 실패 : `, error);
     throw error;
   }
 };
@@ -148,10 +148,10 @@ export const deleteCharacter = async (characterId: number) => {
 export const getExpireTime = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/votes/info`);
-    console.log("종료 시간 조회 : ", response.data);
+    // console.log("종료 시간 조회 : ", response.data);
     return response.data;
   } catch (error) {
-    console.log("종료 시간 조회 실패: ", error);
+    // console.log("종료 시간 조회 실패: ", error);
     throw error;
   }
 };

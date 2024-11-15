@@ -31,10 +31,10 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log("회원가입 성공 : ", response.data);
+    // console.log("회원가입 성공 : ", response.data);
     return response.data;
   } catch (error) {
-    console.log("회원 가입 실패: ", error);
+    // console.log("회원 가입 실패: ", error);
     throw error;
   }
 };
@@ -43,11 +43,11 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
 export const getUserInfo = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/members`);
-    console.log("회원 정보 조회 성공 : ", response.data);
+    // console.log("회원 정보 조회 성공 : ", response.data);
 
     return response.data;
   } catch (error) {
-    console.error("회원 정보 조회 실패 : ", error);
+    // console.error("회원 정보 조회 실패 : ", error);
     throw error;
   }
 };
@@ -56,10 +56,10 @@ export const getUserInfo = async () => {
 export const deleteUser = async () => {
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/members`);
-    console.log(response);
+    // console.log(response);
     return response.data;
   } catch (error) {
-    console.error("회원 탈퇴 실패 : ", error);
+    // console.error("회원 탈퇴 실패 : ", error);
     throw error;
   }
 };
@@ -94,7 +94,7 @@ export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
 
     return response.data;
   } catch (error) {
-    console.error("회원 정보 수정 실패 : ", error);
+    // console.error("회원 정보 수정 실패 : ", error);
     throw error;
   }
 };
@@ -106,10 +106,10 @@ export const requestFcmToken = async (token: any) => {
     await axiosInstance.patch(`${BASE_URL}/members/fcm-tokens`, {
       fcmToken: token,
     });
-    console.log("FCM 토큰이 서버에 저장되었습니다:", token);
+    // console.log("FCM 토큰이 서버에 저장되었습니다:", token);
 
     // console.log("FCM 토큰을 얻을 수 없습니다. 알림 권한을 확인하세요.");
   } catch (error) {
-    console.error("FCM 토큰 요청 중 오류 발생:", error);
+    // console.error("FCM 토큰 요청 중 오류 발생:", error);
   }
 };

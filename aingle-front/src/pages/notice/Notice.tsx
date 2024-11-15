@@ -14,10 +14,8 @@ const Notice = () => {
 
     const { post, voteWinnerCharacter } = alarm;
 
-    // 게시글 알람일 경우 게시글 디테일로 리다이렉트
     if (post) {
       navigate(`/post/${post.postId}`);
-      // 투표 알람일 경우 투표에 선정된 캐릭터 디테일로 리다이렉트
     } else if (voteWinnerCharacter) {
       navigate(`/vote/chardetail/${voteWinnerCharacter.characterId}`);
     }
@@ -41,22 +39,39 @@ const Notice = () => {
     fetchAlarm();
   }, []);
 
+  const currentTime = new Date();
+
+  const isAlarmReady = (alarm: Ialarm) => {
+    if (!alarm.sender) {
+      // sender가 null일 경우 false 반환
+      return false;
+    }
+
+    const alarmTime = new Date(alarm.createTime);
+    alarmTime.setMinutes(
+      alarmTime.getMinutes() + alarm.sender.commentDelayTime
+    );
+    return alarmTime <= currentTime;
+  };
+
   return (
     <div className="h-full  relative bg-white px-6 pt-[13px] pb-[100px] overflow-auto">
       <PinkTextHeader />
       <div className="overflow-auto h-full">
-        {alarms.length === 0 ? (
+        {alarms.filter(isAlarmReady).length === 0 ? (
           <div className="text-center text-lg font-bold text-gray-600 py-5">
             알람이 없습니다
           </div>
         ) : (
-          alarms.map((alarm) => (
-            <NoticeCard
-              key={alarm.alarmId}
-              alarm={alarm}
-              onClickAlarm={() => handleAlarmClick(alarm)}
-            />
-          ))
+          alarms
+            .filter(isAlarmReady)
+            .map((alarm) => (
+              <NoticeCard
+                key={alarm.alarmId}
+                alarm={alarm}
+                onClickAlarm={() => handleAlarmClick(alarm)}
+              />
+            ))
         )}
       </div>
     </div>
