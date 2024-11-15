@@ -13,7 +13,8 @@
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-WFLDPSXQ");
     </script> -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- <meta name="apple-mobile-web-app-capable" content="yes" /> -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
     <meta charset="UTF-8" />
@@ -25,24 +26,6 @@
     <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp" />
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
     <link rel="manifest" href="/manifest.json" />
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("/service-worker.js")
-            .then((registration) => {
-              console.log(
-                "ServiceWorker registration successful with scope: ",
-                registration.scope
-              );
-            })
-            .catch((error) => {
-              console.log("ServiceWorker registration failed: ", error);
-            });
-        });
-      }
-    </script>
-
     <!-- <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -59,7 +42,7 @@
             });
         });
       }
-    </script>
+    </script> -->
 
     <script>
       if ("serviceWorker" in navigator) {
@@ -77,18 +60,11 @@
             });
         });
       }
-    </script> -->
+    </script>
+    -->
     <title>앵글~</title>
   </head>
   <body>
-    <!-- <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-WFLDPSXQ"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript> -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
