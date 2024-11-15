@@ -13,13 +13,11 @@ import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
 import com.aintopia.aingle.common.openai.model.PostRequest;
 import com.aintopia.aingle.common.service.FcmService;
 import com.aintopia.aingle.member.domain.Member;
-import com.aintopia.aingle.member.repository.MemberRepository;
 import com.aintopia.aingle.post.domain.Post;
 import com.aintopia.aingle.post.event.CreateAIPostEvent;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.dto.request.RegistReplyRequestDto;
-import com.aintopia.aingle.reply.exception.ForbiddenReplyException;
 import com.aintopia.aingle.reply.exception.NotFoundReplyException;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
 
@@ -70,7 +68,6 @@ public class OpenAIClient {
     private final CommentRepository commentRepository;
     private final Map<Long, String> postImageDescriptionRepo = new HashMap<>(); // key : postId, value : 이미지 설명
     private final ReplyRepository replyRepository;
-    private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final Map<Long, List<String>> chatHistory = new HashMap<>(); //key : chatRoomId, value : 최근 대화 10건

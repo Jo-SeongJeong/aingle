@@ -57,8 +57,9 @@ public class AlarmService {
 
     public void readAlarm(Long alarmId, Long memberId) {
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(NotFoundAlarmException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
-        if(memberId != alarm.getMember().getMemberId()) throw new ForbiddenAlarmException();
+        if(member != alarm.getMember()) throw new ForbiddenAlarmException();
 
         alarm.isRead();
         alarmRepository.save(alarm);

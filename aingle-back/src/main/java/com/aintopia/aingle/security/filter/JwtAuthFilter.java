@@ -1,6 +1,5 @@
 package com.aintopia.aingle.security.filter;
 
-
 import com.aintopia.aingle.security.CustomUserDetailService;
 import com.aintopia.aingle.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
