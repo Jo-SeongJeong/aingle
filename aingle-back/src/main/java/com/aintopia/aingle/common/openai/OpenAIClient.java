@@ -147,7 +147,7 @@ public class OpenAIClient {
         throws IOException {
 
         Character character = comment.getCharacter();
-        List<Reply> replies = getCommentWithReplies(comment.getCommentId());
+        List<Reply> replies = getCommentWithReplies(comment.getCommentId(), member);
         // 사용자 스스로의 대댓글은 생성 안함 만약 하게 할거면 여기를 열고 연관 함수 수정해야함
         if (comment.getCharacter() == null) {
             for (Reply r : replies) {
@@ -171,7 +171,7 @@ public class OpenAIClient {
         CharacterInfo characterInfo = character.toDTO();
         String replyWithAI = createReplyReply(post, comment, replies, characterInfo, reply);
         replyRepository.save(Reply.makeCharacterReply(comment, character,
-            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
+            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI), member));
 
         // db에 알람 생성
         Alarm alarm = alarmRepository.save(Alarm.alarmPostBuilder()
@@ -180,7 +180,7 @@ public class OpenAIClient {
             .sender(character)
             .build());
 
-        if (post.getMember().getFcmToken() != null) {
+        if (post.getMember() != null) {
             // FCM 보내기
             FcmDto fcmDto = FcmDto.builder()
                 .fcmToken(post.getMember().getFcmToken())
@@ -199,9 +199,9 @@ public class OpenAIClient {
     }
 
     // Comment 리스트와 Reply 리스트를 함께 처리하여 CommentDto 리스트 반환
-    private List<Reply> getCommentWithReplies(Long commentId) {
+    private List<Reply> getCommentWithReplies(Long commentId, Member member) {
         Optional<Comment> comment = commentRepository.findById(commentId);
-        return replyRepository.findByComment(comment.get());
+        return replyRepository.findByCommentAndMember(comment.get(), member);
     }
 
     public String createReplyReply(Post post, Comment comment, List<Reply> replies,

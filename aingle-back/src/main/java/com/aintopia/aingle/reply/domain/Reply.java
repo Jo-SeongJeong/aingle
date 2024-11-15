@@ -52,6 +52,10 @@ public class Reply {
     @JoinColumn(name = "character_id")
     private Character character;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "receiver_id")
+    private Member receiver;
+
     @Builder(builderMethodName = "replyBuilder")
     public Reply(Comment comment, Member member, RegistReplyRequestDto registReplyRequestDto) {
         this.comment = comment;
@@ -60,16 +64,17 @@ public class Reply {
         this.isDeleted = false;
     }
 
-    public static Reply makeCharacterReply(Comment comment, Character character, RegistReplyRequestDto registReplyRequestDto){
-        return new Reply(comment, character, registReplyRequestDto);
+    public static Reply makeCharacterReply(Comment comment, Character character, RegistReplyRequestDto registReplyRequestDto, Member member){
+        return new Reply(comment, character, registReplyRequestDto, member);
     }
 
-    public Reply (Comment comment, Character character, RegistReplyRequestDto registReplyRequestDto){
+    public Reply (Comment comment, Character character, RegistReplyRequestDto registReplyRequestDto, Member member){
         this.comment = comment;
         this.character = character;
         this.content = registReplyRequestDto.getContent();
         this.isDeleted = false;
         this.createTime = LocalDateTime.now();
+        this.member = member;
     }
 
     public void delete() {

@@ -104,7 +104,7 @@ public class ReplyService {
         CharacterInfo characterInfo = post.getCharacter().toDTO();
         String replyWithAI = openAIClient.createReplyByAI(post, comment, characterInfo);
         replyRepository.save(Reply.makeCharacterReply(comment, post.getCharacter(),
-            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI)));
+            new RegistReplyRequestDto(comment.getCommentId(), replyWithAI), member));
 
 
         // 1. 사용자가 캐릭터 게시글에 댓글 남긴 경우
@@ -139,7 +139,7 @@ public class ReplyService {
         return comments.stream()
             .filter(comment -> !comment.getIsDeleted())
             .map(comment -> {
-                List<Reply> replies = replyRepository.findByComment(comment);
+                List<Reply> replies = replyRepository.findByCommentAndMember(comment, member);
                 return convertToCommentDto(comment, replies);
             })
             .collect(Collectors.toList());

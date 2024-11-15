@@ -205,7 +205,7 @@ public class CommentService {
         return comments.stream()
             .filter(comment -> !comment.getIsDeleted())
             .map(comment -> {
-                List<Reply> replies = replyRepository.findByComment(comment);
+                List<Reply> replies = replyRepository.findByCommentAndMember(comment, member);
                 return convertToCommentDto(comment, replies);
             })
             .collect(Collectors.toList());
