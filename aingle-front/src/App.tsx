@@ -16,6 +16,7 @@ import { useEffect } from "react";
 const App = () => {
   const location = useLocation();
   const matchPostDetail = useMatch("/post/:id"); // "/post/:id" 경로와 일치 여부 확인
+  const matchChatDetail = useMatch("/chat/:id"); // "/post/:id" 경로와 일치 여부 확인
 
   useEffect(() => {
     if (Notification.permission !== "granted") {
@@ -43,6 +44,7 @@ const App = () => {
       </Routes>
 
       {!matchPostDetail &&
+        !matchChatDetail &&
         location.pathname !== "/result" &&
         location.pathname !== "/write" &&
         location.pathname !== "/vote/create" &&
