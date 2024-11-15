@@ -5,10 +5,10 @@ import { Inumbers, IpostChat } from "../model/chat";
 export const getChatList = async () => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/chat`);
-    console.log("채팅 리스트 : ", response.data);
+    // console.log("채팅 리스트 : ", response.data);
     return response.data.chatRoomDtoList;
   } catch (error) {
-    console.error("채팅 리스트 가져오기 실패 : ", error);
+    // console.error("채팅 리스트 가져오기 실패 : ", error);
   }
 };
 
@@ -22,7 +22,7 @@ export const getChatDetail = async (numbers: Inumbers) => {
 
     return response.data;
   } catch (error) {
-    console.error("채팅방 디테일 불러오기 실패 : ", error);
+    // console.error("채팅방 디테일 불러오기 실패 : ", error);
   }
 };
 
@@ -36,6 +36,6 @@ export const postChat = async (chat: IpostChat) => {
     );
     return response.data;
   } catch (error) {
-    console.error("채팅 보내기 실패 : ", error);
+    // console.error("채팅 보내기 실패 : ", error);
   }
 };

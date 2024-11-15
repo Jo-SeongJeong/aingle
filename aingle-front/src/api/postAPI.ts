@@ -8,10 +8,10 @@ export const getPost = async (page: number, size: number): Promise<IPost[]> => {
     const response = await axiosInstance.get<IPost[]>(
       `${BASE_URL}/posts?page=${page}&size=${size}`
     );
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("게시글 조회 실패:", error);
+    // console.error("게시글 조회 실패:", error);
     throw error;
   }
 };
@@ -22,10 +22,10 @@ export const getPostDetail = async (postId: string) => {
     const response = await axiosInstance.get(
       `${BASE_URL}/posts/details/${postId}`
     );
-    console.log(`포스트 ${postId}디테일 : `, response.data);
+    // console.log(`포스트 ${postId}디테일 : `, response.data);
     return response.data;
   } catch (error) {
-    console.error(`${postId}번 게시글 상세 조회 실패 : `, error);
+    // console.error(`${postId}번 게시글 상세 조회 실패 : `, error);
     throw error;
   }
 };
@@ -34,10 +34,10 @@ export const getPostDetail = async (postId: string) => {
 export const deletePopst = async (postId: number) => {
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/posts/${postId}`);
-    console.log("게시글 삭제 성공 : ", response);
+    // console.log("게시글 삭제 성공 : ", response);
     return response;
   } catch (error) {
-    console.error("게시글 삭제 실패 : ", error);
+    // console.error("게시글 삭제 실패 : ", error);
     throw error;
   }
 };
@@ -66,10 +66,10 @@ export const createPost = async (post: IcreatePost) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log(response);
+    // console.log(response);
     return response;
   } catch (error) {
-    console.error("게시글 등록 실패 : ", error);
+    // console.error("게시글 등록 실패 : ", error);
     throw error;
   }
 };
