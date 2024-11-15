@@ -1,7 +1,7 @@
 import React from "react";
 import { Ialarm } from "../../model/alarm";
 import { calTime } from "../../utils/date";
-import  CircleBird  from "../../assets/icons/CircleBird.png";
+import CircleBird from "../../assets/icons/CircleBird.png";
 
 interface AlarmProps {
   alarm: Ialarm;
@@ -10,7 +10,7 @@ interface AlarmProps {
 
 const NoticeCard: React.FC<AlarmProps> = ({ alarm, onClickAlarm }) => {
   const { sender, post, voteWinnerCharacter } = alarm;
-  console.log(alarm)
+  // console.log(alarm)
   // 시간을 계산하는 함수 호출
   const time = calTime(alarm.createTime);
 
