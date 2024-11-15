@@ -153,6 +153,8 @@ public class PostService {
         // 알림 취소
         for(Alarm alarm : postAlarmList) {
             fcmService.cancelScheduledNotification(alarm.getAlarmId());
+            alarmRepository.deleteById(alarm.getAlarmId());
+            log.info("알림 삭제 alarm Id :  " + alarm.getAlarmId());
         }
     }
 
