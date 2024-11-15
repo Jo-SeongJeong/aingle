@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -18,14 +21,29 @@ import java.util.Date;
 public class FcmService {
 
     private final TaskScheduler taskScheduler;
+    private final Map<Long, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
+
 
     @TransactionalEventListener
     public void scheduleNotificationWithDelay(FcmDto fcmDto) {
-        taskScheduler.schedule(
+        ScheduledFuture<?> scheduledTask  = taskScheduler.schedule(
                 () -> sendNotification(fcmDto),
                 new Date(System.currentTimeMillis() + (fcmDto.getDelayMinutes() * 60 * 1000))
         );
+        // 게시글 ID 또는 알림 ID를 키로 사용해 작업 저장
+        scheduledTasks.put(fcmDto.getAlarmId(), scheduledTask);
         log.info("Scheduled notification with delay: " + fcmDto.getDelayMinutes() + " 분 뒤에 알림을 보낼겁니다!");
+    }
+
+    public void cancelScheduledNotification(Long alarmId) {
+        ScheduledFuture<?> scheduledTask = scheduledTasks.get(alarmId);
+        if (scheduledTask != null) {
+            scheduledTask.cancel(false); // 작업 취소
+            scheduledTasks.remove(alarmId); // 작업 제거
+            log.info("Scheduled notification for Alarm ID " + alarmId + " was canceled.");
+        } else {
+            log.info("No scheduled notification found for Alarm ID " + alarmId);
+        }
     }
 
     public void sendNotification(FcmDto fcmDto) {
