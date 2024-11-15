@@ -7,6 +7,8 @@ services:
       - /home/ubuntu/nginx-react/logs:/var/log/nginx # 호스트의 '/home/ubuntu/nginx-react/logs' 디렉토리를 Nginx의 '/var/log/nginx' 디렉토리에 마운트
     networks:
       - aingle # 'aingle' 네트워크에 연결
+    environment:
+      - TZ=Asia/Seoul # 컨테이너 시간대를 'Asia/Seoul'로 설정
 
 networks:
   aingle:
