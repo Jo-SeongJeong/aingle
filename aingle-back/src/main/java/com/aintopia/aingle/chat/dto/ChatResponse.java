@@ -1,7 +1,6 @@
 package com.aintopia.aingle.chat.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
