@@ -12,6 +12,7 @@ const ChatDetail = () => {
   const [hasMore, setHasMore] = useState(true);
   const [afterPost, setAfterPost] = useState(false);
   const [page, setPage] = useState(0);
+  const [isDelete , setIsDelete] = useState(false);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const { id } = useParams();
   const parseId = parseInt(id);
@@ -45,39 +46,60 @@ const ChatDetail = () => {
     };
   }, [hasMore]);
 
-  const fetchChatDetail = async (params: Inumbers) => {
-    try {
-      if (!afterPost) {
-        const response = await getChatDetail(params);
-        if (response.chatMessageList.length === 0) {
-          setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
-        } else {
-          const sortedChatDetails = response.chatMessageList.sort(
-            (a, b) => a.chatMessageId - b.chatMessageId
-          );
-          setChatDetails((prev) => [...sortedChatDetails, ...prev]);
-        }
-      } else {
-        const nums = {
-          chatRoomId: parseId,
-          page: 0,
-          size: 10,
-        };
-        const response = await getChatDetail(nums);
-        setAfterPost(false);
-        if (response.chatMessageList.length === 0) {
-          setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
-        } else {
-          const sortedChatDetails = response.chatMessageList.sort(
-            (a, b) => a.chatMessageId - b.chatMessageId
-          );
-          setChatDetails((prev) => [...sortedChatDetails, ...prev]);
-        }
-      }
-    } catch (error) {
-      console.error("채팅방 불러오기 실패: ", error);
-    }
-  };
+ const fetchChatDetail = async (params: Inumbers) => {
+   try {
+     if (!afterPost) {
+       const response = await getChatDetail(params);
+       
+       console.log(response)
+       // 409 에러 처리
+       if (response === undefined) {
+         console.error("삭제된 캐릭터입니다");
+         setIsDelete(true);
+         console.log(isDelete)
+       }
+
+       if (response.chatMessageList.length === 0) {
+         setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
+       } else {
+         const sortedChatDetails = response.chatMessageList.sort(
+           (a, b) => a.chatMessageId - b.chatMessageId
+         );
+         setChatDetails((prev) => [...sortedChatDetails, ...prev]);
+       }
+     } else {
+       const nums = {
+         chatRoomId: parseId,
+         page: 0,
+         size: 10,
+       };
+       const response = await getChatDetail(nums);
+
+       // 409 에러 처리
+       if (response.status === 409) {
+         console.error("삭제된 캐릭터입니다");
+         return; // 에러 메시지 출력 후 함수 종료
+       }
+
+       setAfterPost(false);
+       if (response.chatMessageList.length === 0) {
+         setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
+       } else {
+         const sortedChatDetails = response.chatMessageList.sort(
+           (a, b) => a.chatMessageId - b.chatMessageId
+         );
+         setChatDetails((prev) => [...sortedChatDetails, ...prev]);
+       }
+     }
+   } catch (error) {
+     console.error("채팅방 불러오기 실패: ", error);
+
+     // 에러가 409일 경우 처리
+     if (error.response && error.response.status === 409) {
+       console.error("삭제된 캐릭터입니다");
+     }
+   }
+ };
 
   useEffect(() => {
     fetchChatDetail(params);
@@ -142,14 +164,30 @@ const ChatDetail = () => {
       }
     }
   };
+
+ if (isDelete) {
+   return (
+     <div className="bg-[#ffffff] h-screen w-full flex items-center justify-center">
+       <TextHeader navTo={""} headerText={""} />
+       <h1 className="text-gray-500 text-lg">삭제된 캐릭터입니다.</h1>
+     </div>
+   );
+ }
+
   return (
     <div className="bg-[#ffffff] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-hidden">
       <TextHeader navTo={""} headerText={characterName} />
       <div
-        className="flex flex-col justify-start flex-1 h-full overflow-y-scroll scrollbar-hide"
+        className="flex flex-col justify-start flex-1 overflow-y-scroll scrollbar-hide mt-10"
         ref={chatBoxRef}
+        style={{
+          width: "448px",
+          height: "860px",
+          padding: "16px", 
+          boxSizing: "border-box", 
+        }}
       >
-        <div className="flex flex-col gap-4 mb-11">
+        <div className="flex flex-col gap-4 mb-10">
           {chatDetails.map((chatDetail, index) =>
             chatDetail.memberId ? (
               <div key={index} className="flex items-center justify-end">
