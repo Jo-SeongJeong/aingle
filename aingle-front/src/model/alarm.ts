@@ -2,15 +2,16 @@ import { IvoteWinnerCharacter } from "./vote";
 
 // alarm에 포함되는 알림 sender 정보
 export interface Isender {
-    characterId : number;
-    name : string;
-    characterImage : string;
+  characterId: number;
+  name: string;
+  characterImage: string;
+  commentDelayTime: number;
 }
 
 // alarm에 포함되는 게시글 정보
 export interface Ipost {
-    postId : number;
-    image : string;
+  postId: number;
+  image: string;
 }
 
 export interface Ialarm {
@@ -26,6 +27,6 @@ export interface Ialarm {
 }
 
 export interface IgetAlarm {
-    page : number;
-    size : number;
+  page: number;
+  size: number;
 }

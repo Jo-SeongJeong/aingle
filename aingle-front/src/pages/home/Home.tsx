@@ -36,13 +36,13 @@ const Home = () => {
         vapidKey: import.meta.env.VITE_REACT_APP_VAP_ID,
       })
         .then((token) => {
-          console.log("푸시 토큰 발급 완료:", token);
+          // console.log("푸시 토큰 발급 완료:", token);
           // requestFcmToken(userData.id, token);
           requestFcmToken(token);
           sessionStorage.setItem("fcmToken", token);
         })
         .catch((err) => {
-          console.error("푸시 토큰 가져오기 실패:", err);
+          // console.error("푸시 토큰 가져오기 실패:", err);
         });
     },
     // }
