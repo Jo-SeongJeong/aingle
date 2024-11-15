@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import send from "../../assets/icons/send.png";
 import { getChatDetail, postChat } from "../../api/chatAPI";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { IchatRoomDetail, Inumbers, IpostChat } from "../../model/chat";
 import { calTime } from "../../utils/date";
+import TextHeader from "../../components/header/TextHeader";
 
 const ChatDetail = () => {
   const [chatDetails, setChatDetails] = useState<IchatRoomDetail[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [hasMore, setHasMore] = useState(true);
-  const [afterPost , setAfterPost] = useState(false);
+  const [afterPost, setAfterPost] = useState(false);
   const [page, setPage] = useState(0);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const { id } = useParams();
   const parseId = parseInt(id);
-
+  const location = useLocation();
+  const characterName = location.state?.characterName;
   const params = {
     chatRoomId: parseId,
     page: page,
@@ -43,14 +45,10 @@ const ChatDetail = () => {
     };
   }, [hasMore]);
 
-
   const fetchChatDetail = async (params: Inumbers) => {
-    console.log(params)
     try {
       if (!afterPost) {
         const response = await getChatDetail(params);
-        console.log(response);
-
         if (response.chatMessageList.length === 0) {
           setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
         } else {
@@ -65,10 +63,8 @@ const ChatDetail = () => {
           page: 0,
           size: 10,
         };
-        console.log("채팅 보내고 나서 호출되는 영역 : " , nums);
         const response = await getChatDetail(nums);
         setAfterPost(false);
-        console.log(response);
         if (response.chatMessageList.length === 0) {
           setHasMore(false); // 더 이상 불러올 데이터가 없으면 false
         } else {
@@ -112,6 +108,7 @@ const ChatDetail = () => {
 
   const handleSend = async () => {
     if (inputValue.trim()) {
+      // 임시 메시지를 로컬 상태에 추가하여 즉각적으로 표시
       const temporaryMessage: IchatRoomDetail = {
         chatMessageId: Date.now(),
         message: inputValue,
@@ -128,23 +125,31 @@ const ChatDetail = () => {
       };
 
       try {
-        await postChat(newMessage);
-        setAfterPost(true);
-        console.log(afterPost);
-        fetchChatDetail(params); // 메시지 전송 후 최신 메시지 불러오기
+        const response = await postChat(newMessage); // 메시지 전송 및 응답 받기
+        if (response) {
+          // postChat 응답을 기반으로 로컬 상태 업데이트
+          const newChatDetail: IchatRoomDetail = {
+            chatMessageId: response.chatMessageId,
+            message: response.aiMessage,
+            createTime: response.createTime,
+            memberId: null,
+            character: response.character,
+          };
+          setChatDetails((prev) => [...prev, newChatDetail]);
+        }
       } catch (error) {
         console.error("메시지 전송 실패: ", error);
       }
     }
   };
-  console.log(chatDetails);
   return (
-    <div className="bg-[#ffe8f1] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-hidden">
+    <div className="bg-[#ffffff] h-screen w-full px-[16px] pb-[34px] flex flex-col items-center relative overflow-hidden">
+      <TextHeader navTo={""} headerText={characterName} />
       <div
         className="flex flex-col justify-start flex-1 h-full overflow-y-scroll scrollbar-hide"
         ref={chatBoxRef}
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mb-11">
           {chatDetails.map((chatDetail, index) =>
             chatDetail.memberId ? (
               <div key={index} className="flex items-center justify-end">

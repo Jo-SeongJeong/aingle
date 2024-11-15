@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import PinkTextHeader from "../../components/header/PinkTextHeader";
 import { useNavigate } from "react-router-dom";
 import { getChatList } from "../../api/chatAPI";
 import { IchatRoom } from "../../model/chat";
 import { calTime } from "../../utils/date";
+import TextHeader from "../../components/header/TextHeader";
+
 
 const Chat = () => {
   const [chatList, setChatList] = useState<IchatRoom[]>([]);
@@ -16,8 +17,8 @@ const Chat = () => {
     return message;
   };
 
-  const clickChat = (id: number) => {
-    navigate(`/chat/${id}`);
+  const clickChat = (id: number, characterName: string) => {
+    navigate(`/chat/${id}`, { state: { characterName } });
   };
 
   useEffect(() => {
@@ -41,9 +42,14 @@ const Chat = () => {
   }, []);
 
   return (
-    <div className="bg-white h-screen w-full px-4 py-6 flex flex-col items-start overflow-y-auto">
-      <PinkTextHeader />
-      <div className="flex flex-col w-full">
+    <div className="bg-white h-screen w-full flex flex-col overflow-hidden">
+      {/* 헤더가 상단에 고정 */}
+      <div className="absolute top-0 w-full z-10">
+        <TextHeader navTo={""} headerText={"다이렉트 메세지"} />
+      </div>
+
+      {/* 채팅 리스트가 헤더 아래에서부터 렌더링 */}
+      <div className="mt-[60px] flex-1 overflow-y-auto px-4 py-6">
         {chatList.length === 0 ? (
           <div className="text-gray-500 text-center">
             채팅 리스트가 없습니다
@@ -53,12 +59,13 @@ const Chat = () => {
             <div
               key={chat.chatRoomId}
               className="flex items-center justify-between mb-4 cursor-pointer"
-              onClick={() => clickChat(chat.chatRoomId)}
+              onClick={() => clickChat(chat.chatRoomId, chat.character.name)}
             >
               <div className="flex items-center">
                 <img
                   src={chat.character.characterImage}
                   className="w-12 h-12 rounded-full bg-gray-300 mr-4"
+                  alt={chat.character.name}
                 />
                 <div className="flex flex-col">
                   <span className="font-semibold mb-1 text-black text-sm">
