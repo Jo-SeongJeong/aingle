@@ -74,7 +74,7 @@ public class Reply {
         this.content = registReplyRequestDto.getContent();
         this.isDeleted = false;
         this.createTime = LocalDateTime.now();
-        this.member = member;
+        this.receiver = member;
     }
 
     public void delete() {
