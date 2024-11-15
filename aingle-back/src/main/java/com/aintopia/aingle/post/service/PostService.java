@@ -1,5 +1,7 @@
 package com.aintopia.aingle.post.service;
 
+import com.aintopia.aingle.alarm.domain.Alarm;
+import com.aintopia.aingle.alarm.repository.AlarmRepository;
 import com.aintopia.aingle.character.domain.Character;
 import com.aintopia.aingle.character.dto.PostCharacter;
 import com.aintopia.aingle.character.repository.CharacterRepository;
@@ -7,6 +9,7 @@ import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.dto.CommentDto;
 import com.aintopia.aingle.comment.repository.CommentRepository;
 import com.aintopia.aingle.comment.service.CommentService;
+import com.aintopia.aingle.common.service.FcmService;
 import com.aintopia.aingle.common.service.S3Service;
 import com.aintopia.aingle.follow.dto.FollowInfo;
 import com.aintopia.aingle.follow.service.FollowService;
@@ -58,6 +61,8 @@ public class PostService {
     private final CommentService commentService;
     private final LikeRepository likeRepository;
     private final LikeService likeService;
+    private final FcmService fcmService;
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public List<PostResponseDto> getAllPost(Long memberId, int page, int size) {
@@ -143,6 +148,12 @@ public class PostService {
 
         post.delete();
         postRepository.save(post);
+        // 게시글 관련 모든 알람 조회
+        List<Alarm> postAlarmList = alarmRepository.findByPost(post);
+        // 알림 취소
+        for(Alarm alarm : postAlarmList) {
+            fcmService.cancelScheduledNotification(alarm.getAlarmId());
+        }
     }
 
     // Post를 PostResponseDto로 변환하는 메서드
