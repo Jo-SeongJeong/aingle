@@ -27,7 +27,7 @@ const CharDetail = () => {
   }, []);
 
   return (
-    <div className="h-full min-h-screen relative bg-white overflow-auto ">
+    <div className="min-h-screen relative bg-white overflow-auto mb-[75px]">
       {/* 배경색 */}
       <div
         className="w-full h-[160px] bg-cover bg-center absolute top-0 left-0"

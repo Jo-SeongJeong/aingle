@@ -6,7 +6,7 @@ import VoteMain from "../pages/vote/VoteMain";
 
 const VotePages = () => {
   return (
-    <div className="h-full relative bg-white">
+    <div className="min-h-screen relative bg-white">
       <Routes>
         <Route path="/" element={<Vote />} />
         <Route path="/create" element={<CreateChar />} />
