@@ -74,9 +74,16 @@ const Footer = () => {
     const fetchUnreadAlarms = async () => {
       try {
         const response = await getAlarm({ page: 0, size: 10 });
-        const unreadAlarms = response.filter(
-          (alarm: Ialarm) => !alarm.isRead
-        ).length;
+        const currentTime = new Date();
+
+        const unreadAlarms = response.filter((alarm: Ialarm) => {
+          const alarmTime = new Date(alarm.createTime);
+          alarmTime.setSeconds(
+            alarmTime.getSeconds() + alarm.sender.commentDelayTime
+          );
+          return !alarm.isRead && alarmTime < currentTime;
+        }).length;
+
         setUnreadAlarm(unreadAlarms);
       } catch (error) {
         console.error("알람 데이터 가져오기 실패:", error);
