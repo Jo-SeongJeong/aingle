@@ -22,7 +22,7 @@ const TextHeader = ({ navTo, headerText }: TextHeaderProps) => {
   }, [navTo]);
 
   return (
-    <div className="absolute top-0 bg-white w-full py-[15px] px-[18px] flex justify-between items-center">
+    <div className="absolute top-0 bg-white w-full py-[15px] px-[18px] flex justify-between items-center shadow-md">
       <div
         onClick={() => {
           if (typeof path === "number") {
