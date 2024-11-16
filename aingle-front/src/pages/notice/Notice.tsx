@@ -30,6 +30,7 @@ const Notice = () => {
     const fetchAlarm = async () => {
       try {
         const response = await getAlarm(numbers);
+        console.log("알림 : ", response);
         setAlarms(response);
       } catch (error) {
         console.error("알림 조회 실패: ", error);

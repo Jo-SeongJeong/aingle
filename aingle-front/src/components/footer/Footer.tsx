@@ -77,9 +77,11 @@ const Footer = () => {
         const currentTime = new Date();
 
         const unreadAlarms = response.filter((alarm: Ialarm) => {
+          if (!alarm.sender) return false;
+
           const alarmTime = new Date(alarm.createTime);
-          alarmTime.setSeconds(
-            alarmTime.getSeconds() + alarm.sender.commentDelayTime
+          alarmTime.setMinutes(
+            alarmTime.getMinutes() + alarm.sender.commentDelayTime
           );
           return !alarm.isRead && alarmTime < currentTime;
         }).length;
