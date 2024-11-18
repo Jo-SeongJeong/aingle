@@ -60,7 +60,7 @@ import static com.aintopia.aingle.common.openai.model.OpenAIPrompt.*;
 public class OpenAIClient {
 
     private final OpenAiChatModel chatModel;
-//    private final OpenAiImageModel imageModel;
+    //    private final OpenAiImageModel imageModel;
     private final CharacterRepository characterRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -304,7 +304,8 @@ public class OpenAIClient {
         String imagePrompt = creatAIPostPrompt(content,
             createCharacterSystemPrompt(characterInfo));
         // 이미지 설명 생성
-        String imageDescriptionResponse = chatModel.call(new Prompt(imagePrompt)).getResult().getOutput().getContent();
+        String imageDescriptionResponse = chatModel.call(new Prompt(imagePrompt)).getResult()
+            .getOutput().getContent();
         log.info("게시글 이미지 생성 프롬프트:\n{}", imageDescriptionResponse);
         MultipartFile image = diffusionAIClient.generateImage(imageDescriptionResponse);
 
@@ -337,10 +338,10 @@ public class OpenAIClient {
                     new CreateAIPostEvent(postResponse, saveCharacter.getCharacterId()));
                 return; // 성공 시 메서드 종료
             } catch (Exception e) {
-                log.error("AI Post 등록 실패 - 시도 횟수: {}", i + 1, e);
+                log.error("{}: AI Post 등록 실패 - 시도 횟수: {}", saveCharacter.getName(), i + 1, e);
             }
         }
-        throw new RuntimeException("Post 등록 실패");
+        throw new RuntimeException(saveCharacter.getName() + ": Post 등록 실패");
     }
 
     private Prompt getSummaryPrompt(CharacterInfo characterInfo) {

@@ -36,6 +36,7 @@ import com.aintopia.aingle.post.dto.MyPagePostDto;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -216,16 +217,16 @@ public class CharacterService {
         }
 
         Follow savedFollow = followRepository.save(Follow.builder()
-                .member(member)
-                .character(saveCharacter)
-                .build());
+            .member(member)
+            .character(saveCharacter)
+            .build());
 
         // 팔로우하는 캐릭터와 채팅방 생성
         log.info("생성한 캐릭터 채팅방 생성 캐릭터 id :  " + saveCharacter.getCharacterId());
         chatRoomRepository.save(ChatRoom.builder()
-                .member(member)
-                .character(savedFollow.getCharacter())
-                .build());
+            .member(member)
+            .character(savedFollow.getCharacter())
+            .build());
 
         return CharacterCreateResponseDto.builder().characterId(saveCharacter.getCharacterId())
             .build();
@@ -235,7 +236,7 @@ public class CharacterService {
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
                 String summary = openAIClient.createSummary(
-                        CharacterInfo.builder().character(saveCharacter).build()
+                    CharacterInfo.builder().character(saveCharacter).build()
                 );
                 saveCharacter.updateSummary(summary);
 
@@ -249,20 +250,28 @@ public class CharacterService {
 
 
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
-    // 일단 4시
-    @Scheduled(cron = "0 0 16 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 35 16 * * *", zone = "Asia/Seoul")
     @Transactional
     public void scheduleCharacterPostCreation() {
-        List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
+        // 한 캐릭만 게시글 테스트
+        Optional<Character> oneCharacter = characterRepository.findById(1L);
+
+        // 실 사용 코드 주석 해제 후 사용
+//        List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
+
+        // 아래 두 줄 코드가 테스트용 코드
+        List<Character> publicCharacters = new ArrayList<>();
+        oneCharacter.ifPresent(publicCharacters::add);
+
         int totalCharacters = publicCharacters.size();
-        int batchSize = 5;
+        int batchSize = 3;
+
+        // 스케줄러를 배치 반복문 외부에서 한 번만 생성
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
         for (int i = 0; i < totalCharacters; i += batchSize) {
-            // 현재 배치에서 처리할 캐릭터 목록 가져오기 (최대 5개)
-            List<Character> batch = publicCharacters.subList(i, Math.min(i + batchSize, totalCharacters));
-
-            // 스케줄러 생성
-            ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+            List<Character> batch = publicCharacters.subList(i,
+                Math.min(i + batchSize, totalCharacters));
 
             for (int j = 0; j < batch.size(); j++) {
                 Character character = batch.get(j);
@@ -273,17 +282,25 @@ public class CharacterService {
                 }, j * 20L, TimeUnit.SECONDS);
             }
 
-            // 배치 작업이 끝난 후 스케줄러 종료 및 다음 배치 대기
-            executorService.shutdown();
+            // 배치 간 대기 시간 추가 (1분)
             try {
-                // 1분 대기 후 다음 배치 실행
-                executorService.awaitTermination(1, TimeUnit.MINUTES);
+                Thread.sleep(60 * 1000); // 1분 대기
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-    }
 
+        // 모든 작업이 끝난 후 스케줄러 종료
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            e.printStackTrace();
+        }
+    }
 
 
     @Transactional
