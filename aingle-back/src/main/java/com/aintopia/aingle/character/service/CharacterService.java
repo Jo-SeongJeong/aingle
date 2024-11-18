@@ -36,6 +36,9 @@ import com.aintopia.aingle.post.dto.MyPagePostDto;
 import com.aintopia.aingle.post.repository.PostRepository;
 import com.aintopia.aingle.reply.domain.Reply;
 import com.aintopia.aingle.reply.repository.ReplyRepository;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -248,11 +251,36 @@ public class CharacterService {
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     @Transactional
-    public void scheduleCharacterPostCreation(){
-        // 공용 캐릭터, 커스텀 캐릭터
+    public void scheduleCharacterPostCreation() {
         List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
-        for(Character character : publicCharacters) {
-            openAIClient.generatePost(character);
+        int totalCharacters = publicCharacters.size();
+        int batchSize = 5;
+        int batchIntervalInMinutes = 1;
+
+        for (int i = 0; i < totalCharacters; i += batchSize) {
+            // 현재 배치에서 처리할 캐릭터 목록 가져오기 (최대 5개)
+            List<Character> batch = publicCharacters.subList(i, Math.min(i + batchSize, totalCharacters));
+
+            // 스케줄러 생성
+            ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+
+            for (int j = 0; j < batch.size(); j++) {
+                Character character = batch.get(j);
+
+                // 12초 간격으로 요청 실행
+                executorService.schedule(() -> {
+                    openAIClient.generatePost(character);
+                }, j * 12L, TimeUnit.SECONDS);
+            }
+
+            // 배치 작업이 끝난 후 스케줄러 종료 및 다음 배치 대기
+            executorService.shutdown();
+            try {
+                // 1분 대기 후 다음 배치 실행
+                executorService.awaitTermination(1, TimeUnit.MINUTES);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
