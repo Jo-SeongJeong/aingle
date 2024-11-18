@@ -24,4 +24,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByMemberId(@Param("memberId") Long memberId);
 
     List<Post> findByCharacter(Character character);
+
+    List<Post> findByCharacterAndIsDeletedFalse(Character character);
 }

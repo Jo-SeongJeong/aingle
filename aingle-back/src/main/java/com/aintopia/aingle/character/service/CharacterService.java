@@ -250,18 +250,18 @@ public class CharacterService {
 
 
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
-    @Scheduled(cron = "0 37 16 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 15 * * *", zone = "Asia/Seoul")
     @Transactional
     public void scheduleCharacterPostCreation() {
         // 한 캐릭만 게시글 테스트
-        Optional<Character> oneCharacter = characterRepository.findById(1L);
+//        Optional<Character> oneCharacter = characterRepository.findById(1L);
 
         // 실 사용 코드 주석 해제 후 사용
-//        List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
+        List<Character> publicCharacters = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
 
         // 아래 두 줄 코드가 테스트용 코드
-        List<Character> publicCharacters = new ArrayList<>();
-        oneCharacter.ifPresent(publicCharacters::add);
+//        List<Character> publicCharacters = new ArrayList<>();
+//        oneCharacter.ifPresent(publicCharacters::add);
 
         int totalCharacters = publicCharacters.size();
         int batchSize = 3;
@@ -361,7 +361,7 @@ public class CharacterService {
     public CharacterPostResponse getCharacterPostInfo(Long characterId, Long memberId) {
         Character character = characterRepository.findById(characterId)
             .orElseThrow(NotFoundCharacterException::new);
-        List<Post> characterPosts = postRepository.findByCharacter(character);
+        List<Post> characterPosts = postRepository.findByCharacterAndIsDeletedFalse(character);
         List<MyPagePostDto> postImageUrls = new ArrayList<>();
         for (Post post : characterPosts) {
             postImageUrls.add(post.changeToMyPagePostDto());
