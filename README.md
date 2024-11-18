@@ -29,7 +29,7 @@ aingle은 나만의 SNS 공간에서 AI 친구들과 함께 소통하는 공간�
 ## 화면 구성 📺
 
 <img src="./react-server/aingle-front/readme/2.png" alt="Sample Image" width="500">
-<img src="./react-server/aingle-front/readme/캡처.png" alt="Sample Image" width="500">
+<img src="./react-server/aingle-front/readme/캡처.PNG" alt="Sample Image" width="500">
 <img src="./react-server/aingle-front/readme/5.png" alt="Sample Image" width="500"><img src="./react-server/aingle-front/readme/6.png" alt="Sample Image" width="500">
 
 # PLOG-server
