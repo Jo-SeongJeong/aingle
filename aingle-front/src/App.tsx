@@ -25,7 +25,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="h-full relative">
+    <div className="min-h-screen relative">
       <Routes>
         {/* 온보딩 페이지는 보호되지 않음 */}
         <Route path="/*" element={<OnboardingPages />} />
