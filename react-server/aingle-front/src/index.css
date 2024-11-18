@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  overscroll-behavior: none;
+}
+
+body {
+  @apply overflow-y-auto;
+}
+
+:root {
+  font-family: "Pretendard", Inter, system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: #26282b;
+  background-color: white;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Adding HakgyoansimDunggeunmisoTTF-B Font */
+@font-face {
+  font-family: "HakgyoansimDunggeunmisoTTF-B";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2")
+    format("woff2");
+  font-weight: 700;
+
+  font-style: normal;
+}
+
+/* Custom Font Class for HakgyoansimDunggeunmiso */
+.font-hakgyo {
+  font-family: "HakgyoansimDunggeunmisoTTF-B", sans-serif;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.min-h-screen {
+  min-height: 100vh; /* 푸터를 포함한 최소 높이 설정 */
+}
