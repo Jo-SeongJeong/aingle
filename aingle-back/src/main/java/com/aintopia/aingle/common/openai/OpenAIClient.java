@@ -7,6 +7,7 @@ import com.aintopia.aingle.character.dto.CharacterInfo;
 import com.aintopia.aingle.character.repository.CharacterRepository;
 import com.aintopia.aingle.comment.domain.Comment;
 import com.aintopia.aingle.comment.repository.CommentRepository;
+import com.aintopia.aingle.common.diffusionai.DiffusionAIClient;
 import com.aintopia.aingle.common.dto.CreateAIPostResponseDto;
 import com.aintopia.aingle.common.dto.FcmDto;
 import com.aintopia.aingle.common.openai.model.OpenAIPrompt;
@@ -33,13 +34,10 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.model.Media;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageModel;
-import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
@@ -62,7 +60,7 @@ import static com.aintopia.aingle.common.openai.model.OpenAIPrompt.*;
 public class OpenAIClient {
 
     private final OpenAiChatModel chatModel;
-    private final OpenAiImageModel imageModel;
+//    private final OpenAiImageModel imageModel;
     private final CharacterRepository characterRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -71,6 +69,7 @@ public class OpenAIClient {
     private final AlarmRepository alarmRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final Map<Long, List<String>> chatHistory = new HashMap<>(); //key : chatRoomId, value : 최근 대화 10건
+    private final DiffusionAIClient diffusionAIClient;
 
     private static final int MAX_RETRIES = 1;
     private final FcmService fcmService;
@@ -302,16 +301,16 @@ public class OpenAIClient {
         String content = chatResponse.getResult().getOutput().getContent();
 
         // 글 기반 이미지 생성
-        String getImageUrlPrompt = creatAIPostPrompt(content,
+        String imagePrompt = creatAIPostPrompt(content,
             createCharacterSystemPrompt(characterInfo));
-        log.info("게시글 이미지 생성 프롬프트:\n{}", getImageUrlPrompt);
-        ImageResponse imageResponse = imageModel.call(new ImagePrompt(getImageUrlPrompt,
-            OpenAiImageOptions.builder().withQuality("hd").withStyle("vivid").withHeight(1024)
-                .withWidth(1024).build()));
-        String url = imageResponse.getResult().getOutput().getUrl();
-        log.info("생성 이미지 URL: {}", url);
+        // 이미지 설명 생성
+        String imageDescriptionResponse = chatModel.call(new Prompt(imagePrompt)).getResult().getOutput().getContent();
+        log.info("게시글 이미지 생성 프롬프트:\n{}", imageDescriptionResponse);
+        MultipartFile image = diffusionAIClient.generateImage(imageDescriptionResponse);
+
+        log.info("이미지 생성 완료");
         log.info("게시글 글:\n{}", content);
-        return CreateAIPostResponseDto.builder().file(convertUrlToMultipartFile(url))
+        return CreateAIPostResponseDto.builder().file(image)
             .content(content).build();
     }
 
