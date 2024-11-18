@@ -249,6 +249,7 @@ public class CharacterService {
 
 
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
+    // 일단 4시
     @Scheduled(cron = "0 0 16 * * *", zone = "Asia/Seoul")
     @Transactional
     public void scheduleCharacterPostCreation() {
