@@ -96,7 +96,7 @@ const Onboarding = () => {
     switch (pageNumber) {
       case 1:
         return (
-          <div className="flex items-center justify-center flex-col h-full">
+          <div className="flex items-center justify-center flex-col min-h-screen">
             {" "}
             {/* 가운데 정렬 */}
             <img src={bird} className="w-[60px] h-[60px] mb-6" />
