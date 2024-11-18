@@ -7,11 +7,7 @@ const PinkTextHeader = () => {
 
   return (
     <div className="pt-[20px] py-[27.5px] w-full sticky flex items-center justify-between">
-      <img
-        src={logo}
-        className="h-[25px]"
-        onClick={() => (window.location.href = "/home")}
-      />
+      <img src={logo} className="h-[25px]" onClick={() => navigate("/home")} />
       <img
         src={toChat}
         className=" h-[16px]"
