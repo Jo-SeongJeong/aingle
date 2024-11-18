@@ -155,7 +155,7 @@ const VoteMain = () => {
 
   return (
     <div className="bg-[#ffe8f1] min-h-screen w-full flex flex-col">
-      <div className="bg-[#ffe8f1] w-full px-[16px] pb-[15px] flex flex-col items-center relative">
+      <div className="bg-[#ffe8f1]  w-full px-[16px] pb-[15px] flex flex-col items-center relative">
         <div className="w-full flex justify-between items-center mt-[30px] mb-[30px]">
           <button className="text-[#fb599a] text-lg" onClick={handleBackClick}>
             <svg
