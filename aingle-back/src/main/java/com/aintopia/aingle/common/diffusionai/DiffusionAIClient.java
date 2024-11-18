@@ -1,7 +1,5 @@
 package com.aintopia.aingle.common.diffusionai;
 
-import com.aintopia.aingle.common.service.S3Service;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -17,12 +15,7 @@ import java.io.IOException;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class DiffusionAIClient {
-
-    private final RestTemplate restTemplate;
-    private final S3Service s3Service;
-
 
     @Value("${diffusionai.api.key}")
     private String apiKey; // API 키를 프로퍼티 파일에서 불러옵니다.
