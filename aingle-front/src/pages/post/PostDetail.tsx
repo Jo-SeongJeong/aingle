@@ -289,47 +289,54 @@ const PostDetail = () => {
           {/* 댓글 */}
           <div style={{}}>
             <div className="" style={{}}>
-              {comments.map((comment, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    setCommentId(comment.commentId);
-                    setCommentWriter(
-                      comment.member?.name ||
-                        comment.character?.name ||
-                        "Unknown User"
-                    );
-                  }}
-                >
-                  <Postcomment
-                    key={comment.commentId}
-                    comment={comment}
-                    refreshComments={fetchAndFilterComments}
-                  />
-                  {comment.replies &&
-                    comment.replies
-                      .filter((reply) => {
-                        const replyTime = new Date(reply.createTime);
+              {comments
+                // commentId 기준으로 내림차순 정렬
+                .sort((a, b) => a.commentId - b.commentId)
+                .map((comment, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setCommentId(comment.commentId);
+                      setCommentWriter(
+                        comment.member?.name ||
+                          comment.character?.name ||
+                          "Unknown User"
+                      );
+                    }}
+                  >
+                    <Postcomment
+                      key={comment.commentId}
+                      comment={comment}
+                      refreshComments={fetchAndFilterComments}
+                    />
+                    {comment.replies &&
+                      comment.replies
+                        // replyId 기준으로 오름차순 정렬
+                        .sort((a, b) => a.replyId - b.replyId)
+                        // 필터링 조건 적용
+                        .filter((reply) => {
+                          const replyTime = new Date(reply.createTime);
 
-                        if (reply.character?.commentDelayTime) {
-                          replyTime.setMinutes(
-                            replyTime.getMinutes() +
-                              reply.character.commentDelayTime
-                          );
-                          return replyTime <= new Date(); // character가 있는 대댓글만 시간 필터링 적용
-                        }
+                          // character가 있는 경우, commentDelayTime을 추가하여 필터링
+                          if (reply.character?.commentDelayTime) {
+                            replyTime.setMinutes(
+                              replyTime.getMinutes() +
+                                reply.character.commentDelayTime
+                            );
+                            return replyTime <= new Date(); // character가 있는 대댓글만 시간 필터링 적용
+                          }
 
-                        return true; // character가 없는 대댓글은 필터링 없이 표시
-                      })
-                      .map((reply, idx) => (
-                        <ReplyComment
-                          key={idx}
-                          comment={reply}
-                          refreshComments={refreshComments}
-                        />
-                      ))}
-                </div>
-              ))}
+                          return true; // character가 없는 대댓글은 필터링 없이 표시
+                        })
+                        .map((reply, idx) => (
+                          <ReplyComment
+                            key={reply.replyId}
+                            comment={reply}
+                            refreshComments={refreshComments}
+                          />
+                        ))}
+                  </div>
+                ))}
             </div>
           </div>
         </div>
