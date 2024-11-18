@@ -4,7 +4,10 @@ export function calTime(dateString: string): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return `${diffInSeconds + 1}초 전`;
+    if (diffInSeconds < 0) {
+      return `0초 전`;
+    }
+    return `${diffInSeconds}초 전`;
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
