@@ -209,8 +209,13 @@ public class OpenAIClient {
 //        replies.sort(Comparator.comparing(Reply::getReplyId).reversed());
         sb.append("댓글 기록\n");
         // 위에서 캐릭터 답글에 대한 것만 이 함수로 올 수 있게 해야함
-        sb.append(comment.getCharacter().getName()).append(": ").append(comment.getContent())
-            .append("\n");
+        if(comment.getCharacter() == null){
+            sb.append(comment.getMember().getName()).append(": ").append(comment.getContent())
+                .append("\n");
+        }else{
+            sb.append(characterInfo.getName()).append(": ").append(comment.getContent())
+                .append("\n");
+        }
         if (replies.isEmpty()) {
             if (nowReply.getMember() == null) {
                 sb.append("끝\n");
