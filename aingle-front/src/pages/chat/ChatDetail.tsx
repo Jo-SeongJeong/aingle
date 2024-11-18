@@ -119,7 +119,7 @@ const ChatDetail = () => {
   }
 
   return (
-    <div className="bg-white h-screen w-full flex flex-col relative overflow-hidden">
+    <div className="bg-white min-h-screen w-full flex flex-col relative overflow-hidden">
       {/* 헤더 */}
       <div className="absolute top-0 w-full z-10">
         <TextHeader navTo={""} headerText={characterName} />
