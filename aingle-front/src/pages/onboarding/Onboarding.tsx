@@ -229,7 +229,7 @@ const Onboarding = () => {
           <button className="text-[#fb599a] text-lg" onClick={handleBackClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 mr-2"
+              className="h-6 w-6 mr-2 mt-[20px]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
