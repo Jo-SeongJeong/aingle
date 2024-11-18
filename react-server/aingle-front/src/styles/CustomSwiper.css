@@ -1,0 +1,25 @@
+/* Swiper 페이지네이션 점 위치 및 간격 조정 */
+.swiper-pagination {
+  bottom: 12px !important; /* 점을 슬라이더 아래로 내림 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* 페이지네이션 점 크기 및 간격 */
+.swiper-pagination-bullet {
+  background-color: #ff99c2; /* 점의 기본 색상 */
+  opacity: 0.7; /* 약간 투명도 설정 */
+  width: 12px; /* 점의 너비 조정 */
+  height: 12px; /* 점의 높이 조정 */
+  margin: 0 6px; /* 점 간 간격을 좌우로 6px씩 설정 */
+}
+
+/* 활성화된 페이지네이션 점 색상 및 크기 */
+.swiper-pagination-bullet-active {
+  background-color: #fc448e; /* 활성 점의 색상 */
+  opacity: 1; /* 불투명하게 설정 */
+  width: 14px; /* 활성 점의 너비를 더 키움 */
+  height: 14px; /* 활성 점의 높이도 더 키움 */
+}
