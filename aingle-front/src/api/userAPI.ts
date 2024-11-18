@@ -1,15 +1,15 @@
 import axios from "axios";
 import { BASE_URL } from "./APIconfig";
-import {
-  ImemberSignUpRequestDto,
-  ImemberUpdateRequestDto,
-} from "../model/user";
+import {ImemberSignUpRequestDto,ImemberUpdateRequestDto} from "../model/user";
 import axiosInstance from "./axiosInstance";
+import defaultImg from "../../src/assets/defaultImg.png";
 
 // 회원 가입 api
 export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const formData = new FormData();
+    
     const memberData = {
       name: userInfo.name,
       email: userInfo.email,
@@ -22,8 +22,12 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
     // `memberSignUpRequestDto`라는 키로 전체 데이터를 묶기
     formData.append("memberSignUpRequestDto", JSON.stringify(memberData));
 
+    // 이미지가 있으면 첨부, 없으면 디폴트 이미지
     if (userInfo.file) {
       formData.append("file", userInfo.file);
+    } else {
+      const defaultUserImg = await fetch(defaultImg).then((res) => res.blob());
+      formData.append("file", defaultUserImg, "defaultImg.jpg"); // 디폴트 이미지
     }
 
     const response = await axios.post(`${BASE_URL}/members/sign-up`, formData, {
@@ -41,6 +45,7 @@ export const registUserInfo = async (userInfo: ImemberSignUpRequestDto) => {
 
 // 회원 정보 조회 api
 export const getUserInfo = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.get(`${BASE_URL}/members`);
     // console.log("회원 정보 조회 성공 : ", response.data);
@@ -54,6 +59,7 @@ export const getUserInfo = async () => {
 
 // 회원 탈퇴 api
 export const deleteUser = async () => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await axiosInstance.delete(`${BASE_URL}/members`);
     // console.log(response);
@@ -66,6 +72,7 @@ export const deleteUser = async () => {
 
 // 회원 정보 수정 api
 export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const formData = new FormData();
 
@@ -101,6 +108,7 @@ export const patchUserInfo = async (patchInfo: ImemberUpdateRequestDto) => {
 
 // FCM 토큰을 얻어 서버로 전송
 export const requestFcmToken = async (token: any) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     // FCM 토큰을 서버에 전송하여 업데이트
     await axiosInstance.patch(`${BASE_URL}/members/fcm-tokens`, {
