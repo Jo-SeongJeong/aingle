@@ -34,8 +34,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     implementation 'org.postgresql:postgresql:42.7.4'
+
     //openAI
     implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3'
+
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
