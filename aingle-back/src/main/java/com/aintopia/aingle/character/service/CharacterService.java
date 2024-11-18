@@ -249,13 +249,12 @@ public class CharacterService {
 
 
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
-    @Scheduled(cron = "0 0 11 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 37 13 * * *", zone = "Asia/Seoul")
     @Transactional
     public void scheduleCharacterPostCreation() {
         List<Character> publicCharacters = characterRepository.findByIsDeletedFalse();
         int totalCharacters = publicCharacters.size();
         int batchSize = 5;
-        int batchIntervalInMinutes = 1;
 
         for (int i = 0; i < totalCharacters; i += batchSize) {
             // 현재 배치에서 처리할 캐릭터 목록 가져오기 (최대 5개)
@@ -267,10 +266,10 @@ public class CharacterService {
             for (int j = 0; j < batch.size(); j++) {
                 Character character = batch.get(j);
 
-                // 12초 간격으로 요청 실행
+                // 20초 간격으로 요청 실행
                 executorService.schedule(() -> {
                     openAIClient.generatePost(character);
-                }, j * 12L, TimeUnit.SECONDS);
+                }, j * 20L, TimeUnit.SECONDS);
             }
 
             // 배치 작업이 끝난 후 스케줄러 종료 및 다음 배치 대기
