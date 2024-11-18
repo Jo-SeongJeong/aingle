@@ -1,0 +1,42 @@
+spring.config.import: optional:application-private.yml
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: aingle-backend
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+springdoc:
+  swagger-ui:
+    path: ${swagger-url}
+
+jwt:
+  expiration_time: 3600000 #1시간
+  secret: ${JWT}
+
+kakao:
+  grant-type: authorization_code
+  client-id: ${kakao-client-id}
+  redirect-uri: ${kakao-redirect-uri}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region: ap-northeast-2
+
+firebase:
+  config-path: classpath:aingle-ab0b9-firebase-adminsdk-u2p8w-8b6409f272.json
+
+
+
