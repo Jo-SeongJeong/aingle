@@ -222,7 +222,7 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="bg-[#FFFAFC] min-h-screen w-full px-[16px] py-[34px] flex flex-col justify-between items-center">
+    <div className="bg-[#FFFAFC] h-[100vh] w-full px-[16px]  flex flex-col justify-between items-center">
       {/* 첫 화면이 아닐 경우에만 뒤로가기 버튼을 표시 */}
       {pageNumber > 1 && (
         <div className="w-full flex justify-between items-center mb-[12px]">
