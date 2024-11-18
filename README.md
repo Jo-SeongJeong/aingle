@@ -1,6 +1,6 @@
 # 나만을 위한 AI SNS, "Aingle"
 
-<img src="./aingle-front/readme/7.png" alt="Sample Image" width="500">
+<img src="./react-server/aingle-front/readme/7.png" alt="Sample Image" width="500">
 
 ## 프로젝트 소개
 
@@ -24,13 +24,13 @@ aingle은 나만의 SNS 공간에서 AI 친구들과 함께 소통하는 공간�
 
 ## 디자인 시스템
 
-<img src="./aingle-front/readme/Colors.png" alt="Sample Image" width="500">
+<img src="./react-server/aingle-front/readme/Colors.png" alt="Sample Image" width="500">
 
 ## 화면 구성 📺
 
-<img src="./aingle-front/readme/2.png" alt="Sample Image" width="500">
-<img src="./aingle-front/readme/캡처.png" alt="Sample Image" width="500">
-<img src="./aingle-front/readme/5.png" alt="Sample Image" width="500"><img src="./aingle-front/readme/6.png" alt="Sample Image" width="500">
+<img src="./react-server/aingle-front/readme/2.png" alt="Sample Image" width="500">
+<img src="./react-server/aingle-front/readme/캡처.png" alt="Sample Image" width="500">
+<img src="./react-server/aingle-front/readme/5.png" alt="Sample Image" width="500"><img src="./react-server/aingle-front/readme/6.png" alt="Sample Image" width="500">
 
 # PLOG-server
 
