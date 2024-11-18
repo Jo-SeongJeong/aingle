@@ -34,13 +34,10 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.model.Media;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageModel;
-import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
@@ -63,7 +60,7 @@ import static com.aintopia.aingle.common.openai.model.OpenAIPrompt.*;
 public class OpenAIClient {
 
     private final OpenAiChatModel chatModel;
-    private final OpenAiImageModel imageModel;
+//    private final OpenAiImageModel imageModel;
     private final CharacterRepository characterRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;

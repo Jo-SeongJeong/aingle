@@ -31,7 +31,6 @@ public class OpenAIController {
     private final OpenAIClient openAIClient;
     private final CharacterRepository characterRepository;
     private final S3Service s3Service;
-    private final DiffusionAIClient diffusionAIClient;
 
     @Operation(
             summary = "AI 댓글 생성 테스트 API",
