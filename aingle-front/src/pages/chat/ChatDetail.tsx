@@ -119,19 +119,18 @@ const ChatDetail = () => {
   }
 
   return (
-    <div className="bg-white min-h-screen w-full flex flex-col relative overflow-hidden">
+    <div className="bg-white h-screen w-full flex flex-col overflow-hidden">
       {/* 헤더 */}
-      <div className="absolute top-0 w-full z-10">
+      <div className="fixed top-0 w-full z-10">
         <TextHeader navTo={""} headerText={characterName} />
       </div>
 
       {/* 채팅 컨테이너 */}
       <div
-        className="flex-1 mt-[60px] overflow-y-auto p-4 w-full max-w-[800px] mx-auto pb-20"
+        className="flex-1 mt-[60px] overflow-y-auto p-4 w-full max-w-[800px] mx-auto"
         ref={chatBoxRef}
       >
-        {/* <div className="flex flex-col gap-4 px-4 md:px-6 lg:px-8"> */}
-        <div className="flex flex-col gap-4 ">
+        <div className="flex flex-col gap-4 px-4 md:px-6 lg:px-8">
           {chatDetails.map((chatDetail, index) =>
             chatDetail.memberId ? (
               <div key={index} className="flex items-center justify-end">
@@ -160,8 +159,9 @@ const ChatDetail = () => {
           )}
         </div>
       </div>
+
       {/* 입력창 */}
-      <div className="absolute bottom-0 left-0 w-full flex items-center p-3 bg-white border-t border-gray-300">
+      <div className="flex w-full items-center p-3 bg-white border-t border-gray-300">
         <input
           type="text"
           value={inputValue}
