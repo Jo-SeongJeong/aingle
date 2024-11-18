@@ -9,7 +9,7 @@ export const createComment = async (comment: IcreateComment) => {
 
     return response.data;
   } catch (error) {
-    // console.error("댓글 등록 실패 : ", error);
+    console.error("댓글 등록 실패 : ", error);
     throw error;
   }
 };
@@ -18,10 +18,10 @@ export const createComment = async (comment: IcreateComment) => {
 export const getComments = async (postId: number) => {
   try {
     const response = await axiosInstance.get(`${BASE_URL}/comments/${postId}`);
-    // console.log(response.data);
+    console.log(response.data);
     return response.data;
   } catch (error) {
-    // console.error("게시글 댓글 조회에 실패 : ", error);
+    console.error("게시글 댓글 조회에 실패 : ", error);
   }
 };
 
@@ -33,7 +33,7 @@ export const deleteComments = async (commentId: number) => {
     );
     return response.data;
   } catch (error) {
-    // console.error("게시글 댓글 조회에 실패 : ", error);
+    console.error("게시글 댓글 조회에 실패 : ", error);
   }
 };
 
@@ -46,11 +46,11 @@ export const createReply = async (commentId: number, content: string) => {
       content,
     });
 
-    // console.log(`댓글 ${commentId}에 대댓글 달기 성공 : `, response);
+    console.log(`댓글 ${commentId}에 대댓글 달기 성공 : `, response);
 
     return response.data;
   } catch (error) {
-    // console.error("댓글 등록 실패 : ", error);
+    console.error("댓글 등록 실패 : ", error);
     throw error;
   }
 };
@@ -62,11 +62,11 @@ export const deleteReply = async (replyId: number) => {
       `${BASE_URL}/replies/${replyId}`
     );
 
-    // console.log("대댓글 삭제 성공 ");
+    console.log("대댓글 삭제 성공 ");
 
     return response;
   } catch (error) {
-    // console.error("대댓글 삭제 실패 : ", error);
+    console.error("대댓글 삭제 실패 : ", error);
     throw error;
   }
 };

@@ -119,9 +119,9 @@ const ChatDetail = () => {
   }
 
   return (
-    <div className="bg-white h-screen w-full flex flex-col overflow-hidden">
+    <div className="bg-white h-screen w-full flex flex-col relative overflow-hidden">
       {/* 헤더 */}
-      <div className="fixed top-0 w-full z-10">
+      <div className="absolute top-0 w-full z-10">
         <TextHeader navTo={""} headerText={characterName} />
       </div>
 
@@ -130,7 +130,8 @@ const ChatDetail = () => {
         className="flex-1 mt-[60px] overflow-y-auto p-4 w-full max-w-[800px] mx-auto"
         ref={chatBoxRef}
       >
-        <div className="flex flex-col gap-4 px-4 md:px-6 lg:px-8">
+        {/* <div className="flex flex-col gap-4 px-4 md:px-6 lg:px-8"> */}
+        <div className="flex flex-col gap-4 ">
           {chatDetails.map((chatDetail, index) =>
             chatDetail.memberId ? (
               <div key={index} className="flex items-center justify-end">

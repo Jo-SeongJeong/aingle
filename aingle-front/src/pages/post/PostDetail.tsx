@@ -206,7 +206,18 @@ const PostDetail = () => {
           {/* 포스트 */}
           <div>
             {/* 작성자 정보 */}
-            <div className="flex items-center mb-[11px]">
+            <div
+              className="flex items-center mb-[11px]"
+              onClick={() => {
+                if (postData.member) {
+                  navigate("/mypage");
+                } else {
+                  navigate(
+                    `/vote/chardetail/${postData.character.characterId}`
+                  );
+                }
+              }}
+            >
               <img
                 src={
                   postData.member

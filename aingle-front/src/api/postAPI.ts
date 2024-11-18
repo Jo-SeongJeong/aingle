@@ -8,7 +8,7 @@ export const getPost = async (page: number, size: number): Promise<IPost[]> => {
     const response = await axiosInstance.get<IPost[]>(
       `${BASE_URL}/posts?page=${page}&size=${size}`
     );
-    // console.log(response.data);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     // console.error("게시글 조회 실패:", error);

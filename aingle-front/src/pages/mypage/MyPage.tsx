@@ -32,7 +32,7 @@ const MyPage = () => {
   }, []); // location.key를 감지
 
   return (
-    <div className="h-full  relative bg-white overflow-auto pb-[90px]">
+    <div className="min-h-screen  relative bg-white overflow-auto pb-[90px]">
       {/* 배경색 */}
       <div
         className="w-full h-[190px] bg-cover bg-center absolute top-0 left-0 z-100"

@@ -11,7 +11,7 @@ export const getAlarm = async (numbers: IgetAlarm) => {
       params: { page, size },
     });
 
-    // console.log(response.data);
+    console.log(response.data);
 
     return response.data;
   } catch (error) {

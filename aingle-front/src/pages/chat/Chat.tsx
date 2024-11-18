@@ -5,7 +5,6 @@ import { IchatRoom } from "../../model/chat";
 import { calTime } from "../../utils/date";
 import TextHeader from "../../components/header/TextHeader";
 
-
 const Chat = () => {
   const [chatList, setChatList] = useState<IchatRoom[]>([]);
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ const Chat = () => {
   }, []);
 
   return (
-    <div className="bg-white h-screen w-full flex flex-col overflow-hidden">
+    <div className="bg-white min-h-screen w-full flex flex-col overflow-hidden">
       {/* 헤더가 상단에 고정 */}
       <div className="absolute top-0 w-full z-10">
         <TextHeader navTo={""} headerText={"다이렉트 메세지"} />

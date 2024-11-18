@@ -30,6 +30,7 @@ const Notice = () => {
     const fetchAlarm = async () => {
       try {
         const response = await getAlarm(numbers);
+        console.log("알림 : ", response);
         setAlarms(response);
       } catch (error) {
         console.error("알림 조회 실패: ", error);
@@ -55,9 +56,9 @@ const Notice = () => {
   };
 
   return (
-    <div className="h-full  relative bg-white px-6 pt-[13px] pb-[100px] overflow-auto">
+    <div className="min-h-screen  relative bg-white px-6 pt-[13px] pb-[100px] overflow-auto">
       <PinkTextHeader />
-      <div className="overflow-auto h-full">
+      <div className="overflow-auto min-h-screen">
         {alarms.filter(isAlarmReady).length === 0 ? (
           <div className="text-center text-lg font-bold text-gray-600 py-5">
             알람이 없습니다
