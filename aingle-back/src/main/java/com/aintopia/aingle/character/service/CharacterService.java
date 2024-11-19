@@ -250,57 +250,57 @@ public class CharacterService {
 
 
     // 공용 캐릭터, 커스텀 캐릭터 게시글 매일 밤 12시마다 생성
-    @Scheduled(cron = "0 0 15 * * *", zone = "Asia/Seoul")
-    @Transactional
-    public void scheduleCharacterPostCreation() {
-        // 한 캐릭만 게시글 테스트
-//        Optional<Character> oneCharacter = characterRepository.findById(1L);
+//    @Scheduled(cron = "0 0 15 * * *", zone = "Asia/Seoul")
+//    @Transactional
+//    public void scheduleCharacterPostCreation() {
+//        // 한 캐릭만 게시글 테스트
+////        Optional<Character> oneCharacter = characterRepository.findById(1L);
+//
+//        // 실 사용 코드 주석 해제 후 사용
+//        List<Character> publicCharacters = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
+//
+//        // 아래 두 줄 코드가 테스트용 코드
+////        List<Character> publicCharacters = new ArrayList<>();
+////        oneCharacter.ifPresent(publicCharacters::add);
+//
+//        int totalCharacters = publicCharacters.size();
+//        int batchSize = 3;
+//
+//        // 스케줄러를 배치 반복문 외부에서 한 번만 생성
+//        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+//
+//        for (int i = 0; i < totalCharacters; i += batchSize) {
+//            List<Character> batch = publicCharacters.subList(i,
+//                Math.min(i + batchSize, totalCharacters));
+//
+//            for (int j = 0; j < batch.size(); j++) {
+//                Character character = batch.get(j);
+//
+//                // 20초 간격으로 요청 실행
+//                executorService.schedule(() -> {
+//                    openAIClient.generatePost(character);
+//                }, j * 20L, TimeUnit.SECONDS);
+//            }
+//
+//            // 배치 간 대기 시간 추가 (1분)
+//            try {
+//                Thread.sleep(60 * 1000); // 1분 대기
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
-        // 실 사용 코드 주석 해제 후 사용
-        List<Character> publicCharacters = characterRepository.findByIsPublicTrueAndIsDeletedFalse();
-
-        // 아래 두 줄 코드가 테스트용 코드
-//        List<Character> publicCharacters = new ArrayList<>();
-//        oneCharacter.ifPresent(publicCharacters::add);
-
-        int totalCharacters = publicCharacters.size();
-        int batchSize = 3;
-
-        // 스케줄러를 배치 반복문 외부에서 한 번만 생성
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-
-        for (int i = 0; i < totalCharacters; i += batchSize) {
-            List<Character> batch = publicCharacters.subList(i,
-                Math.min(i + batchSize, totalCharacters));
-
-            for (int j = 0; j < batch.size(); j++) {
-                Character character = batch.get(j);
-
-                // 20초 간격으로 요청 실행
-                executorService.schedule(() -> {
-                    openAIClient.generatePost(character);
-                }, j * 20L, TimeUnit.SECONDS);
-            }
-
-            // 배치 간 대기 시간 추가 (1분)
-            try {
-                Thread.sleep(60 * 1000); // 1분 대기
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // 모든 작업이 끝난 후 스케줄러 종료
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-            e.printStackTrace();
-        }
-    }
+//        // 모든 작업이 끝난 후 스케줄러 종료
+//        executorService.shutdown();
+//        try {
+//            if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
+//                executorService.shutdownNow();
+//            }
+//        } catch (InterruptedException e) {
+//            executorService.shutdownNow();
+//            e.printStackTrace();
+//        }
+//    }
 
 
     @Transactional
